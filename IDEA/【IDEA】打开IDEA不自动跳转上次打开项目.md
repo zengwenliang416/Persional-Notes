@@ -1,0 +1,1 @@
+File -> settings -> Appearance & Behavior -> system settings，关闭Project下的Reopen projects on startup ![image.png](./imgs/1703210222451-d8c15f36-8cd5-4a41-90eb-ecc307f78f95.png) 
