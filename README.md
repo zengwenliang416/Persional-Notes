@@ -46,7 +46,7 @@
 |   └── ...
 │   └── ...
 └── pull.bat # 一键push脚本(windows)
-└── pull.sh # 一键push脚本(li)
+└── pull.sh # 一键push脚本(linux、macos)
 ```
 
 ## 如何使用这个仓库 ❓
