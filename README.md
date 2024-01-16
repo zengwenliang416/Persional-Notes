@@ -16,6 +16,7 @@
 - **Git学习**：我阅读书籍的心得和摘抄。
 - **IDEA**：使用IDEA过程中的一些技巧和问题
 - **JAVA**：日常生活中的随想和反思。
+- **LeetCode**：LeetCode刷题记录。
 - **MySQL**：学习MySQL过程中的一些问题
 - **Tomcat**：关于我参与或者关注的项目的详细记录。
 - **Ruoyi-Plus**：关于开源项目Ruoyi-Plus的一些学习记录。
@@ -25,34 +26,18 @@
 ```plaintext
 /
 ├── 科研心得
-│   ├── Latex+VSCode+Git+PyCharm
-│   ├── 
-│   └── ...
 ├── 设计模式
-│   ├── 
-│   ├── 
-│   └── ...
 ├── Apusic应用服务器
-│   ├── 
-│   ├── 
-│   └── ...
 ├── Git学习
-│   └── ...
 └── IDEA
-|   └── ...
-│   └── ...
 └── JAVA
-|   └── ...
-│   └── ...
+|   └── JAVA基础
+│   └── JVM
+└── LeetCode
+|   └── LeetCode-Hot-100
 └── MySQL
-|   └── ...
-│   └── ...
 └── Tomcat
-|   └── ...
-│   └── ...
 └── Ruoyi-Plus
-|   └── ...
-│   └── ...
 └── pull.bat # 一键push脚本(windows)
 └── pull.sh # 一键push脚本(linux、macos)
 ```
