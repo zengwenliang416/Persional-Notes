@@ -111,7 +111,7 @@
 
 ### 访问测试
 
-访问http://localhost:8080/ssi_war_exploded/显示如下：
+访问`http://localhost:8080/ssi_war_exploded/`显示如下：
 
 ![image-20240117103520949](./imgs/image-20240117103520949.png)
 
@@ -121,7 +121,7 @@
 
 ### 错误分析
 
-错误信息显示找不到/comon/footer.html文件，
+错误信息显示找不到`/comon/footer.html`文件，
 
 ## weblogic测试
 
@@ -162,13 +162,13 @@
 
 ### 访问测试
 
-访问http://localhost:8080/ssi_war_exploded/显示如下：
+访问`http://localhost:8080/ssi_war_exploded/`显示如下：
 
 ![image-20240117115956798](./imgs/image-20240117115956798.png)
 
 ### 错误信息
 
-![image-20240117115937799](./imgs/image-20240117115937799.png)
+![image-20240117120016316](./imgs/image-20240117120016316.png)
 
 ## AAS测试
 
@@ -188,27 +188,27 @@
 
 ### 访问测试
 
-访问http://localhost:8080/ssi_war_exploded/显示如下：
+访问`http://localhost:8080/ssi_war_exploded/`显示如下：
 
 ![image-20240117115906442](./imgs/image-20240117115906442.png)
 
 ### 错误信息
 
-![image-20240117120016316](./imgs/image-20240117120016316.png)
+![image-20240117115937799](./imgs/image-20240117115937799.png)
 
 ### 问题分析
 
-在debug模式下定位问题输出现在获取fullURI的过程中出现了问题，AAS获取的路径并不是ssi-aas-rela/pages/common/header.shtml，而是ssi-aas-rela/common/header.shtml，然而在web下并没有common文件夹，导致找不到这个shtml。
+在`debug`模式下定位问题输出现在获取fullURI的过程中出现了问题，`AAS`获取的路径并不是`ssi-aas-rela/pages/common/header.shtml`，而是`ssi-aas-rela/common/header.shtml`，然而在`web`下并没有`common`文件夹，导致找不到这个`shtml`。
 
 ![image-20240117153011814](./imgs/image-20240117153011814.png)
 
 ### 解决思路
 
-在绝对路径下查找失败后，拼接资源地址，随后传输给getRequestDispathcher方法。
+在绝对路径下查找失败后，拼接资源地址，随后传输给`getRequestDispathcher`方法。
 
 修改代码如下：
 
-```
+```java
 try {
 	    RequestDispatcher rd = getServletContext().getRequestDispatcher(target);
 	    rd.include(request, response);
@@ -224,5 +224,5 @@ try {
 	}
 ```
 
-这种方式下的修改还是会出现问题，因为做了error操作，这会导致页面上出现一行错误之后才能出现一行正常的，因此需要对其进行改进，使用判断文件是否存在来决定用哪种方法，如果两个位置都不存在的话，则在相对路径下报告异常，代码如下：
+这种方式下的修改还是会出现问题，因为做了两次`error`操作，这会导致页面上出现一行错误之后才能出现一行正常的，因此需要对其进行改进，使用判断文件是否存在来决定用哪种方法，如果两个位置都不存在的话，则在相对路径下报告异常，代码如下：
 
