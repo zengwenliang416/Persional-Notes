@@ -226,3 +226,14 @@ try {
 
 这种方式下的修改还是会出现问题，因为做了两次`error`操作，这会导致页面上出现一行错误之后才能出现一行正常的，因此需要对其进行改进，使用判断文件是否存在来决定用哪种方法，如果两个位置都不存在的话，则在相对路径下报告异常，代码如下：
 
+```java
+try {
+		File file = new File(target);
+    String pathToInclude = file.exists() && !file.isDirectory() ? target : Utils.resolvePath(this.path, target);
+    RequestDispatcher rd = getServletContext().getRequestDispatcher(pathToInclude);
+    rd.include(request, response);
+} catch (FileNotFoundException e) {
+    error(_T(SSI_INCLUDE_NOT_FOUND, target));
+}
+```
+
