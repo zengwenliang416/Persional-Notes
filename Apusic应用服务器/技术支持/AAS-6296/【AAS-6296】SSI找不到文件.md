@@ -160,6 +160,53 @@
 </web-app>
 ```
 
+
+
+```
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE weblogic-web-app PUBLIC "-//BEA Systems, Inc.//DTD Web Application 8.1//EN" "http://xmlns.oracle.com/weblogic/weblogic-web-app/1.3/weblogic-web-app.xsd">
+<weblogic-web-app>
+    <welcome-file-list>
+        <welcome-file>index.jsp</welcome-file>
+    </welcome-file-list>
+    <virtual-directory-mapping>
+        <local-path>
+
+        </local-path>
+        <url-pattern>/*</url-pattern>
+    </virtual-directory-mapping>
+    <context>
+        /
+    </context>
+</weblogic-web-app>
+```
+
+
+
+
+
+
+
+```java
+RequestDispatcher getRequestDispatcher(String path, int mode) {
+    if (path != null && path.length() != 0 && path.charAt(0) == '/') { // 判断是不是相对路径
+        String queryString = null;
+        int queryStringPos = path.indexOf(63); // 找到第一次？出现的位置
+        if (queryStringPos > 0 && queryStringPos < path.length() - 1) { // 查询
+            queryString = path.substring(queryStringPos + 1);
+            path = path.substring(0, queryStringPos);
+        }
+
+        path = FilenameEncoder.resolveRelativeURIPath(path, true);
+        return path == null ? null : new RequestDispatcherImpl(path, queryString, this, mode);
+    } else {
+        return null;
+    }
+}
+```
+
+
+
 ### 访问测试
 
 访问`http://localhost:8080/ssi_war_exploded/`显示如下：
@@ -237,6 +284,19 @@ try {
 }
 ```
 
-## demo逻辑
+### demo逻辑
 
 ![image-20240118153053819](./imgs/image-20240118153053819.png)
+
+### 问题逻辑
+
+```
+upload/
+|-- futuresPingAnCom/
+|   |-- meirishidian/
+|		|		|-- shangpinqihuoribao/
+|		|		|		|-- new.shtml
+|		|		|-- top.shtml
+|-- index.shtml 
+```
+
