@@ -1,4 +1,4 @@
-# 【RAMS】平安版本号变更方式
+# 【RAS-V10】平安版本号变更方式
 
 ## 需求
 
@@ -66,3 +66,70 @@ tomcat-native.version=1.2.23
 验证需要将`license.xml`和要运行的`jar`包放在同一目录下，运行`java -jar spring-boot-jsp-1.0.jar`后可以在终端看到版本信息已经输出。
 
 ![image-20240123172258506](./imgs/image-20240123172258506.png)
+
+### 脚本查看版本信息
+
+```bash
+@echo off
+setlocal enabledelayedexpansion
+
+REM 检查命令行参数并设置外部JAR文件路径
+if "%~1"=="-j" (
+    set "OUTER_JAR_FILE=%~2"
+) else (
+    echo Usage: %~nx0 -j [JAR_FILE]
+    exit /b
+)
+
+REM 设置内部JAR文件和properties文件的路径
+set INNER_JAR_PATH=BOOT-INF/lib/ras-embed-core-11.0.0.jar
+set PROP_FILE_PATH=com\rockyas\rms\util\ServerInfo.properties
+
+REM 创建临时目录用来存放提取的JAR和properties文件
+set TEMP_DIR=%~dp0temp
+set INNER_JAR_TEMP_DIR=%TEMP_DIR%\inner_jar
+mkdir "%INNER_JAR_TEMP_DIR%" >nul 2>&1
+
+REM 提取内部JAR到临时目录
+pushd "%TEMP_DIR%"
+jar -xf "%~dp0%OUTER_JAR_FILE%" "%INNER_JAR_PATH%"
+if errorlevel 1 (
+    echo Error: Failed to extract %INNER_JAR_PATH% from %OUTER_JAR_FILE%
+    exit /b
+)
+popd
+
+REM 解压内部JAR以获取properties文件
+pushd "%INNER_JAR_TEMP_DIR%"
+jar -xf "%TEMP_DIR%\%INNER_JAR_PATH%" "%PROP_FILE_PATH%"
+if errorlevel 1 (
+    echo Error: Failed to extract %PROP_FILE_PATH% from %INNER_JAR_PATH%
+    exit /b
+)
+popd
+
+REM 读取properties文件中的属性值
+set PROP_VALUE=
+for /f "tokens=1* delims==" %%a in ('type "%INNER_JAR_TEMP_DIR%\%PROP_FILE_PATH%" 2^>nul') do (
+    if "%%a"=="server.info" (
+        REM 删除行首和行尾的空格
+        set "PROP_VALUE=%%b"
+        set "PROP_VALUE=!PROP_VALUE: =!"
+        goto output
+    )
+)
+
+:output
+REM 输出属性值
+if not defined PROP_VALUE (
+    echo Property server.info not found.
+) else (
+    echo server.info=!PROP_VALUE!
+)
+
+REM 清理临时文件
+rmdir /q /s "%TEMP_DIR%"
+
+endlocal
+```
+
