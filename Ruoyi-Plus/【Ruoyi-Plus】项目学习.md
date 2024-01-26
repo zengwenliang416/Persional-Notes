@@ -4,19 +4,21 @@
 
 
 
-## yml文件配置
+## yml文件
 
-Spring boot一定加载application.yml以及激活的application-xxx.yml等形式的文件，Spring boot首先会加载application.yml，然后再加载我们激活的application-xxx.yml，如果两个同时激活，后加载的会覆盖掉前面加载的
+### 定制加载配置
+
+`Spring boot`一定加载`application.yml`以及激活的`application-xxx.yml`等形式的文件，`Spring boot`首先会加载`application.yml`，然后再加载我们激活的`application-xxx.yml`，如果两个同时激活，后加载的会覆盖掉前面加载的。
 
 如果不符合这种命名规范的话就不会被自动加载，此时可以在类上加上注解加载该配置文件：
 
-```
+```java
 @PropertySource(value = {"classpath:generator.yml"}, encoding = "UTF-8")
 ```
 
-### security配置
+### 数组配置
 
-```
+```yaml
 security:
   # 排除路径
   excludes:
@@ -38,50 +40,83 @@ security:
 
 对应代码：
 
-```
+```java
 package com.ruoyi.framework.config.properties;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
-/**
- * Security 配置属性
- * @Data
- * @author Lion Li
- */
 @Data
 @Component
 @ConfigurationProperties(prefix = "security")
 public class SecurityProperties {
 
-    /**
-     * 排除路径
-     */
     private String[] excludes;
 
 } 
 ```
 
-在配置文件中，排除路径是一个数组，数组的配置的话会在前面加一个-和一个空格
+### 驼峰转换
 
-连字符-可以实现驼峰转换，比如：
+在配置文件中，排除路径是一个数组，数组的配置的话会在前面加一个`-`和一个空格
 
-```
+连字符`-`可以实现驼峰转换，比如：
+
+```yaml
 jwt-secret-key: abcdefghijklmnopqrstuvwxyz
 ```
 
 在代码中是这样的：
 
-```
+```java
 private String jwtSecretKey;
 ```
 
-三个连字符---可以将一个文档分成多个文档以实现配置文件的隔离
+### 配置文件隔离
 
+在`Spring Boot`中，使用三个连字符 `---` 在单个 `application.yml` 文件中分隔不同的配置节是一种流行的做法。这可以让开发者在同一个物理文件中区分不同的逻辑或环境配置，而无需创建多个文件。这种方式对于管理和维护多环境配置特别有用。
 
+例如，你可以在同一个 `application.yml` 文件中指定默认配置，开发环境配置，和生产环境配置：
 
-指定运行的配置文件
+```yaml
+# 默认配置
+server:
+  port: 8080
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb
+    username: sa
+    password:
+
+---
+
+# 开发环境配置
+spring:
+  profiles: dev
+  datasource:
+    url: jdbc:mysql://localhost/devdb
+    username: devuser
+    password: devpass
+
+---
+
+# 生产环境配置
+spring:
+  profiles: prod
+  datasource:
+    url: jdbc:mysql://localhost/proddb
+    username: produser
+    password: prodpass
+```
+
+在这个例子中，我们定义了三个配置节。第一个是默认配置，它将应用于没有特定指定profile的情况；接着是开发环境的配置，这部分配置在激活 `dev` profile时将覆盖默认配置；最后是生产环境的配置，这部分配置在激活 `prod` profile时将覆盖默认配置。
+
+`Spring Boot`使用 `spring.profiles` 属性来确定哪部分配置是激活状态。启动应用时，你可以通过设置 `spring.profiles.active` 属性来指定活跃的`profile`，如通过命令行参数（`--spring.profiles.active=prod`）、环境变量或其他方法。
+
+使用这种方式可以使配置文件更加模块化和易于管理，尤其是当多个环境或配置组需要维护时，它们都聚合在同一个文件中，方便开发者查看和对比。
+
+### 指定配置文件
 
 ```
 java -jar xxx.jar --spring.config.name=application-xxx
@@ -89,35 +124,205 @@ java -jar xxx.jar --spring.config.name=application-xxx
 java -jar xxx.jar --spring.profiles.active=xxx
 ```
 
-## Jackson配置
+## Jackson
 
 ### 前置知识
 
-客户端向服务端发送请求数据主要包含三个部分：URL、Body（一般的GET方法没有）和Header。
+#### 客户端向服务端发送请求数据主要包含哪些部分？
 
+- 三个部分：`URL`、`Body`（一般的`GET`方法没有）和`Header`。
 
+#### 后端如何接受前端发送过来的参数？
 
-后端如何接受前端发送过来的参数？后端处理之后返回给前端，前端又怎么去接收这些数据？前端向后端发送请求的过程中，参数可以放在哪个部分？ 
+##### Spring Boot 和Spring MVC
 
+- **@RequestParam**: 用于获取`URL`查询参数或表单数据。
 
+```java
+@GetMapping("/search")
+public ResponseEntity<String> search(@RequestParam String query) {
+    // 业务逻辑处理
+    return ResponseEntity.ok("Results for " + query);
+}
+```
 
-#### 参数位置
+- **@PathVariable**: 用于获取`URL`中的路径变量。
 
-url、body
+```java
+@GetMapping("/users/{id}")
+public ResponseEntity<String> getUser(@PathVariable Long id) {
+    // 业务逻辑处理
+    return ResponseEntity.ok("User with ID: " + id);
+}
+```
 
-因此，后端的接受方式总共有三种：路径变量传参、拼接后注解传参和body传参
+- **@RequestBody**: 用于获取请求体中的数据，通常是`JSON`或`XML`格式。
 
+```java
+@PostMapping("/users")
+public ResponseEntity<User> createUser(@RequestBody User user) {
+    // 业务逻辑处理，如保存用户
+    return ResponseEntity.status(HttpStatus.CREATED).body(user);
+}
+```
 
+- **@RequestHeader**: 用于获取请求头中的特定字段。
 
-这种body传递参数和查看后端响应就是Jackson的反序列化和序列化，接口接收到接口字符串并转为body对象的这个过程就是反序列化，而经过处理之后再返回数据的过程就是序列化
+```java
+@GetMapping("/header-info")
+public ResponseEntity<String> getHeaderInfo(@RequestHeader("User-Agent") String userAgent) {
+    // 业务逻辑处理
+    return ResponseEntity.ok("User-Agent: " + userAgent);
+}
+```
 
+##### **Java Servlet API**
 
+- **HttpServletRequest.getParameter**: 用于获取查询参数或表单数据。
 
-#### 序列化
+```java
+protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    String query = request.getParameter("query");
+    // 业务逻辑处理
+    response.getWriter().write("Results for " + query);
+}
+```
+
+- **获取路径参数**: 在原生Servlet中没有直接的注解来获取，通常需要解析请求的URL。
+
+```java
+protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    String pathInfo = request.getPathInfo();
+    String id = pathInfo.substring(1); // 假设路径是 "/users/{id}"
+    // 业务逻辑处理
+    response.getWriter().write("User with ID: " + id);
+}
+```
+
+- **HttpServletRequest.getReader** 或 **getInputStream**: 用于从请求体中读取数据。
+
+```java
+protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    StringBuilder sb = new StringBuilder();
+    String line;
+    BufferedReader reader = request.getReader();
+    while ((line = reader.readLine()) != null) {
+        sb.append(line);
+    }
+    String requestBody = sb.toString();
+    // 解析requestBody中的数据
+    // 业务逻辑处理
+    response.getWriter().write("Data received: " + requestBody);
+}
+```
+
+- **HttpServletRequest.getHeader**: 用于获取请求头信息。
+
+```java
+protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    String userAgent = request.getHeader("User-Agent");
+    // 业务逻辑处理
+    response.getWriter().write("User-Agent: " + userAgent);
+}
+```
+
+#### 后端处理之后返回给前端，前端又怎么去接收这些数据？
+
+前端接收后端返回的数据通常涉及到发送HTTP请求并处理响应。这个过程可以通过原生`JavaScript`，框架或者库实现，例如用 `XMLHttpRequest`、`Fetch API`、`Axios`、`jQuery`等。以下是这些方法的一些例子：
+
+##### JavaScript
+
+`Fetch API`是现代浏览器提供的原生`JavaScript API`，用于执行网络请求。以下是一个基本的例子：
+
+```javascript
+fetch('http://example.com/api/data') // 发送GET请求
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Network response was not ok ' + response.statusText);
+    }
+    return response.json(); // 解析JSON格式的响应体
+  })
+  .then(data => {
+    console.log(data); // 处理获取到的数据
+  })
+  .catch(error => {
+    console.error('There has been a problem with your fetch operation:', error);
+  });
+```
+
+##### Axios
+
+`Axios`是一个流行的基于`Promise`的`HTTP`客户端，它可以在浏览器和`node.js`中使用。以下是一个使用`Axios`的例子：
+
+```javascript
+axios.get('http://example.com/api/data')
+  .then(response => {
+    console.log(response.data); // 处理获取到的数据
+  })
+  .catch(error => {
+    console.error('There was an error!', error);
+  });
+```
+
+##### jQuery
+
+```javascript
+$.ajax({
+  url: 'http://example.com/api/data',
+  type: 'GET',
+  success: function(data) {
+    console.log(data); // 处理获取到的数据
+  },
+  error: function(error) {
+    console.error('There was an error!', error);
+  }
+});
+```
+
+##### 前端处理HTTP响应:
+
+不论使用什么方法，处理HTTP响应通常包含以下步骤：
+
+1. **接收响应**: 检查响应状态码来判断请求是否成功。
+
+2. **解析响应体**: 根据响应头的`Content-Type`，可能需要将响应体从`JSON`、`XML`或其他格式转换为`JavaScript`可以处理的对象。
+
+3. **错误处理**: 适当地处理网络错误或后端返回的错误信息。
+
+4. **更新UI**: 使用获取到的数据更新前端的用户界面。
+
+##### 注意事项:
+
+- **同源策略**: 浏览器的同源策略限制了跨域请求，除非后端服务器明确允许（通过`CORS`头部）。
+
+- **安全性**: 应当对从后端获取的数据进行适当的安全处理，以避免例如`XSS`攻击等安全漏洞。
+
+#### 前端向后端发送请求的过程中，参数可以放在哪个部分？ 
+
+前端向后端发送请求时，参数可以放在以下几个不同的部分：
+
+1. **URL路径**:
+   - 作为路径的一部分，常用于`RESTful API`中。例如，`GET /users/123` 中的 `123` 是一个用户`ID`。
+2. **查询字符串**:
+   - 放在`URL`的`?`后面，用于`GET`请求的查询参数。例如，`GET /search?query=keyword&page=2`。
+3. **请求体** (`Body`):
+   - 用于`POST`、`PUT`、`PATCH`等请求，可以包含如`JSON`、`XML`、二进制数据等格式的内容。例如，`POST /users` 请求的body中可能包含一个新用户的`JSON`数据。
+4. **请求头** (`Headers`):
+   - 包含诸如认证令牌（`Authorization`）、内容类型（`Content-Type`）、接受的回复格式（`Accept`）等元数据。
+5. **Cookie**:
+   - 通常用于维护会话状态，`Cookie`数据会自动随请求发送。
+6. **表单数据**:
+   - 当提交一个表单时，可以使用`application/x-www-form-urlencoded`或`multipart/form-data`编码，尤其是在上传文件时。
+
+这种`body`传递参数和查看后端响应就是`Jackson`的反序列化和序列化，接口接收到接口字符串并转为`body`对象的这个过程就是反序列化，而经过处理之后再返回数据的过程就是序列化
+
+### 序列化
 
 将数据结构或者对象转换为可以被存储或传输的一系列字节的过程
 
-#### jackson配置
+### jackson配置
+
+#### yaml文件配置
 
 ```yml
 # jackson相关配置
@@ -175,7 +380,7 @@ public class JacksonConfig {
 }
 ```
 
-通过实现Jackson2ObjectMapperBuilderCustomizer的customize就可以从代码去配置Jackson
+通过实现`Jackson2ObjectMapperBuilderCustomizer`的`customize`就可以从代码去配置`Jackson`
 
 ```java
 @FunctionalInterface
@@ -190,7 +395,7 @@ public interface Jackson2ObjectMapperBuilderCustomizer {
 }
 ```
 
-进入这个方法，就跳到了JacksonAutoConfiguration，这个类负责Jackson的自动装配，其中有一个内部类。
+进入这个方法，就跳到了`JacksonAutoConfiguration`，这个类负责`Jackson`的自动装配，其中有一个内部类。
 
 ```java
 	@Configuration(proxyBeanMethods = false)
@@ -223,17 +428,127 @@ public interface Jackson2ObjectMapperBuilderCustomizer {
 	}
 ```
 
-#### jackson注解
+### jackson注解
 
-@JsonIgnore：序列化和反序列化过程中忽略该属性
+`@JsonIgnore`：序列化和反序列化过程中忽略该属性
 
-@JsonInclude：当属性符合某个条件时才进行序列化和反序列化
+`@JsonInclude`：当属性符合某个条件时才进行序列化和反序列化
 
-@JsonSerialize(using = TranslationHandler.class)：指定对应序列化类来执行序列化
+`@JsonSerialize(using = TranslationHandler.class)`：指定对应序列化类来执行序列化
 
-@JsonProperty：增加别名
+`@JsonProperty`：增加别名
 
-@JsonFormat(pattern = "yyyy-MM-dd")：时间格式化
+`@JsonFormat(pattern = "yyyy-MM-dd")`：时间格式化
 
-#### JsonUtils
+### JsonUtils
+
+```java
+package com.ruoyi.common.utils;
+
+import cn.hutool.core.lang.Dict;
+import cn.hutool.core.util.ArrayUtil;
+import cn.hutool.core.util.ObjectUtil;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.exc.MismatchedInputException;
+import com.ruoyi.common.utils.spring.SpringUtils;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public class JsonUtils {
+
+    private static final ObjectMapper OBJECT_MAPPER = SpringUtils.getBean(ObjectMapper.class);
+
+    public static ObjectMapper getObjectMapper() {
+        return OBJECT_MAPPER;
+    }
+
+    public static String toJsonString(Object object) {
+        if (ObjectUtil.isNull(object)) {
+            return null;
+        }
+        try {
+            return OBJECT_MAPPER.writeValueAsString(object);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static <T> T parseObject(String text, Class<T> clazz) {
+        if (StringUtils.isEmpty(text)) {
+            return null;
+        }
+        try {
+            return OBJECT_MAPPER.readValue(text, clazz);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static <T> T parseObject(byte[] bytes, Class<T> clazz) {
+        if (ArrayUtil.isEmpty(bytes)) {
+            return null;
+        }
+        try {
+            return OBJECT_MAPPER.readValue(bytes, clazz);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static <T> T parseObject(String text, TypeReference<T> typeReference) {
+        if (StringUtils.isBlank(text)) {
+            return null;
+        }
+        try {
+            return OBJECT_MAPPER.readValue(text, typeReference);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static Dict parseMap(String text) {
+        if (StringUtils.isBlank(text)) {
+            return null;
+        }
+        try {
+            return OBJECT_MAPPER.readValue(text, OBJECT_MAPPER.getTypeFactory().constructType(Dict.class));
+        } catch (MismatchedInputException e) {
+            // 类型不匹配说明不是json
+            return null;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static List<Dict> parseArrayMap(String text) {
+        if (StringUtils.isBlank(text)) {
+            return null;
+        }
+        try {
+            return OBJECT_MAPPER.readValue(text, OBJECT_MAPPER.getTypeFactory().constructCollectionType(List.class, Dict.class));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static <T> List<T> parseArray(String text, Class<T> clazz) {
+        if (StringUtils.isEmpty(text)) {
+            return new ArrayList<>();
+        }
+        try {
+            return OBJECT_MAPPER.readValue(text, OBJECT_MAPPER.getTypeFactory().constructCollectionType(List.class, clazz));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+}
+```
 
