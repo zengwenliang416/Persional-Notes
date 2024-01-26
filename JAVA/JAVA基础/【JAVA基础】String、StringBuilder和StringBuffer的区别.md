@@ -31,6 +31,9 @@ public final class StringBuilder
 
     // StringBuilder内部使用char数组来存储数据
     char[] value;
+    
+    // 数组zui'da'zhi
+    private static final int MAX_ARRAY_SIZE = Integer.MAX_VALUE - 8
 
     // ... 其他方法
 
@@ -49,8 +52,36 @@ abstract class AbstractStringBuilder {
     int count;
 
     // 实际扩展数组和添加内容在这个类中实现
-    void expandCapacity(int minimumCapacity) {
-        // ... 扩展逻辑
+    public void ensureCapacity(int minimumCapacity) {
+        if (minimumCapacity > 0)
+            ensureCapacityInternal(minimumCapacity);
+    }
+    
+    private void ensureCapacityInternal(int minimumCapacity) {
+        // overflow-conscious code
+        if (minimumCapacity - value.length > 0) {
+            value = Arrays.copyOf(value,
+                    newCapacity(minimumCapacity));
+        }
+    }
+    
+    private int newCapacity(int minCapacity) {
+        // overflow-conscious code
+        int newCapacity = (value.length << 1) + 2;
+        if (newCapacity - minCapacity < 0) {
+            newCapacity = minCapacity;
+        }
+        return (newCapacity <= 0 || MAX_ARRAY_SIZE - newCapacity < 0)
+            ? hugeCapacity(minCapacity)
+            : newCapacity;
+    }
+    
+    private int hugeCapacity(int minCapacity) {
+        if (Integer.MAX_VALUE - minCapacity < 0) { // overflow
+            throw new OutOfMemoryError();
+        }
+        return (minCapacity > MAX_ARRAY_SIZE)
+            ? minCapacity : MAX_ARRAY_SIZE;
     }
 
     public AbstractStringBuilder append(String str) {
@@ -69,6 +100,8 @@ abstract class AbstractStringBuilder {
 ```
 
 这里关注一下抽象类AbstractStringBuilder中的append方法，从这里可以看出append方法首先根据这个字符串的长度对当前的字符数组进行扩容，这里需要看到的是
+
+
 
 ## 使用场景
 
