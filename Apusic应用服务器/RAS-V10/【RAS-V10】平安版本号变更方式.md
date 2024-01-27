@@ -69,6 +69,8 @@ tomcat-native.version=1.2.23
 
 ### 脚本查看版本信息
 
+#### bat脚本
+
 ```bash
 @echo off
 setlocal enabledelayedexpansion
@@ -131,5 +133,64 @@ REM 清理临时文件
 rmdir /q /s "%TEMP_DIR%"
 
 endlocal
+```
+
+#### shell脚本
+
+```shell
+#!/bin/bash
+
+# Check command-line arguments and set external JAR file path
+if [ "$1" == "-j" ]; then
+    OUTER_JAR_FILE="$2"
+else
+    echo "Usage: ${0##*/} -j [JAR_FILE]"
+    exit 1
+fi
+
+# Set internal JAR file and properties file paths
+INNER_JAR_PATH="BOOT-INF/lib/ras-embed-core-11.0.0.jar"
+PROP_FILE_PATH="com/rockyas/rms/util/ServerInfo.properties"
+
+# Create temporary directory for extracting JAR and properties files
+TEMP_DIR="$(dirname "$0")/temp"
+INNER_JAR_TEMP_DIR="$TEMP_DIR/inner_jar"
+mkdir -p "$INNER_JAR_TEMP_DIR"
+
+# Extract internal JAR to temporary directory
+pushd "$TEMP_DIR" > /dev/null
+jar -xf "$OUTER_JAR_FILE" "$INNER_JAR_PATH" || {
+    echo "Error: Failed to extract $INNER_JAR_PATH from $OUTER_JAR_FILE"
+    exit 1
+}
+popd > /dev/null
+
+# Unzip internal JAR to get properties file
+pushd "$INNER_JAR_TEMP_DIR" > /dev/null
+jar -xf "$TEMP_DIR/$INNER_JAR_PATH" "$PROP_FILE_PATH" || {
+    echo "Error: Failed to extract $PROP_FILE_PATH from $INNER_JAR_PATH"
+    exit 1
+}
+popd > /dev/null
+
+# Read property value from properties file
+PROP_VALUE=""
+while IFS='=' read -r key value; do
+    if [ "$key" == "server.info" ]; then
+        # Trim leading and trailing whitespace
+        PROP_VALUE=$(echo "$value" | xargs)
+        break
+    fi
+done <"$INNER_JAR_TEMP_DIR/$PROP_FILE_PATH"
+
+# Output property value
+if [ -z "$PROP_VALUE" ]; then
+    echo "Property server.info not found."
+else
+    echo "server.info=$PROP_VALUE"
+fi
+
+# Clean up temporary files
+rm -rf "$TEMP_DIR"
 ```
 
