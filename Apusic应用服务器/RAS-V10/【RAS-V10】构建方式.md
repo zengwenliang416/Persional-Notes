@@ -66,3 +66,50 @@ endlocal
 ```
 
 ## shell脚本
+
+```shell
+#!/bin/bash
+# Exit on any error
+set -e
+
+# Changing to the 'rams' directory
+cd rams
+
+# Executing Ant commands
+ant clean
+
+ant -propertyfile build-pingan.properties
+
+ant package-zip -propertyfile build-pingan.properties
+
+# Changing back to the root directory
+cd ..
+
+# Executing Maven commands for module apollo
+mvn -f rams/modules/apollo/pom.xml clean package
+
+# Executing Maven commands for module redis
+mvn -f rams/modules/redis/pom.xml clean package
+
+# Installing JAR files to the local Maven repository
+for f in core el websocket jasper dbcp; do
+    mvn install:install-file -Dfile=rams/output/embed/ras-embed-$f.jar -DgroupId=com.rockyas.rms.embed -DartifactId=ras-embed-$f -Dversion=10.1 -Dpackaging=jar
+done
+
+# There are two versions of ecj, installing both to the repository
+mvn install:install-file -Dfile=rams/output/embed/ecj-4.20.jar -DgroupId=com.rockyas.rms.embed -DartifactId=ecj -Dversion=4.12 -Dpackaging=jar
+
+mvn install:install-file -Dfile=rams/output/embed/ecj-4.20.jar -DgroupId=com.rockyas.rms.embed -DartifactId=ecj -Dversion=4.20 -Dpackaging=jar
+
+# Executing Maven clean and install commands for multiple modules
+for v in 1.2 1.3 1.4 1.5 2.4; do
+    mvn -f rams-spring-boot-v$v-starter/pom.xml clean install
+    mvn -f rams-spring-boot-v$v-websocket-starter/pom.xml clean install
+done
+
+# Executing Maven clean and install for rams-spring-boot-starter without version
+mvn -f rams-spring-boot-starter/pom.xml clean install
+
+mvn -f rams-spring-boot-websocket-starter/pom.xml clean install
+```
+
