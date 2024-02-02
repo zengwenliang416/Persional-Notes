@@ -31,8 +31,8 @@
 git config --global http.proxy socks5 127.0.0.1:端口地址
 git config --global https.proxy socks5 127.0.0.1:端口地址
 # 配置http代理
-git config --global http.proxy socks5 127.0.0.1:端口地址
-git config --global https.proxy socks5 127.0.0.1:端口地址
+git config --global http.proxy 127.0.0.1:端口地址
+git config --global https.proxy https 127.0.0.1:端口地址
 ```
 
 端口地址可以在自己的VPN软件中查看，`Clash for windows`默认是`7890`，代理方式和使用的软件有关，两种都可以测试一下。
