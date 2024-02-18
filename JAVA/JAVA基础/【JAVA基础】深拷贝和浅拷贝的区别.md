@@ -58,6 +58,11 @@ class Address implements Cloneable, Serializable {
         this.city = otherAddress.city;
     }
 
+    // 拷贝工厂方法
+    public static Address newAddressInstance(Address other) {
+        return new Address(other.street, other.city);
+    }
+
     @Override
     protected Object clone() throws CloneNotSupportedException {
         return super.clone();
@@ -110,6 +115,13 @@ class User implements Cloneable, Serializable {
         }
     }
 
+    // 拷贝工厂方法
+    public static User newUserInstance(User other) {
+        // 对Address对象执行深拷贝
+        Address copiedAddress = Address.newAddressInstance(other.address);
+        return new User(other.name, copiedAddress);
+    }
+
     @Override
     protected Object clone() throws CloneNotSupportedException {
         return super.clone();
@@ -133,6 +145,8 @@ public class DeepCopyVsShallowCopy {
         deepCopyUser = originalUser.deepCopy(); // 使用Jackson序列化和反序列化创建副本
         // 4. 使用第三方包进行深拷贝
         deepCopyUser = SerializationUtils.clone(originalUser);
+        // 5. 拷贝工厂方法进行深拷贝
+        deepCopyUser = User.newUserInstance(originalUser);
 
 
         // 更改原始对象中Address对象的city字段
