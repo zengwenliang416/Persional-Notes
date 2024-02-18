@@ -23,6 +23,9 @@ conda activate ParaCPI
 # 安装PyTorch, torchvision和torchaudio
 pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu111
 
+# 安装对应版本的torch_spline_conv、torch_sparse、torch_scatter和torch_cluster，补充资料中有下载lun
+pip install torch_*
+
 # 安装torch_geometric
 pip install torch_geometric==2.0.4
 
@@ -46,3 +49,14 @@ chmod +x setup.sh
 ./setup.sh
 ```
 
+## 补充资料
+
+安装失败大多是版本不匹配的问题
+
+### pytorch-geometric依赖库
+
+https://pytorch-geometric.com/whl/
+
+### pytorch安装指南
+
+https://pytorch.org/get-started/locally/
