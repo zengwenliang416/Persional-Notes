@@ -15,6 +15,8 @@
 ```java
 package org.example;
 
+import org.apache.commons.lang3.SerializationUtils;
+
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -129,6 +131,8 @@ public class DeepCopyVsShallowCopy {
         deepCopyUser = new User(originalUser); // 使用深拷贝构造方法创建副本
         // 3. 使用序列化实现深拷贝（Jackson）
         deepCopyUser = originalUser.deepCopy(); // 使用Jackson序列化和反序列化创建副本
+        // 4. 使用第三方包进行深拷贝
+        deepCopyUser = SerializationUtils.clone(originalUser);
 
 
         // 更改原始对象中Address对象的city字段
