@@ -44,6 +44,20 @@ I'd suggest the authors to further investigate a little bit on this perspective.
 
 我建议作者从这个角度进一步研究一下。
 
+的确，对于化合物而言，生成有效的原子表示能够大大提高CPI预测的准确率。我们在实验初期也采用过类似于MG-BERT中提出的方法。我们采用了经典work2vec和BERT两种方式对化合物数据集进行预训练。起初为了生成一个具有泛化性的预训练模型，我们将本文的五个数据集中的化合物汇总得到一个预训练模型，随后分别在Human数据集和C.elegans数据集上微调后得到化合物的原子表示。最后将特征输入到ParaCPI中训练并测试实验结果。ParaCPI使用预训练模型获取化合物原子表示实验结果如表 1 和表2所示。
+
+表1和表2中的ParaCPI-work2vec和ParaCPI-BERT分别代表采用work2vec和BERT预训练获取化合物原子表示的模型。从表1的实验结果可以看出，尽管ParaCPI-work2vec和ParaCPI-BERT的三个指标具有了一定的竞争力，但是相比于ParaCPI模型还是存在一定的差距。在Human数据集上，ParaCPI-work2vec和ParaCPI-BERT的Precision分别比ParaCPI低了5.70%和4.66%ParaCPI-work2vec和ParaCPI-BERT的Recall分别比MGrpahDTA低了13.27%和10.34%。ParaCPI-work2vec和ParaCPI-BERT的AUC分别比MGrpahDTA低了3.63%和2.62%。表2的实验结果同样可以看出ParaCPI-work2vec和ParaCPI-BERT在C.elegans数据集上表现不佳。这种现象可能是因为预训练模型中可能掺杂了不同数据集的表征信息，导致在测试结果不佳。ParaCPI以化合物的SMILES序列作为输入，采用NE算法结合ParaCPIGNN模块获取化合物的原子表示。这种方式能够有效地获取到化合物的原子特征并且在冷启动环境中体现了其泛化能力。
+
+
+
+![image-20240220165944772](./imgs/image-20240220165944772.png)
+
+![image-20240220165952244](./imgs/image-20240220165952244.png)
+
+
+
+对于蛋白质表示法，三维结构信息确实比一维序列信息大得多。然而，获取蛋白质准确的3D信息结构却是耗时耗力的，这也是蛋白质的3D结构数据集稀缺的原因。当前用于预测的AlphaFold 3尽管体现了其优越性，但是也具有陷入双重陷阱的风险（即使用预测错误的3D结构信息预测CPI）。
+
 
 
 ## 审稿人三
@@ -81,6 +95,7 @@ The authors have introduced a framework for predicting compound-protein interact
 
 - 澄清图 4 和图 5 的区别，因为两者都标注为 ParaGNN 模块。此外，在文中提及图 5。
 - 解释图 3 的第 2 层和第 4 层为什么都有一个相同的节点（节点 C）。
+
 - 提供所使用数据集的更多细节，包括训练（训练-验证）和独立（测试）子集中的样本数量。
 - 确保不同表格中呈现结果的一致性（例如，不同表格中的 "精确度、召回率和 AUC "与 "准确度、精确度、召回率、AUC 和 AUPR"）。考虑添加马修斯相关系数（MCC）和 F1 分数，以便更全面地比较和反映方法的稳健性和有效性。
 - 使用 Scikit-Learn 软件包中的 StratifiedKFold 适当应用 k-fold 交叉验证，以进行更全面、更稳健的性能评估。
