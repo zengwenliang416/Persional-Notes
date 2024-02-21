@@ -110,9 +110,46 @@ The authors have introduced a framework for predicting compound-protein interact
 
 - 提供所使用数据集的更多细节，包括训练（训练-验证）和独立（测试）子集中的样本数量。
 - 确保不同表格中呈现结果的一致性（例如，不同表格中的 "精确度、召回率和 AUC "与 "准确度、精确度、召回率、AUC 和 AUPR"）。考虑添加马修斯相关系数（MCC）和 F1 分数，以便更全面地比较和反映方法的稳健性和有效性。
+
+的确，表4、表5和表6中模型的指标对比结果存在差异。这一现象的原因有两点：1.当下CPI预测模型在Huamn和C.elegans数据集上的性能对比指标是Precision、Recall和AUC。2.我们也尝试了去复现GraphDTA、DeepConv-DTI、TransformerCPI、MGraphDTA、CPGL和MSF-DTA并计算其Accuracy和AUPR，但是复现实验结果与原论文结果存在一定差距。3.在冷启动环境中，当前的CPI预测模型通常比较的性能指标是Accuracy、Precision、Recall、AUC和AUPR。综合以上原因并结合当前的SOTA模型常用的性能指标，我们在热启动环境和标签反转环境中采用Precision、Recall和AUC作为性能指标分析模型效果，在冷启动环境中使用Accuracy、Precision、Recall、AUC和AUPR作为性能指标分析模型效果。
+
+为了更全面地比较和反映方法的稳健性和有效性，我们在消融实验部分添加了马修斯相关系数（MCC）和 F1 分数。
+
 - 使用 Scikit-Learn 软件包中的 StratifiedKFold 适当应用 k-fold 交叉验证，以进行更全面、更稳健的性能评估。
+
+在3.2.1小节中，我们说明了本文的实验方法：
+
+"The two datasets are randomly divided into a 5:1 ratio between the training-validation set and the test set. The training-validation set is divided into five subsets by a strict five-fold cross-validation (5-fold CV) method, in which four subsets serve as the training set and one as the validation set. The model with the highest AUC score on the validation set in the five training times is used to evaluate the model’s performance on the test set."
+
+这种描述可能并不够清晰，因此在修改稿中我们将实验设置放在3.1.2小节进行描述。详情请见第4页。
+
 - 明确说明表 4、表 5、表 6 和表 7 中的结果是来自 5 倍 CV 训练还是独立子集，并提供两组结果进行比较。
+
+表 4、表 5、表 6 和表 7 的结果五折交叉验证结合留出法的结果，即在独立子集上的五次结果的平均值和标准差。经过您的指导，我们认为表4、表5和表7的结果应该来自五折交叉验证更为合理。原因在于热启动环境对测试集并无严格要求。然而，在冷启动环境和标签反转环境中测试集的数据是有严格要求的：
+
+’‘The warm-start setting refers to the type of compounds or proteins that have been included in the test set in the training set. ... The three cold-start settings indicate that the model needs to detect compounds, proteins, or CPCs that have not been seen during the training phase of the model while testing. ... The label reversal setting indicates that a compound in the training set belongs only to the positive or negative CPI, whereas the compound in the test set belongs to the opposite class of the sample set.’‘
+
+因此，我们使用五折交叉验证重新在对比实验的热启动环境和消融实验重新实验，得到如表4和表5所示的实验结果。同样的，ParaCPI在对比实验的热启动环境和消融实验中使用留出法结合五折交叉验证与标准的五折交叉验证的结果如表6所示。
+
+
+
 - 确保方法间比较的公平性；例如，ParaCPI 的结果来自 5 次训练，而 MGraphDTA 的结果来自 3 次训练。
+
+MGraphDTA的实验设置描述如下（原论文第8页右栏的第8-10行）：
+
+’‘All experiments were repeated three times, each with a different random seed following the previous studies.’‘
+
+因此，在ParaCPI中，我们同样使用三个不同的随机数重新进行对比实验的热启动环境实验和消融实验以确保方法间比较的公平性。冷启动环境实验中，我们使用的实验次数和HyperAttentionDTI相同，即使用十个不同的随机数在DrugBank上进行五折交叉验证。HyperAttentionDTI的实验设置描述如下（原论文第四页左栏的第9-11行）：
+
+''... We perform 10 times repeated 5-fold cross-validation to assess the predictive ability of models. For each time, we conduct different random split of datasets under different random seeds. ...''
+
+标签反转实验上，由于原论文并未明确指出实验次数，因此ParaCPI与CPGL同样采用一次五折交叉验证后的结果。CPGL的实验设置描述如下（原论文第四页左栏2.5小节的第2-6行）：
+
+’‘... We selected a part of the data as the unseen test set, and the rest was used as the training set for 5-fold cross-validation, where one fold is used as the validation set and the rest is used as the training set. The final model was the average of all these models. ...’‘
+
+
+
+
 
 
 * 小评论：
