@@ -60,6 +60,18 @@ I'd suggest the authors to further investigate a little bit on this perspective.
 
 
 
+MG-BERT: leveraging unsupervised atomic representation learning for molecular property prediction
+
+与TransformerCPI类似，MG-BERT模型结合了GNNs的局部信息传播机制和BERT的高级能力，提高了分子图结构学习的效率。。作者进一步引入了掩蔽原子预测法，这是一种高效的自监督学习策略。通过该策略，在大规模未标记数据集上预训练MG-BERT模型，可以更好地挖掘分子的上下文信息。此方法生成的原子特征对上下文高度敏感，适用于多种复杂的预测任务。
+
+CGINet: graph convolutional network‑based model for identifying chemical‑gene interaction in an integrated multi‑relational graph
+
+在CPI预测中，原子特征的有效表示能显著提高预测准确性。CGINet模型特别采用了子图视角来促进特征学习过程：初始节点嵌入首先通过学习二元关联子图来进行，之后这些嵌入被迁移到包含多重交互的子图中。这一策略使模型能够更专注地学习目标节点的高级表示，从而更有效地预测化学物质和基因之间的相互作用。
+
+BioNet: a large-scale and heterogeneous biological network model for interaction prediction with graph convolution
+
+yang等人指出传统湿实验的高成本和劳动强度限制了研究的规模。针对这个问题，作者提出了一个名为BioNet的新型深度生物网络模型，该模型采用图形编码器-解码器架构，通过图卷积学习化学物质、基因、疾病和生物途径之间复杂相互作用的潜在信息。
+
 ## 审稿人三
 
 Reviewer: 3
