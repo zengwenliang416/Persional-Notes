@@ -24,6 +24,9 @@ D:\workspace\AAS-v10-server\aas\prerequisites>mvn initialize
 D:\workspace\AAS-v10-server\aas>mvn -Pstaging clean  install -Dmaven.multiModuleProjectDirectory=D:\workspace\AAS-v10-learn\apusic-jersey -Djdk8_tools_jar=D:\workspace\jdk1.8.0_144\lib\tools.jar
 D:\workspace\AAS-v10-server\aas>mvn -Pstaging clean  install -Dmaven.multiModuleProjectDirectory=D:\workspace\AAS-v10-learn\apusic-metro-wsit\wsit -Djdk8_tools_jar=D:\workspace\jdk1.8.0_144\lib\tools.jar
 D:\workspace\AAS-v10-server\aas>mvn -Pstaging clean  install -Dmaven.multiModuleProjectDirectory=D:\workspace\AAS-v10-learn\apusic-fighterfish -Djdk8_tools_jar=D:\workspace\jdk1.8.0_144\lib\tools.jar
+
+cd apusic-oss mvn install
+cd ../aas/prerequisites>mvn initialize
 ```
 
 # 打包成docker镜像文件

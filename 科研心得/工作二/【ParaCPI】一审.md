@@ -111,9 +111,35 @@ The authors have introduced a framework for predicting compound-protein interact
 - 提供所使用数据集的更多细节，包括训练（训练-验证）和独立（测试）子集中的样本数量。
 - 确保不同表格中呈现结果的一致性（例如，不同表格中的 "精确度、召回率和 AUC "与 "准确度、精确度、召回率、AUC 和 AUPR"）。考虑添加马修斯相关系数（MCC）和 F1 分数，以便更全面地比较和反映方法的稳健性和有效性。
 
-的确，表4、表5和表6中模型的指标对比结果存在差异。这一现象的原因有两点：1.当下CPI预测模型在Huamn和C.elegans数据集上的性能对比指标是Precision、Recall和AUC。2.我们也尝试了去复现GraphDTA、DeepConv-DTI、TransformerCPI、MGraphDTA、CPGL和MSF-DTA并计算其Accuracy和AUPR，但是复现实验结果与原论文结果存在一定差距。3.在冷启动环境中，当前的CPI预测模型通常比较的性能指标是Accuracy、Precision、Recall、AUC和AUPR。综合以上原因并结合当前的SOTA模型常用的性能指标，我们在热启动环境和标签反转环境中采用Precision、Recall和AUC作为性能指标分析模型效果，在冷启动环境中使用Accuracy、Precision、Recall、AUC和AUPR作为性能指标分析模型效果。
+的确，表4、表5和表6中模型的指标对比结果存在差异。这一现象的原因有两点：
 
-为了更全面地比较和反映方法的稳健性和有效性，我们在消融实验部分添加了马修斯相关系数（MCC）和 F1 分数。
+1.在MGraphDTA、CPGL、SPP-CPI和TransformerCPI模型中，研究者在Huamn和C.elegans数据集上比较了Precision、Recall和AUC，文献[1]和[2]在这三个指标的基础上添加了一个AUPR作为性能指标，DeepConv-DTI则在研究中比较了F1分数。
+
+2.在冷启动环境中，当前的CPI预测模型通常比较的性能指标是Accuracy、Precision、Recall、AUC和AUPR。
+
+综合以上原因并结合当前的SOTA模型常用的性能指标，我们在热启动环境和标签反转环境中采用Precision、Recall和AUC作为性能指标分析模型效果，在冷启动环境中使用Accuracy、Precision、Recall、AUC和AUPR作为性能指标分析模型效果。
+
+为了更全面地比较和反映方法的稳健性和有效性，我们在消融实验部分添加了 F1 分数。
+
+Precision、Recall和AUC：
+
+CPGL: Prediction of compound-protein interaction by integrating graph attention network with long short-term memory neural network
+
+SPP-CPI: Predicting Compound–Protein Interactions Based on Neural Networks
+
+MGraphDTA: deep multiscale graph neural network for explainable drug–target binding affinity prediction
+
+TransformerCPI: improving compound–protein interaction prediction by sequence-based deep learning with self-attention mechanism and label reversal experiments
+
+Precision、Recall、AUC和AUPR：
+
+CPInformer for Efficient and Robust Compound-Protein Interaction Prediction
+
+Predicting Drug-Target Affinity by Learning Protein Knowledge from Biological Networks
+
+F1：
+
+DeepConv-DTI: Prediction of drug-target interactions via deep learning with convolution on protein sequences
 
 - 使用 Scikit-Learn 软件包中的 StratifiedKFold 适当应用 k-fold 交叉验证，以进行更全面、更稳健的性能评估。
 
@@ -123,15 +149,23 @@ The authors have introduced a framework for predicting compound-protein interact
 
 这种描述可能并不够清晰，因此在修改稿中我们将实验设置放在3.1.2小节进行描述。详情请见第4页。
 
+
+
+
+
+表3中的[D, P, DP]分别表示compound-cold start setting、protein cold start setting和compound-protein cold-start setting下的
+
+冷启动环境的训练集、验证集和测试集
+
 - 明确说明表 4、表 5、表 6 和表 7 中的结果是来自 5 倍 CV 训练还是独立子集，并提供两组结果进行比较。
 
-表 4、表 5、表 6 和表 7 的结果五折交叉验证结合留出法的结果，即在独立子集上的五次结果的平均值和标准差。经过您的指导，我们认为表4、表5和表7的结果应该来自五折交叉验证更为合理。原因在于热启动环境对测试集并无严格要求。然而，在冷启动环境和标签反转环境中测试集的数据是有严格要求的：
+表 4、表 5、表 6 和表 7 的结果五折交叉验证结合留出法的结果，即在独立子集上的五次结果的平均值和标准差。在您的建议下，我们认为表4、表5和表7的结果应该来自五折交叉验证更为合理。原因在于热启动环境对测试集并无严格要求。然而，在冷启动环境和标签反转环境中测试集的数据是有严格要求的：
 
 ’‘The warm-start setting refers to the type of compounds or proteins that have been included in the test set in the training set. ... The three cold-start settings indicate that the model needs to detect compounds, proteins, or CPCs that have not been seen during the training phase of the model while testing. ... The label reversal setting indicates that a compound in the training set belongs only to the positive or negative CPI, whereas the compound in the test set belongs to the opposite class of the sample set.’‘
 
 因此，我们使用五折交叉验证重新在对比实验的热启动环境和消融实验重新实验，得到如表4和表5所示的实验结果。同样的，ParaCPI在对比实验的热启动环境和消融实验中使用留出法结合五折交叉验证与标准的五折交叉验证的结果如表6所示。
 
-
+留出法结合五折交叉验证和标准的五折交叉验证结果对比
 
 - 确保方法间比较的公平性；例如，ParaCPI 的结果来自 5 次训练，而 MGraphDTA 的结果来自 3 次训练。
 
