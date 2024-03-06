@@ -1,4 +1,4 @@
-# 【ParaCPI】环境构建
+# 【ParaCPI】环境构建及训练
 
 ## 前置条件
 
@@ -64,6 +64,8 @@ https://pytorch-geometric.com/whl/
 https://pytorch.org/get-started/locally/
 
 ## 数据处理
+
+训练批处理命令如【环境构建命令】处理即可
 
 ### human
 
