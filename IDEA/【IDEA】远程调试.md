@@ -6,7 +6,7 @@
 
 ```bash
 #针对JDK15.-1.8
--agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=localhost:8000
+-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=127.0.0.1:8000
 针对JDK1.9及以上
 agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:8000
 ```
