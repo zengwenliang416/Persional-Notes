@@ -62,6 +62,7 @@ apusic.bat run
 
 主要配置项包括：nacos服务端地址及端口、配置ID、配置分组、读取配置超时时间以及总配置文件名
 
+<<<<<<< HEAD
 | 配置项                | 配置参数                                                     | 默认值        | 备注                                            |
 | --------------------- | ------------------------------------------------------------ | ------------- | ----------------------------------------------- |
 | nacos服务端地址及端口 | 环境变量：AAMS_CONFIG_CENTER_ADDR=${IP}:8848<br />JVM参数：-DAAMS_CONFIG_CENTER_ADDR=${IP}:8848 |               | ${IP}为配置中心所在机器的IP，必须赋值，否则报错 |
@@ -69,6 +70,15 @@ apusic.bat run
 | 配置分组              | 环境变量：AAMS_CONFIG_GROUP=DEFAULT_GROUP<br />JVM参数：-DAAMS_CONFIG_GROUP=DEFAULT_GROUP | DEFAULT_GROUP |                                                 |
 | 读取配置超时时间      | 环境变量：AAMS_CONFIG_TIMEOUT_MS=3000<br />JVM参数：-DAAMS_CONFIG_TIMEOUT_MS=3000 | 3000          | nacos官方推荐值                                 |
 | 总配置文件名          | 环境变量：AAMS_CONFIG_FILE_NAME=configs.xml<br />JVM参数：-DAAMS_CONFIG_FILE_NAME=configs.xml | configs.xml   |                                                 |
+=======
+| 配置项                | 配置参数                                                     | 默认值        | 备注            |
+| --------------------- | ------------------------------------------------------------ | ------------- | --------------- |
+| nacos服务端地址及端口 | 环境变量：CONFIG_CENTER_ADDR=127.0.0.1:8848<br />JVM参数：-DCONFIG_CENTER_ADDR=127.0.0.1:8848 |               |                 |
+| 配置ID                | 环境变量：CONFIG_DATA_ID=configs.xml<br />JVM参数：-DCONFIG_DATA_ID=configs.xml | configs.xml   |                 |
+| 配置分组              | 环境变量：CONFIG_GROUP=DEFAULT_GROUP<br />JVM参数：-DCONFIG_GROUP=DEFAULT_GROUP | DEFAULT_GROUP |                 |
+| 读取配置超时时间      | 环境变量：CONFIG_TIMEOUT_MS=3000<br />JVM参数：-DCONFIG_TIMEOUT_MS=3000 | 3000          | nacos官方推荐值 |
+| 总配置文件名          | 环境变量：CONFIG_FILE_NAME=configs.xml<br />JVM参数：-DCONFIG_FILE_NAME=configs.xml | configs.xml   |                 |
+>>>>>>> 1b640eb (最新提交)
 
 #### 启动AAMS
 
@@ -185,6 +195,19 @@ aas-config.jar插件的类图如下：
 - 线程安全：Java虚拟机（JVM）在加载类的时候，会执行类的初始化，并且只会执行一次，这保证了线程安全。
 
 ```java
+<<<<<<< HEAD
+=======
+public class ConfigCenter implements ConfigCenterImpl {
+    private static final Logger logger = Logger.getLogger(ConfigCenter.class.getName());
+    private final String configCenterAddr;
+    private final String dataId;
+    private final String group;
+    private final long timeoutMs;
+    private final String configsFileName;
+    private final Listener listener;
+
+    // Static inner class for thread-safe singleton initialization
+>>>>>>> 1b640eb (最新提交)
     private static class Holder {
         // 配置中心的单例实例。
         private static final ConfigCenter INSTANCE = new ConfigCenter();
@@ -198,12 +221,24 @@ aas-config.jar插件的类图如下：
     public static ConfigCenter getInstance() {
         return Holder.INSTANCE;
     }
+<<<<<<< HEAD
 ```
+=======
+    private String getConfigValue(String envKey, String sysPropKey) {
+        String value = System.getenv(envKey);
+        return value != null ? value : System.getProperty(sysPropKey);
+    }
+  private String getConfigValue(String envKey, String sysPropKey, String defaultValue) {
+        String value = System.getenv(envKey);
+        return value != null ? value : System.getProperty(sysPropKey, defaultValue);
+    }
+>>>>>>> 1b640eb (最新提交)
 
 在实例创建过程中使用私有构造器初始化配置：
 
 ```java
     private ConfigCenter() {
+<<<<<<< HEAD
         // 初始化配置中心地址，必须指定
         this.configCenterAddr = getConfigValue("AAMS_CONFIG_CENTER_ADDR", "AAMS_CONFIG_CENTER_ADDR");
         // 初始化配置数据ID，从configs.xml文件中读取，如果不存在则使用默认值
@@ -219,11 +254,22 @@ aas-config.jar插件的类图如下：
             @Override
             public void receiveConfigInfo(String configInfo) {
                 // 当接收到配置信息更新时，更新应用的配置
+=======
+        this.configCenterAddr = getConfigValue("CONFIG_CENTER_ADDR", "CONFIG_CENTER_ADDR");
+        this.dataId = getConfigValue("CONFIG_DATA_ID", "CONFIG_DATA_ID", "configs.xml");
+        this.group = getConfigValue("CONFIG_GROUP", "CONFIG_GROUP", "DEFAULT_GROUP");
+        this.timeoutMs = Long.parseLong(getConfigValue("CONFIG_TIMEOUT_MS", "CONFIG_TIMEOUT_MS", "3000"));
+        this.configsFileName = getConfigValue("CONFIG_FILE_NAME", "CONFIG_FILE_NAME", "configs.xml");
+        this.listener = new Listener() {
+            @Override
+            public void receiveConfigInfo(String configInfo) {
+>>>>>>> 1b640eb (最新提交)
                 updateApusicConfigs(configInfo);
             }
 
             @Override
             public Executor getExecutor() {
+<<<<<<< HEAD
                 // 返回null，表示不使用异步处理。可根据需要提供一个执行器。
                 return null;
             }
@@ -262,6 +308,38 @@ publishApusicConfig(String dataId, String group)方法首先会判断配置中�
         if (configCenterAddr == null) {
             throw new IllegalStateException("Configuration center address not set.");
         }
+=======
+                return null; // Optionally provide an executor for asynchronous processing
+            }
+        };
+        logger.info("ConfigCenter client has been initialized.");
+    }
+  /**
+     * 更新配置
+     *
+     * @param content
+     */
+    public void updateApusicConfigs(String content) {
+        ConfigCenterUtils.saveConfigs(content, configsFileName);
+    }
+    public boolean publishApusicConfig() {
+        if (publishApusicConfig(dataId, group)){
+            logger.severe("Successfully publish the configuration to the configuration center !");
+            return true;
+        }else {
+            return false;
+        }
+    }
+    /**
+     * 发布AAMS配置
+     *
+     * @param dataId 配置ID
+     * @param group  配置所在组
+     * @return
+     * @throws Exception
+     */
+    public boolean publishApusicConfig(String dataId, String group) {
+>>>>>>> 1b640eb (最新提交)
         try {
             // 初始化配置属性，包括配置中心地址
             Properties properties = new Properties();
@@ -288,6 +366,21 @@ publishApusicConfig(String dataId, String group)方法首先会判断配置中�
             return false;
         }
     }
+<<<<<<< HEAD
+=======
+  public void addConfigListener() throws Exception {
+        addConfigListener(dataId, group, listener);
+    }
+    private void addConfigListener(String dataId, String group, Listener listener) throws Exception {
+        Properties properties = new Properties();
+        properties.put("serverAddr", configCenterAddr);
+        ConfigService configService = NacosFactory.createConfigService(properties);
+        String content = configService.getConfig(dataId, group, timeoutMs);
+        logger.info("Listening configuration......");
+        configService.addListener(dataId, group, listener);
+    }
+}
+>>>>>>> 1b640eb (最新提交)
 ```
 
 ```java
@@ -368,6 +461,7 @@ getXMLConfig方法首先调用getSaveConfigFile以获取不同配置文件的文
             return null;
         }
     }
+<<<<<<< HEAD
 ```
 
 ### 监听配置
@@ -385,6 +479,24 @@ addConfigListener同样会检查configCenterAddr是否配置了地址，随后�
     private void addConfigListener(String dataId, String group, Listener listener) throws Exception {
         if (configCenterAddr == null) {
             throw new IllegalStateException("Configuration center address not set.");
+=======
+  /**
+     * 从apusicConfig标签中获取配置文件名
+     *
+     * @param config
+     * @return
+     */
+    public static String getSaveConfigFile(String config) {
+        // 正则表达式匹配config标签的name属性
+        Pattern pattern = Pattern.compile("config\\s+name=\"([^\"]+)\"");
+        // 创建一个Matcher对象
+        Matcher matcher = pattern.matcher(config);
+        String fileName = null;
+        // 遍历所有匹配项
+        while (matcher.find()) {
+            // 获取匹配到的文件名
+            fileName = matcher.group(1);
+>>>>>>> 1b640eb (最新提交)
         }
         // 初始化配置属性，设置配置中心的地址。
         Properties properties = new Properties();
@@ -399,9 +511,21 @@ addConfigListener同样会检查configCenterAddr是否配置了地址，随后�
         // 注册监听器，以便在配置变更时得到通知。
         configService.addListener(dataId, group, listener);
     }
+<<<<<<< HEAD
 ```
 
 ### 更新配置
+=======
+  public static String getFilePath(String root, String name) {
+        if (root == null) {
+            root = System.getProperty("user.dir");
+        }
+        if (File.separatorChar != '/') {
+            name = name.replace('/', File.separatorChar);
+            root = root.replace('/', File.separatorChar);
+        }
+        String path = System.getProperty("apusic.home");
+>>>>>>> 1b640eb (最新提交)
 
 配置的更新主要是在com.alibaba.nacos.api.config.listener.Listener实例中重写的receiveConfigInfo方法调用updateApusicConfigs(String content)实现的
 
@@ -410,6 +534,7 @@ addConfigListener同样会检查configCenterAddr是否配置了地址，随后�
         // 使用ConfigCenterUtils的saveConfigs方法保存配置内容到指定的配置文件中
         ConfigCenterUtils.saveConfigs(content, configsFileName);
     }
+<<<<<<< HEAD
 ```
 
 updateApusicConfigs方法会调用saveConfigs(String config, String configsFileName) 方法。该方法主要步骤如下：
@@ -420,6 +545,14 @@ updateApusicConfigs方法会调用saveConfigs(String config, String configsFileN
 - 调用writeXMLFile方法保存config标签中的内容
 
 ```java
+=======
+
+    /**
+     * 分离每个config标签中的配置
+     *
+     * @param config
+     */
+>>>>>>> 1b640eb (最新提交)
     public static void saveConfigs(String config, String configsFileName) {
         // 更新configs.xml文件
         writeXMLFile(getFilePath("conf", configsFileName), config);
@@ -456,6 +589,7 @@ updateApusicConfigs方法会调用saveConfigs(String config, String configsFileN
             logger.info("File is saved in " + getFilePath("conf", fileName));
         }
     }
+<<<<<<< HEAD
 ```
 
 
@@ -487,6 +621,12 @@ public class ApolloPluginLoader implements LifecycleListener {
 
     /**
      * 应用ID
+=======
+  /**
+     * 从xml文件中获取配置信息（字符串形式）
+     *
+     * @return
+>>>>>>> 1b640eb (最新提交)
      */
     private String appId;
 
@@ -522,6 +662,7 @@ public class ApolloPluginLoader implements LifecycleListener {
     public String getAppId() {
         return appId;
     }
+<<<<<<< HEAD
 
     public void setAppId(String appId) {
         this.appId = appId;
@@ -589,6 +730,80 @@ public class ApolloPluginLoader implements LifecycleListener {
                 }
             }
         } catch (MalformedURLException e) {
+=======
+  /**
+     * 存储配置到相应路径
+     *
+     * @param filePath
+     * @param content
+     */
+    private static void writeXMLFile(String filePath, String content) {
+        File file = new File(filePath);
+        try (FileWriter writer = new FileWriter(file)) {
+            writer.write(content);
+            writer.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+  /**
+     * 处理apysic.conf文件的保存
+     *
+     * @param apusicConfig
+     * @param filePath
+     */
+    private static void saveApusicConfig(String apusicConfig, String filePath) {
+        try {
+            // 创建 DocumentBuilderFactory
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = factory.newDocumentBuilder();
+
+            // 解析 XML 字符串
+            Document document = builder.parse(new ByteArrayInputStream(apusicConfig.getBytes("UTF-8")));
+            document.getDocumentElement().normalize(); // 标准化文档结构
+
+            // 移除所有 'config' 元素中的 'name' 属性
+            NodeList configList = document.getElementsByTagName("config");
+            for (int i = 0; i < configList.getLength(); i++) {
+                ((Element) configList.item(i)).removeAttribute("name");
+            }
+
+            // 创建新的 Document 来保存需要的 XML 内容
+            Document newDocument = builder.newDocument();
+            // 创建 Transformer 一次，重用
+            Transformer transformer = TransformerFactory.newInstance().newTransformer();
+            transformer.setOutputProperty(OutputKeys.INDENT, "no");
+            transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+            transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+          // 手动创建不包含 standalone 的 XML 声明
+            String xmlDeclaration = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
+            StringBuilder xmlContentBuilder = new StringBuilder(xmlDeclaration);
+
+            // 将处理过的节点写入新的 Document 并转换为字符串
+            for (int i = 0; i < configList.getLength(); i++) {
+                Node importedConfig = newDocument.importNode(configList.item(i), true);
+                newDocument.appendChild(importedConfig);
+
+                StringWriter writer = new StringWriter();
+                try {
+                    transformer.transform(new DOMSource(newDocument), new StreamResult(writer));
+                    xmlContentBuilder.append(writer.toString());
+                    // 清理当前的文档以供下一个循环使用
+                    newDocument.removeChild(importedConfig);
+                } finally {
+                    writer.close(); // 确保资源被关闭
+                }
+            }
+
+            // 将最终的 XML 内容写入到文件
+            try (FileWriter fileWriter = new FileWriter(new File(filePath))) {
+                fileWriter.write(xmlContentBuilder.toString());
+            }
+            logger.info("File is saved in " + filePath);
+
+        } catch (Exception e) {
+            logger.warning("An error occurred while saving the Apusic config.");
+>>>>>>> 1b640eb (最新提交)
         }
         classloader = new URLClassLoader(urlList.toArray(new URL[urlList.size()]), Thread.currentThread().getContextClassLoader());
     }

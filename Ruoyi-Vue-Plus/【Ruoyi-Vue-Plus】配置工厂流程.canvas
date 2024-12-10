@@ -1,0 +1,23 @@
+{
+	"nodes":[
+		{"id":"540c27dafc1450bd","type":"text","text":"开始","x":-345,"y":-220,"width":250,"height":73},
+		{"id":"911ca0e319d1aef6","type":"text","text":"获取资源名","x":-345,"y":-102,"width":250,"height":60},
+		{"id":"950d507ec32483bd","type":"text","text":"判断是否.yml或者.yaml结尾","x":-380,"y":4,"width":321,"height":60},
+		{"id":"b44a17385dfcdcd6","type":"text","text":"设置yaml资源","x":-345,"y":281,"width":250,"height":60},
+		{"id":"32fc976c3dbfcde9","type":"text","text":"触发yaml解析初始化","x":-345,"y":440,"width":250,"height":60},
+		{"id":"01229831347ecd99","type":"text","text":"获取解析后的Properties对象","x":-345,"y":583,"width":250,"height":60},
+		{"id":"1879510920ec745d","type":"text","text":"创建YamlPropertiesFactoryBean实例","x":-525,"y":163,"width":361,"height":50},
+		{"id":"09b6184066c7ff20","x":-59,"y":163,"width":350,"height":60,"type":"text","text":"调用父类的createPropertySource方法"},
+		{"id":"2d7da16f1e5196e8","x":-406,"y":700,"width":374,"height":60,"type":"text","text":"创建PropertiesPropertySource并返回"}
+	],
+	"edges":[
+		{"id":"63e1a42a8e6457e9","fromNode":"540c27dafc1450bd","fromSide":"bottom","toNode":"911ca0e319d1aef6","toSide":"top"},
+		{"id":"fd96ed1cfab7e2a3","fromNode":"911ca0e319d1aef6","fromSide":"bottom","toNode":"950d507ec32483bd","toSide":"top"},
+		{"id":"860cfb278fff4982","fromNode":"950d507ec32483bd","fromSide":"bottom","toNode":"1879510920ec745d","toSide":"top","label":"是"},
+		{"id":"3d94440318be5df4","fromNode":"1879510920ec745d","fromSide":"bottom","toNode":"b44a17385dfcdcd6","toSide":"top"},
+		{"id":"d1430cb88d74b012","fromNode":"b44a17385dfcdcd6","fromSide":"bottom","toNode":"32fc976c3dbfcde9","toSide":"top"},
+		{"id":"3b8227e25830d2a1","fromNode":"32fc976c3dbfcde9","fromSide":"bottom","toNode":"01229831347ecd99","toSide":"top"},
+		{"id":"da0e7d7be3cef08d","fromNode":"950d507ec32483bd","fromSide":"bottom","toNode":"09b6184066c7ff20","toSide":"top","label":"否"},
+		{"id":"2783907f1274cec9","fromNode":"01229831347ecd99","fromSide":"bottom","toNode":"2d7da16f1e5196e8","toSide":"top"}
+	]
+}
