@@ -5,6 +5,50 @@ setlocal EnableDelayedExpansion
 set "RED=[91m"
 set "GREEN=[92m"
 set "YELLOW=[93m"
+set "BLUE=[94m"
+set "NC=[0m"
+
+:: 初始化操作状态
+set "files_added=false"
+set "changes_committed=false"
+set "commit_hash="
+set "target_branch="
+set "commit_message="
+
+:: 显示操作状态和恢复建议
+:show_status_and_recovery
+echo.
+echo %BLUE%=== 操作状态 ===%NC%
+echo 1. 文件暂存: %files_added%
+echo 2. 更改提交: %changes_committed%
+if not "%commit_hash%"=="" (
+    echo 3. 提交哈希: %commit_hash%
+)
+echo 4. 目标分支: %target_branch%
+echo 5. 提交信息: %commit_message%
+
+echo.
+echo %BLUE%=== 恢复建议 ===%NC%
+if "%changes_committed%"=="true" (
+    echo 您的更改已经提交到本地仓库。要重新推送，请执行：
+    echo git push origin %target_branch%
+    echo.
+    echo 如果想要撤销提交，请执行：
+    echo git reset --soft HEAD^
+) else if "%files_added%"=="true" (
+    echo 文件已暂存但未提交。要继续，请执行：
+    echo git commit -m "%commit_message%"
+    echo git push origin %target_branch%
+    echo.
+    echo 如果想要撤销暂存，请执行：
+    echo git reset
+)
+goto :eof
+
+:: 设置颜色代码
+set "RED=[91m"
+set "GREEN=[92m"
+set "YELLOW=[93m"
 set "NC=[0m"
 
 :: 定义提交类型数组
@@ -77,16 +121,19 @@ if "!choice!"=="1" (
     echo.
     echo %YELLOW%添加所有文件...%NC%
     git add .
+    set "files_added=true"
 ) else if "!choice!"=="2" (
     echo.
     echo %YELLOW%开始交互式选择...%NC%
     git add -p
+    set "files_added=true"
 ) else if "!choice!"=="3" (
     echo.
     echo %YELLOW%请输入要添加的文件路径（多个文件用空格分隔）:%NC%
     set /p "files="
     if not "!files!"=="" (
         git add !files!
+        set "files_added=true"
     ) else (
         echo %RED%未指定任何文件%NC%
         exit /b 1
@@ -156,10 +203,12 @@ if "!commit_desc!"=="" (
 
 :: 组合完整的提交信息
 set "message=!commit_prefix! !commit_desc!"
+set "commit_message=!message!"
 
 :: 获取分支名称
 set /p "branch=请输入分支名称 (默认是 %current_branch%): "
 if "!branch!"=="" set "branch=%current_branch%"
+set "target_branch=!branch!"
 
 echo.
 echo %YELLOW%即将执行以下操作:%NC%
@@ -181,14 +230,18 @@ echo %YELLOW%1. 提交更改...%NC%
 git commit -m "!message!"
 if errorlevel 1 (
     echo %RED%提交更改失败%NC%
+    call :show_status_and_recovery
     exit /b 1
 )
+set "changes_committed=true"
+for /f "tokens=*" %%i in ('git rev-parse HEAD') do set "commit_hash=%%i"
 
 echo.
 echo %YELLOW%2. 推送到远程...%NC%
 git push origin "!branch!"
 if errorlevel 1 (
     echo %RED%推送失败，请检查网络连接或远程仓库状态%NC%
+    call :show_status_and_recovery
     exit /b 1
 ) else (
     echo.

@@ -7,7 +7,51 @@ set -e
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
 NC='\033[0m' # No Color
+
+# 记录操作状态的变量
+STATUS_FILES_ADDED=false
+STATUS_CHANGES_COMMITTED=false
+STATUS_COMMIT_HASH=""
+STATUS_BRANCH=""
+STATUS_COMMIT_MESSAGE=""
+
+# 显示操作状态和恢复建议
+show_status_and_recovery() {
+    echo -e "\n${BLUE}=== 操作状态 ===${NC}"
+    echo -e "1. 文件暂存: $STATUS_FILES_ADDED"
+    echo -e "2. 更改提交: $STATUS_CHANGES_COMMITTED"
+    if [ ! -z "$STATUS_COMMIT_HASH" ]; then
+        echo -e "3. 提交哈希: $STATUS_COMMIT_HASH"
+    fi
+    echo -e "4. 目标分支: $STATUS_BRANCH"
+    echo -e "5. 提交信息: $STATUS_COMMIT_MESSAGE"
+
+    echo -e "\n${BLUE}=== 恢复建议 ===${NC}"
+    if [ "$STATUS_CHANGES_COMMITTED" = true ]; then
+        echo -e "您的更改已经提交到本地仓库。要重新推送，请执行："
+        echo -e "git push origin $STATUS_BRANCH"
+        echo -e "\n如果想要撤销提交，请执行："
+        echo -e "git reset --soft HEAD^"
+    elif [ "$STATUS_FILES_ADDED" = true ]; then
+        echo -e "文件已暂存但未提交。要继续，请执行："
+        echo -e "git commit -m \"$STATUS_COMMIT_MESSAGE\""
+        echo -e "git push origin $STATUS_BRANCH"
+        echo -e "\n如果想要撤销暂存，请执行："
+        echo -e "git reset"
+    fi
+}
+
+# 错误处理函数
+handle_error() {
+    echo -e "\n${RED}执行过程中发生错误${NC}"
+    show_status_and_recovery
+    exit 1
+}
+
+# 设置错误处理
+trap 'handle_error' ERR
 
 # 提交类型数组
 declare -a commit_types=(
@@ -80,16 +124,19 @@ case $choice in
     1)
         echo -e "\n${YELLOW}添加所有文件...${NC}"
         git add .
+        STATUS_FILES_ADDED=true
         ;;
     2)
         echo -e "\n${YELLOW}开始交互式选择...${NC}"
         git add -p
+        STATUS_FILES_ADDED=true
         ;;
     3)
         echo -e "\n${YELLOW}请输入要添加的文件路径（多个文件用空格分隔）:${NC}"
         read -e files
         if [ ! -z "$files" ]; then
             git add $files
+            STATUS_FILES_ADDED=true
         else
             echo -e "${RED}未指定任何文件${NC}"
             exit 1
@@ -156,10 +203,12 @@ fi
 
 # 组合完整的提交信息
 message="$commit_prefix $commit_desc"
+STATUS_COMMIT_MESSAGE="$message"
 
 # 获取分支名称
 read -p "请输入分支名称 (默认是 $current_branch): " branch
 branch=${branch:-$current_branch}
+STATUS_BRANCH="$branch"
 
 echo -e "\n${YELLOW}即将执行以下操作:${NC}"
 echo "1. git commit -m \"$message\""
@@ -176,11 +225,14 @@ echo -e "\n${YELLOW}正在执行git操作...${NC}"
 
 echo -e "\n${YELLOW}1. 提交更改...${NC}"
 git commit -m "$message"
+STATUS_CHANGES_COMMITTED=true
+STATUS_COMMIT_HASH=$(git rev-parse HEAD)
 
 echo -e "\n${YELLOW}2. 推送到远程...${NC}"
 if git push origin "$branch"; then
     echo -e "\n${GREEN}所有操作已成功完成！${NC}"
 else
     echo -e "\n${RED}推送失败，请检查网络连接或远程仓库状态${NC}"
+    show_status_and_recovery
     exit 1
 fi
