@@ -9,6 +9,43 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
+# 提交类型数组
+declare -a commit_types=(
+    "feat: ✨ 新功能"
+    "fix: 🐛 修复bug"
+    "docs: 📝 文档更新"
+    "style: 💄 代码格式"
+    "refactor: ♻️ 代码重构"
+    "perf: ⚡️ 性能优化"
+    "test: ✅ 测试相关"
+    "build: 📦 构建相关"
+    "ci: 👷 CI/CD相关"
+    "chore: 🔧 其他更改"
+    "custom: 🎨 自定义格式"
+)
+
+# 表情数组
+declare -a emojis=(
+    "✨ - 新功能"
+    "🐛 - Bug修复"
+    "📝 - 文档"
+    "💄 - 样式"
+    "♻️ - 重构"
+    "⚡️ - 性能"
+    "✅ - 测试"
+    "📦 - 构建"
+    "👷 - CI/CD"
+    "🔧 - 工具"
+    "🎨 - 格式"
+    "🚀 - 部署"
+    "🆕 - 新增"
+    "🔨 - 更新"
+    "🗑️ - 删除"
+    "🔀 - 合并"
+    "🔖 - 版本"
+    "🔒 - 安全"
+)
+
 # 检查是否在git仓库中
 if ! git rev-parse --is-inside-work-tree > /dev/null 2>&1; then
     echo -e "${RED}错误: 当前目录不是git仓库${NC}"
@@ -68,15 +105,57 @@ esac
 echo -e "\n${YELLOW}已暂存的更改:${NC}"
 git status -s
 
-# 获取提交信息
-while true; do
-    read -p "请输入提交信息: " message
-    if [ ! -z "$message" ]; then
-        break
-    else
-        echo -e "${RED}提交信息不能为空，请重新输入${NC}"
-    fi
+# 选择提交信息类型
+echo -e "\n${YELLOW}请选择提交类型:${NC}"
+for i in "${!commit_types[@]}"; do
+    echo "$((i+1)). ${commit_types[$i]}"
 done
+read -p "请选择 (1-${#commit_types[@]}): " type_choice
+
+if [ "$type_choice" -ge 1 ] && [ "$type_choice" -le ${#commit_types[@]} ]; then
+    selected_type=${commit_types[$((type_choice-1))]}
+else
+    echo -e "${RED}无效的选择${NC}"
+    exit 1
+fi
+
+# 如果选择自定义格式
+if [[ "$selected_type" == "custom: "* ]]; then
+    # 显示表情列表
+    echo -e "\n${YELLOW}请选择表情:${NC}"
+    for i in "${!emojis[@]}"; do
+        echo "$((i+1)). ${emojis[$i]}"
+    done
+    read -p "请选择表情 (1-${#emojis[@]}, 直接回车跳过): " emoji_choice
+    
+    if [ ! -z "$emoji_choice" ] && [ "$emoji_choice" -ge 1 ] && [ "$emoji_choice" -le ${#emojis[@]} ]; then
+        selected_emoji=$(echo "${emojis[$((emoji_choice-1))]}" | cut -d' ' -f1)
+    fi
+    
+    read -p "请输入自定义提交类型: " custom_type
+    if [ ! -z "$custom_type" ]; then
+        if [ ! -z "$selected_emoji" ]; then
+            commit_prefix="$custom_type: $selected_emoji"
+        else
+            commit_prefix="$custom_type:"
+        fi
+    else
+        echo -e "${RED}提交类型不能为空${NC}"
+        exit 1
+    fi
+else
+    commit_prefix=$(echo "$selected_type" | cut -d' ' -f1,2)
+fi
+
+# 获取提交信息
+read -p "请输入提交描述: " commit_desc
+if [ -z "$commit_desc" ]; then
+    echo -e "${RED}提交描述不能为空${NC}"
+    exit 1
+fi
+
+# 组合完整的提交信息
+message="$commit_prefix $commit_desc"
 
 # 获取分支名称
 read -p "请输入分支名称 (默认是 $current_branch): " branch
