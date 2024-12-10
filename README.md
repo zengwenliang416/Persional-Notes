@@ -1,5 +1,3 @@
-
-
 # 个人笔记仓库 📚
 
 欢迎来到我的个人笔记仓库！这里存放着我关于各种主题的学习和思考的记录。🤔
@@ -10,36 +8,62 @@
 
 在这个仓库中，你可以找到以下类型的笔记：
 
-- **科研心得**：读研期间在科研方面自己的一些总结。
-- **设计模式**：包含我对于不同技术栈的实践和理解。
-- **Apusic应用服务器**：关于Apusic服务器的一些工作记录
-- **Git学习**：我阅读书籍的心得和摘抄。
-- **IDEA**：使用IDEA过程中的一些技巧和问题
-- **JAVA**：日常生活中的随想和反思。
-- **LeetCode**：LeetCode刷题记录。
-- **MySQL**：学习MySQL过程中的一些问题
-- **Tomcat**：关于我参与或者关注的项目的详细记录。
-- **Ruoyi-Plus**：关于开源项目Ruoyi-Plus的一些学习记录。
+- **Apusic应用服务器**：关于Apusic服务器的工作记录和学习笔记
+- **Bug**：常见问题和解决方案记录
+- **Crontab**：Linux定时任务相关笔记
+- **Docker**：Docker容器化技术学习笔记
+- **Git学习**：Git版本控制系统的使用技巧和经验
+- **Grafana**：监控可视化平台学习笔记
+- **IDEA**：IntelliJ IDEA IDE使用技巧和配置说明
+- **JAVA**：Java编程语言学习笔记和实践经验
+- **KubeSphere**：容器平台使用记录
+- **LLM**：大语言模型相关学习笔记
+- **LeetCode**：算法刷题记录
+- **Mac**：MacOS使用技巧和问题解决
+- **Maven**：项目构建工具使用笔记
+- **MiniIO**：对象存储服务学习笔记
+- **MySQL**：数据库使用和优化笔记
+- **Prometheus**：监控系统学习笔记
+- **Redis**：缓存数据库使用笔记
+- **Ruoyi-Plus/Vue**：若依开源项目学习记录
+- **Solr**：搜索引擎使用笔记
+- **Spring Cloud**：微服务框架学习笔记
+- **Tomcat**：Web服务器配置和优化笔记
+- **Zipkin**：分布式追踪系统学习笔记
+- **科研心得**：科研过程中的心得体会
+- **设计模式**：软件设计模式学习和实践
 
 ## 目录结构 🗂
 
 ```plaintext
 /
-├── 科研心得
-├── 设计模式
-├── Apusic应用服务器
-├── Git学习
-└── IDEA
-└── JAVA
-|   └── JAVA基础
-│   └── JVM
-└── LeetCode
-|   └── LeetCode-Hot-100
-└── MySQL
-└── Tomcat
-└── Ruoyi-Plus
-└── pull.bat # 一键push脚本(windows)
-└── pull.sh # 一键push脚本(linux、macos)
+├── Apusic应用服务器/
+├── Bug/
+├── Crontab/
+├── Docker/
+├── Git学习/
+├── Grafana/
+├── IDEA/
+├── JAVA/
+├── KubeSphere/
+├── LLM/
+├── LeetCode/
+├── Mac/
+├── Maven/
+├── MiniIO/
+├── MySQL/
+├── Prometheus/
+├── Redis/
+├── Ruoyi-Plus/
+├── Ruoyi-Vue-Plus/
+├── Solr/
+├── Spring Cloud/
+├── Tomcat/
+├── Zipkin/
+├── 科研心得/
+├── 设计模式/
+├── push.bat    # 一键push脚本(windows)
+└── push.sh     # 一键push脚本(linux、macos)
 ```
 
 ## 如何使用这个仓库 ❓
