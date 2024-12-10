@@ -7,6 +7,9 @@ set -e
 export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 
+# 设置git不对中文文件名转义
+git config --global core.quotepath false
+
 # 颜色定义
 RED='\033[0;31m'
 GREEN='\033[0;32m'

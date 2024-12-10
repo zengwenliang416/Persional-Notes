@@ -114,6 +114,9 @@ goto :eof
 :: 设置代码页为UTF-8
 chcp 65001 >nul
 
+:: 设置git不对中文文件名转义
+git config --global core.quotepath false
+
 :: 检查是否在git仓库中
 git rev-parse --git-dir >nul 2>&1
 if errorlevel 1 (
