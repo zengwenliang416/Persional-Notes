@@ -26,7 +26,60 @@ set "type[7]=test: ✅ 测试相关"
 set "type[8]=build: 📦️ 构建相关"
 set "type[9]=ci: 👷 CI/CD相关"
 set "type[10]=chore: 🔨 其他更改"
-set "type[11]=custom: 🎨 自定义格式"
+set "type[11]=init: 🎉 初始化"
+set "type[12]=security: 🔒 安全更新"
+set "type[13]=deps: 📌 依赖更新"
+set "type[14]=i18n: 🌐 国际化"
+set "type[15]=typo: ✍️ 拼写修正"
+set "type[16]=revert: ⏪️ 回退更改"
+set "type[17]=merge: 🔀 合并分支"
+set "type[18]=release: 🏷️ 发布版本"
+set "type[19]=deploy: 🚀 部署相关"
+set "type[20]=ui: 🎨 界面相关"
+set "type[21]=custom: 🎯 自定义格式"
+
+:: 定义表情数组
+set "emoji[1]=🎨 - 改进代码结构/格式"
+set "emoji[2]=⚡️ - 提升性能"
+set "emoji[3]=🔥 - 删除代码/文件"
+set "emoji[4]=🐛 - 修复 bug"
+set "emoji[5]=🚑️ - 重要补丁"
+set "emoji[6]=✨ - 引入新功能"
+set "emoji[7]=📝 - 撰写文档"
+set "emoji[8]=🚀 - 部署功能"
+set "emoji[9]=💄 - UI/样式更新"
+set "emoji[10]=🎉 - 初次提交"
+set "emoji[11]=✅ - 增加测试"
+set "emoji[12]=🔒️ - 修复安全问题"
+set "emoji[13]=🔐 - 添加或更新密钥"
+set "emoji[14]=🔖 - 发布/版本标签"
+set "emoji[15]=🚨 - 修复编译器/linter警告"
+set "emoji[16]=🚧 - 工作进行中"
+set "emoji[17]=💚 - 修复CI构建问题"
+set "emoji[18]=⬇️ - 降级依赖"
+set "emoji[19]=⬆️ - 升级依赖"
+set "emoji[20]=📌 - 固定依赖版本"
+set "emoji[21]=👷 - 添加CI构建系统"
+set "emoji[22]=📈 - 添加分析或跟踪代码"
+set "emoji[23]=♻️ - 重构代码"
+set "emoji[24]=➕ - 添加依赖"
+set "emoji[25]=➖ - 删除依赖"
+set "emoji[26]=🔧 - 修改配置文件"
+set "emoji[27]=🔨 - 重大重构"
+set "emoji[28]=🌐 - 国际化与本地化"
+set "emoji[29]=✏️ - 修复拼写错误"
+set "emoji[30]=💩 - 需要改进的代码"
+set "emoji[31]=⏪️ - 回退更改"
+set "emoji[32]=🔀 - 合并分支"
+set "emoji[33]=📦️ - 更新编译文件"
+set "emoji[34]=👽️ - 更新外部API"
+set "emoji[35]=🚚 - 移动/重命名文件"
+set "emoji[36]=📄 - 添加许可证"
+set "emoji[37]=💥 - 重大更改"
+set "emoji[38]=🍱 - 添加资源"
+set "emoji[39]=♿️ - 提高可访问性"
+set "emoji[40]=🔊 - 添加日志"
+set "emoji[41]=🔇 - 删除日志"
 
 :: 显示操作状态和恢复建议
 :show_status_and_recovery
@@ -58,6 +111,9 @@ if "%STATUS_CHANGES_COMMITTED%"=="true" (
 )
 goto :eof
 
+:: 设置代码页为UTF-8
+chcp 65001 >nul
+
 :: 检查是否在git仓库中
 git rev-parse --git-dir >nul 2>&1
 if errorlevel 1 (
@@ -67,6 +123,14 @@ if errorlevel 1 (
 
 :: 获取当前分支
 for /f "tokens=*" %%i in ('git rev-parse --abbrev-ref HEAD') do set "current_branch=%%i"
+
+:: 显示当前Git状态
+echo 当前Git状态:
+git status -s -uno > "%TEMP%\gitstatus.tmp"
+for /f "usebackq tokens=1,* delims= " %%a in ("%TEMP%\gitstatus.tmp") do (
+    echo %%a %%b
+)
+del "%TEMP%\gitstatus.tmp"
 
 :: 选择提交方式
 echo.
@@ -105,15 +169,15 @@ if "!choice!"=="1" (
 :: 显示提交类型选项
 echo.
 echo %YELLOW%请选择提交类型:%NC%
-for /l %%i in (1,1,11) do echo %%i. !type[%%i]!
-set /p "type_choice=请选择 (1-11): "
+for /l %%i in (1,1,21) do echo %%i. !type[%%i]!
+set /p "type_choice=请选择 (1-21): "
 
 :: 验证提交类型选择
 if !type_choice! lss 1 (
     echo %RED%无效的选择%NC%
     exit /b 1
 )
-if !type_choice! gtr 11 (
+if !type_choice! gtr 21 (
     echo %RED%无效的选择%NC%
     exit /b 1
 )
@@ -121,29 +185,29 @@ if !type_choice! gtr 11 (
 :: 获取选择的提交类型
 set "commit_prefix=!type[%type_choice%]!"
 
-:: 如果选择了自定义格式，让用户输入emoji
-if "!type_choice!"=="11" (
+:: 如果选择了自定义格式，让用户选择emoji
+if "!type_choice!"=="21" (
     echo.
     echo %YELLOW%请选择emoji:%NC%
-    echo 1. 🎨 艺术     2. 🌟 闪耀     3. 🚀 火箭
-    echo 4. 🎯 目标     5. 🎬 电影     6. 🎮 游戏
-    echo 7. 📱 手机     8. 💻 电脑     9. 🌈 彩虹
-    set /p "emoji_choice=请选择 (1-9): "
+    for /l %%i in (1,1,41) do echo %%i. !emoji[%%i]!
+    set /p "emoji_choice=请选择 (1-41): "
     
-    :: 设置emoji
-    if "!emoji_choice!"=="1" set "emoji=🎨"
-    if "!emoji_choice!"=="2" set "emoji=🌟"
-    if "!emoji_choice!"=="3" set "emoji=🚀"
-    if "!emoji_choice!"=="4" set "emoji=🎯"
-    if "!emoji_choice!"=="5" set "emoji=🎬"
-    if "!emoji_choice!"=="6" set "emoji=🎮"
-    if "!emoji_choice!"=="7" set "emoji=📱"
-    if "!emoji_choice!"=="8" set "emoji=💻"
-    if "!emoji_choice!"=="9" set "emoji=🌈"
+    :: 验证emoji选择
+    if !emoji_choice! lss 1 (
+        echo %RED%无效的选择%NC%
+        exit /b 1
+    )
+    if !emoji_choice! gtr 41 (
+        echo %RED%无效的选择%NC%
+        exit /b 1
+    )
+    
+    :: 提取emoji（第一个空格前的部分）
+    for /f "tokens=1 delims= " %%a in ("!emoji[%emoji_choice%]!") do set "selected_emoji=%%a"
     
     :: 获取自定义类型
     set /p "custom_type=请输入提交类型: "
-    set "commit_prefix=!custom_type!: !emoji!"
+    set "commit_prefix=!custom_type!: !selected_emoji!"
 )
 
 :: 获取提交描述
