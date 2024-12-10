@@ -166,6 +166,36 @@ git config --global core.quotepath false
 
 这个设置已经添加到 `push.sh` 和 `push.bat` 脚本的开头，确保中文文件名能够正确显示。
 
+### 终端输入处理优化
+在脚本交互过程中，输入中文字符时可能会遇到以下问题：
+1. 删除中文字符时显示异常
+2. 删除操作可能会影响到提示文字
+3. Windows下中文输入显示乱码
+
+解决方法：
+
+1. Linux/macOS (`push.sh`):
+   ```bash
+   # 使用 read 命令的 -e 选项启用 readline 功能
+   # 使用 -p 选项显示提示符
+   read -e -p "请输入: " input
+   ```
+   - `-e` 选项启用 readline 功能，支持命令行编辑
+   - `-p` 选项显示提示符，且提示符不会被删除操作影响
+
+2. Windows (`push.bat`):
+   ```batch
+   :: 使用 PowerShell 处理输入，支持更好的中文处理
+   powershell -Command "$input = Read-Host '请输入'; $input" > "%TEMP%\input.txt"
+   set /p input=<"%TEMP%\input.txt"
+   del "%TEMP%\input.txt"
+   ```
+   - 使用 PowerShell 的 `Read-Host` 命令处理输入
+   - 通过临时文件传递输入内容
+   - 支持完整的中文字符处理
+
+这些优化确保了在不同操作系统下都能正确处理中文输入，提供更好的用户体验。
+
 ## 注意事项
 1. 确保脚本具有执行权限（Linux/macOS）：
    ```bash

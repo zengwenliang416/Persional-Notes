@@ -142,8 +142,8 @@ current_branch=$(git rev-parse --abbrev-ref HEAD)
 # 检查是否有未提交的更改
 if [ -z "$(git status --porcelain)" ]; then
     echo -e "${YELLOW}没有发现需要提交的更改${NC}"
-    read -p "是否继续? (y/n): " continue
-    if [ "$continue" != "y" ]; then
+    read -e -p "是否继续? (y/n): " continue
+    if [ "$(echo "$continue" | tr '[:upper:]' '[:lower:]')" != "y" ]; then
         echo "操作已取消"
         exit 0
     fi
@@ -158,32 +158,29 @@ echo -e "\n${YELLOW}请选择提交方式:${NC}"
 echo "1. 提交所有更改 (git add .)"
 echo "2. 交互式选择文件 (git add -p)"
 echo "3. 手动输入文件路径"
-read -p "请选择 (1-3): " choice
+read -e -p "请选择 (1-3): " choice
 
 case $choice in
     1)
-        echo -e "\n${YELLOW}添加所有文件...${NC}"
         git add .
         STATUS_FILES_ADDED=true
         ;;
     2)
-        echo -e "\n${YELLOW}开始交互式选择...${NC}"
         git add -p
         STATUS_FILES_ADDED=true
         ;;
     3)
-        echo -e "\n${YELLOW}请输入要添加的文件路径（多个文件用空格分隔）:${NC}"
-        read -e files
-        if [ ! -z "$files" ]; then
-            git add $files
+        read -e -p "请输入文件路径: " file_path
+        if [ -n "$file_path" ]; then
+            git add "$file_path"
             STATUS_FILES_ADDED=true
         else
-            echo -e "${RED}未指定任何文件${NC}"
+            echo -e "${RED}错误: 文件路径不能为空${NC}"
             exit 1
         fi
         ;;
     *)
-        echo -e "${RED}无效的选择${NC}"
+        echo -e "${RED}错误: 无效的选择${NC}"
         exit 1
         ;;
 esac
@@ -195,14 +192,14 @@ git status -s
 # 选择提交信息类型
 echo -e "\n${YELLOW}请选择提交类型:${NC}"
 for i in "${!commit_types[@]}"; do
-    echo "$((i+1)). ${commit_types[$i]}"
+    echo "$((i+1)). ${commit_types[i]}"
 done
-read -p "请选择 (1-${#commit_types[@]}): " type_choice
+read -e -p "请选择 (1-${#commit_types[@]}): " type_choice
 
 if [ "$type_choice" -ge 1 ] && [ "$type_choice" -le ${#commit_types[@]} ]; then
     selected_type=${commit_types[$((type_choice-1))]}
 else
-    echo -e "${RED}无效的选择${NC}"
+    echo -e "${RED}错误: 无效的选择${NC}"
     exit 1
 fi
 
@@ -210,27 +207,27 @@ fi
 if [ "$type_choice" -eq ${#commit_types[@]} ]; then
     echo -e "\n${YELLOW}请选择表情:${NC}"
     for i in "${!emojis[@]}"; do
-        echo "$((i+1)). ${emojis[$i]}"
+        echo "$((i+1)). ${emojis[i]}"
     done
     
-    read -p "请选择 (1-${#emojis[@]}): " emoji_choice
+    read -e -p "请选择 (1-${#emojis[@]}): " emoji_choice
     
     if [ "$emoji_choice" -ge 1 ] && [ "$emoji_choice" -le ${#emojis[@]} ]; then
         # 提取选中表情的emoji部分（第一个空格之前的部分）
         selected_emoji=$(echo "${emojis[$((emoji_choice-1))]}" | cut -d' ' -f1)
         
-        read -p "请输入提交类型: " custom_type
+        read -e -p "请输入提交类型: " custom_type
         commit_prefix="$custom_type: $selected_emoji"
     else
-        echo -e "${RED}无效的选择${NC}"
+        echo -e "${RED}错误: 无效的选择${NC}"
         exit 1
     fi
 else
     commit_prefix=$(echo "$selected_type" | cut -d' ' -f1,2)
 fi
 
-# 获取提交信息
-read -p "请输入提交描述: " commit_desc
+# 获取提交描述
+read -e -p "请输入提交描述: " commit_desc
 if [ -z "$commit_desc" ]; then
     echo -e "${RED}提交描述不能为空${NC}"
     exit 1
@@ -241,16 +238,18 @@ message="$commit_prefix $commit_desc"
 STATUS_COMMIT_MESSAGE="$message"
 
 # 获取分支名称
-read -p "请输入分支名称 (默认是 $current_branch): " branch
-branch=${branch:-$current_branch}
+read -e -p "请输入分支名称 (默认是 $current_branch): " branch
+if [ -z "$branch" ]; then
+    branch=$current_branch
+fi
 STATUS_BRANCH="$branch"
 
 echo -e "\n${YELLOW}即将执行以下操作:${NC}"
 echo "1. git commit -m \"$message\""
 echo "2. git push origin $branch"
 
-read -p "确认执行? (y/n): " confirm
-if [ "$confirm" != "y" ]; then
+read -e -p "确认执行? (y/n): " confirm
+if [ "$(echo "$confirm" | tr '[:upper:]' '[:lower:]')" != "y" ]; then
     echo "操作已取消"
     exit 0
 fi

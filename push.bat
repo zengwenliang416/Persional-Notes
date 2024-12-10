@@ -135,37 +135,59 @@ for /f "usebackq tokens=1,* delims= " %%a in ("%TEMP%\gitstatus.tmp") do (
 )
 del "%TEMP%\gitstatus.tmp"
 
+:: 检查是否有未提交的更改
+git status --porcelain > "%TEMP%\status.txt"
+for /f %%i in ("%TEMP%\status.txt") do set size=%%~zi
+if %size% equ 0 (
+    echo %YELLOW%没有发现需要提交的更改%NC%
+    powershell -Command "$continue = Read-Host '是否继续? (y/n)'; $continue" > "%TEMP%\continue.txt"
+    set /p continue=<"%TEMP%\continue.txt"
+    del "%TEMP%\continue.txt"
+
+    if /i "!continue!" neq "y" (
+        echo 操作已取消
+        exit /b 0
+    )
+)
+del "%TEMP%\status.txt"
+
 :: 选择提交方式
 echo.
 echo %YELLOW%请选择提交方式:%NC%
 echo 1. 提交所有更改 (git add .)
 echo 2. 交互式选择文件 (git add -p)
 echo 3. 手动输入文件路径
-set /p "choice=请选择 (1-3): "
 
-if "!choice!"=="1" (
+powershell -Command "$choice = Read-Host '请选择 (1-3)'; $choice" > "%TEMP%\choice.txt"
+set /p choice=<"%TEMP%\choice.txt"
+del "%TEMP%\choice.txt"
+
+if "%choice%"=="1" (
     echo.
     echo %YELLOW%添加所有文件...%NC%
     git add .
     set "STATUS_FILES_ADDED=true"
-) else if "!choice!"=="2" (
+) else if "%choice%"=="2" (
     echo.
     echo %YELLOW%开始交互式选择...%NC%
     git add -p
     set "STATUS_FILES_ADDED=true"
-) else if "!choice!"=="3" (
+) else if "%choice%"=="3" (
     echo.
     echo %YELLOW%请输入要添加的文件路径（多个文件用空格分隔）:%NC%
-    set /p "files="
-    if not "!files!"=="" (
-        git add !files!
+    powershell -Command "$path = Read-Host '请输入文件路径'; $path" > "%TEMP%\path.txt"
+    set /p file_path=<"%TEMP%\path.txt"
+    del "%TEMP%\path.txt"
+    
+    if not "!file_path!"=="" (
+        git add "!file_path!"
         set "STATUS_FILES_ADDED=true"
     ) else (
-        echo %RED%未指定任何文件%NC%
+        echo %RED%错误: 文件路径不能为空%NC%
         exit /b 1
     )
 ) else (
-    echo %RED%无效的选择%NC%
+    echo %RED%错误: 无效的选择%NC%
     exit /b 1
 )
 
@@ -173,15 +195,17 @@ if "!choice!"=="1" (
 echo.
 echo %YELLOW%请选择提交类型:%NC%
 for /l %%i in (1,1,21) do echo %%i. !type[%%i]!
-set /p "type_choice=请选择 (1-21): "
+powershell -Command "$type_choice = Read-Host '请选择 (1-21)'; $type_choice" > "%TEMP%\type_choice.txt"
+set /p type_choice=<"%TEMP%\type_choice.txt"
+del "%TEMP%\type_choice.txt"
 
 :: 验证提交类型选择
 if !type_choice! lss 1 (
-    echo %RED%无效的选择%NC%
+    echo %RED%错误: 无效的选择%NC%
     exit /b 1
 )
 if !type_choice! gtr 21 (
-    echo %RED%无效的选择%NC%
+    echo %RED%错误: 无效的选择%NC%
     exit /b 1
 )
 
@@ -193,15 +217,17 @@ if "!type_choice!"=="21" (
     echo.
     echo %YELLOW%请选择emoji:%NC%
     for /l %%i in (1,1,41) do echo %%i. !emoji[%%i]!
-    set /p "emoji_choice=请选择 (1-41): "
+    powershell -Command "$emoji_choice = Read-Host '请选择 (1-41)'; $emoji_choice" > "%TEMP%\emoji_choice.txt"
+    set /p emoji_choice=<"%TEMP%\emoji_choice.txt"
+    del "%TEMP%\emoji_choice.txt"
     
     :: 验证emoji选择
     if !emoji_choice! lss 1 (
-        echo %RED%无效的选择%NC%
+        echo %RED%错误: 无效的选择%NC%
         exit /b 1
     )
     if !emoji_choice! gtr 41 (
-        echo %RED%无效的选择%NC%
+        echo %RED%错误: 无效的选择%NC%
         exit /b 1
     )
     
@@ -209,20 +235,26 @@ if "!type_choice!"=="21" (
     for /f "tokens=1 delims= " %%a in ("!emoji[%emoji_choice%]!") do set "selected_emoji=%%a"
     
     :: 获取自定义类型
-    set /p "custom_type=请输入提交类型: "
+    powershell -Command "$custom_type = Read-Host '请输入提交类型'; $custom_type" > "%TEMP%\custom_type.txt"
+    set /p custom_type=<"%TEMP%\custom_type.txt"
+    del "%TEMP%\custom_type.txt"
     set "commit_prefix=!custom_type!: !selected_emoji!"
 )
 
 :: 获取提交描述
 echo.
-set /p "commit_desc=请输入提交描述: "
+powershell -Command "$commit_desc = Read-Host '请输入提交描述'; $commit_desc" > "%TEMP%\commit_desc.txt"
+set /p commit_desc=<"%TEMP%\commit_desc.txt"
+del "%TEMP%\commit_desc.txt"
 
 :: 组合完整的提交信息
 set "message=!commit_prefix! !commit_desc!"
 set "STATUS_COMMIT_MESSAGE=!message!"
 
 :: 获取分支名称
-set /p "branch=请输入分支名称 (默认是 %current_branch%): "
+powershell -Command "$branch = Read-Host '请输入分支名称 (默认是 %current_branch%)'; $branch" > "%TEMP%\branch.txt"
+set /p branch=<"%TEMP%\branch.txt"
+del "%TEMP%\branch.txt"
 if "!branch!"=="" set "branch=%current_branch%"
 set "STATUS_BRANCH=!branch!"
 
@@ -231,7 +263,9 @@ echo %YELLOW%即将执行以下操作:%NC%
 echo 1. git commit -m "!message!"
 echo 2. git push origin !branch!
 
-set /p "confirm=确认执行? (y/n): "
+powershell -Command "$confirm = Read-Host '确认执行? (y/n)'; $confirm" > "%TEMP%\confirm.txt"
+set /p confirm=<"%TEMP%\confirm.txt"
+del "%TEMP%\confirm.txt"
 if /i "!confirm!" neq "y" (
     echo 操作已取消
     exit /b 0
