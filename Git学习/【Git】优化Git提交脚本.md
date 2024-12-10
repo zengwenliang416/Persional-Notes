@@ -194,7 +194,25 @@ git config --global core.quotepath false
    - 通过临时文件传递输入内容
    - 支持完整的中文字符处理
 
-这些优化确保了在不同操作系统下都能正确处理中文输入，提供更好的用户体验。
+### Shell 兼容性问题
+在不同的 Shell 环境中，某些字符串操作的语法可能不兼容。例如，将字符串转换为小写的 `${variable,,}` 语法只在 Bash 4.0+ 版本中支持。
+
+问题表现：
+```bash
+./push.sh: line 252: ${confirm,,}: bad substitution
+```
+
+解决方法：
+使用更通用的 `tr` 命令进行大小写转换：
+```bash
+# 不兼容的写法
+if [ "${confirm,,}" != "y" ]; then
+
+# 兼容的写法
+if [ "$(echo "$confirm" | tr '[:upper:]' '[:lower:]')" != "y" ]; then
+```
+
+这个修改确保脚本能在各种 Shell 环境（如 bash、sh、zsh 等）下正常运行。
 
 ## 注意事项
 1. 确保脚本具有执行权限（Linux/macOS）：
