@@ -164,19 +164,19 @@
 
 ## 脚本修改历史
 
-| 提交时间 | 提交说明 | 提交者 | 提交哈希 |
-|---------|---------|--------|----------|
-| 7分钟前 | feat: ✨ 添加windos下的提交历史和管理功能 | Zengwenliang0416 | b65e681 |
-| 11分钟前 | feat: ✨ 添加Linux/mac下的提交历史和管理功能 | Zengwenliang0416 | 331fca0 |
-| 10小时前 | fix: 🐛 终端中文显示问题 | Zengwenliang0416 | 8f838ba |
+| 提交时间  | 提交说明                                 | 提交者              | 提交哈希    |
+| ----- | ------------------------------------ | ---------------- | ------- |
+| 7分钟前  | feat: ✨ 添加Windows下的提交历史和管理功能         | Zengwenliang0416 | b65e681 |
+| 11分钟前 | feat: ✨ 添加Linux/mac下的提交历史和管理功能       | Zengwenliang0416 | 331fca0 |
+| 10小时前 | fix: 🐛 终端中文显示问题                     | Zengwenliang0416 | 8f838ba |
 | 10小时前 | fix: 🐛 git status下中文显示为数字的修改方案和修改措施 | Zengwenliang0416 | 1717821 |
-| 10小时前 | docs: 📝 优化脚本并且添加操作教程 | Zengwenliang0416 | 2ea4ddb |
-| 11小时前 | docs: 📝 优化windows下的push脚本 | Zengwenliang0416 | 492cb13 |
-| 11小时前 | doc: 📝 push脚本优化 | Zengwenliang0416 | 09c492d |
-| 11小时前 | docs: 📝 添加表情信息在message中 | Zengwenliang0416 | 9dbf2eb |
-| 11小时前 | refactor(git脚本): :recycle: 优化push操作 | Zengwenliang0416 | 9ef0b0c |
-| 11个月前 | 初始化JVM文档以及测试Linux下的push脚本 | Zengwenliang0416 | 44edb13 |
-| 11个月前 | 添加一键实现add、commit、push脚本 | Zengwenliang0416 | 32c9ac0 |
+| 10小时前 | docs: 📝 优化脚本并且添加操作教程                | Zengwenliang0416 | 2ea4ddb |
+| 11小时前 | docs: 📝 优化windows下的push脚本           | Zengwenliang0416 | 492cb13 |
+| 11小时前 | doc: 📝 push脚本优化                     | Zengwenliang0416 | 09c492d |
+| 11小时前 | docs: 📝 添加表情信息在message中             | Zengwenliang0416 | 9dbf2eb |
+| 11小时前 | refactor(git脚本): :recycle: 优化push操作  | Zengwenliang0416 | 9ef0b0c |
+| 11个月前 | 初始化JVM文档以及测试Linux下的push脚本            | Zengwenliang0416 | 44edb13 |
+| 11个月前 | 添加一键实现add、commit、push脚本              | Zengwenliang0416 | 32c9ac0 |
 
 ### 主要更新内容
 
@@ -514,17 +514,86 @@ A2: 脚本会显示当前状态和恢复建议，按照提示执行相应命令�
 A3: 可以编辑脚本中的提交类型数组来自定义默认选项。
 
 ## 后续优化方向
-1. 添加配置文件支持，允许用户自定义：
-   - 提交类型
-   - 表情符号
-   - 默认分支
-2. 多语言支持
-3. 提交历史查看和管理
-4. 分支管理功能
-5. 提交消息模板支持
-6. 集成代码检查工具
+1. **功能增强**
+   - [ ] 配置文件支持
+     - 可自定义提交类型和表情
+     - 可配置默认分支和远程仓库
+     - 支持项目级别的配置文件
+   - [ ] 提交模板系统
+     - 支持自定义提交模板
+     - 支持不同项目使用不同模板
+     - 模板变量替换功能
+   - [ ] 批量操作支持
+     - 批量提交管理
+     - 批量撤销功能
+     - 批量查看历史
 
-## 参考资料
-1. [Conventional Commits](https://www.conventionalcommits.org/)
-2. [Git Documentation](https://git-scm.com/doc)
-3. [Gitmoji](https://gitmoji.dev/)
+2. **用户体验优化**
+   - [ ] 图形界面支持
+     - 简单的GUI界面
+     - 文件树形显示
+     - 可视化的提交历史
+   - [ ] 智能提示
+     - 自动补全功能
+     - 智能提交信息建议
+     - 错误预防提示
+   - [ ] 多语言支持
+     - 完整的国际化支持
+     - 可切换的界面语言
+     - 提交信息的多语言模板
+
+3. **集成增强**
+   - [ ] CI/CD系统集成
+     - 与常见CI系统集成
+     - 自动化测试集成
+     - 发布流程集成
+   - [ ] 项目管理工具集成
+     - Jira集成
+     - Trello集成
+     - GitHub/GitLab集成
+   - [ ] 代码审查工具集成
+     - Gerrit集成
+     - GitHub Code Review集成
+     - GitLab Code Review集成
+
+4. **性能优化**
+   - [ ] 缓存机制
+     - 提交历史缓存
+     - 配置信息缓存
+     - 智能缓存清理
+   - [ ] 异步操作支持
+     - 异步提交处理
+     - 异步历史查询
+     - 后台任务处理
+   - [ ] 大型仓库优化
+     - 优化大文件处理
+     - 提高历史查询速度
+     - 减少内存占用
+   - [ ] 网络连接优化
+     - 优化网络请求
+     - 减少网络延迟
+     - 提高网络稳定性
+
+5. **安全性增强**
+   - [ ] 提交信息验证
+     - 敏感信息检查
+     - 提交规范验证
+     - 自动化代码审查
+   - [ ] 权限管理
+     - 用户权限控制
+     - 分支权限管理
+     - 操作审计日志
+   - [ ] 备份机制
+     - 自动本地备份
+     - 远程备份支持
+     - 恢复机制
+
+## 贡献指南
+
+欢迎提交改进建议和bug报告！请：
+1. Fork本仓库
+2. 创建特性分支
+3. 提交更改
+4. 发起Pull Request
+
+{{ ... }}
