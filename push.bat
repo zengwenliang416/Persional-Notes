@@ -270,12 +270,20 @@ set "STATUS_COMMIT_MESSAGE="
     ) else if "%choice%"=="3" (
         echo.
         echo %YELLOW%请输入要添加的文件路径（多个文件用空格分隔）:%NC%
-        powershell -Command "$path = Read-Host '请输入文件路径'; $path" > "%TEMP%\path.txt"
-        set /p file_path=<"%TEMP%\path.txt"
-        del "%TEMP%\path.txt"
+        powershell -Command "$paths = Read-Host '请输入文件路径'; $paths" > "%TEMP%\paths.txt"
+        set /p file_paths=<"%TEMP%\paths.txt"
+        del "%TEMP%\paths.txt"
         
-        if not "!file_path!"=="" (
-            git add "!file_path!"
+        if not "!file_paths!"=="" (
+            for %%f in (!file_paths!) do (
+                git add "%%f" 2>nul
+                if errorlevel 1 (
+                    echo %RED%添加失败: %%f%NC%
+                    exit /b 1
+                ) else (
+                    echo %GREEN%成功添加: %%f%NC%
+                )
+            )
             set "STATUS_FILES_ADDED=true"
         ) else (
             echo %RED%错误: 文件路径不能为空%NC%

@@ -193,12 +193,22 @@ commit_changes() {
             STATUS_FILES_ADDED=true
             ;;
         3)
-            read -e -p "请输入文件路径: " file_path
-            if [ -n "$file_path" ]; then
-                git add "$file_path"
+            echo
+            echo "${YELLOW}请输入要添加的文件路径（多个文件用空格分隔）:${NC}"
+            read -r file_paths
+            if [ -n "$file_paths" ]; then
+                # 使用for循环处理每个文件路径
+                for file_path in $file_paths; do
+                    if git add "$file_path" 2>/dev/null; then
+                        echo "${GREEN}成功添加: $file_path${NC}"
+                    else
+                        echo "${RED}添加失败: $file_path${NC}"
+                        exit 1
+                    fi
+                done
                 STATUS_FILES_ADDED=true
             else
-                echo -e "${RED}错误: 文件路径不能为空${NC}"
+                echo "${RED}错误: 文件路径不能为空${NC}"
                 exit 1
             fi
             ;;
