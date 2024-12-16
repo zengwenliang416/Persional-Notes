@@ -38,35 +38,13 @@
 ```plaintext
 Persional-Notes
 ├── 科研心得
-│   ├── 工作二/
 │   ├── imgs/
-│   ├── 【科研心得】大论文撰写.md
-│   └── 【科研心得】Latex+VSCode+Git+PyCharm.md
+│   └── 【科研心得】 LaTeX + VSCode + Git + PyCharm 科研工具链配置指南.md
 ├── 设计模式
 │   ├── imgs/
-│   ├── Untitled Folder
 │   ├── 【设计模式】单例模式不同写法以及优缺点.md
 │   ├── 【设计模式】工作中如何使用设计模式.md
 │   └── 【设计模式】模板方法模式.md
-├── ACA 大模型工程师
-│   ├── code/
-│   ├── img/
-│   ├── 【ACA 大模型工程师】提示词工程.md
-│   └── 【ACA 大模型工程师】API处理自动化办公.md
-├── Apusic应用服务器
-│   ├── 技术支持/
-│   ├── AAMS-V10/
-│   ├── AAMS-V11/
-│   ├── AAS-V10/
-│   ├── AAS-V11/
-│   ├── AAS-V9/
-│   ├── RAS-V10/
-│   ├── RAS-V11/
-│   ├── 工作资料地址.md
-│   ├── 系统启动流程.docx
-│   ├── aasv10应用类加载机制.txt
-│   ├── HK2简介及其在应用服务器中的应用.pptx
-│   └── OSGi介绍.pptx
 ├── Bug
 │   ├── imgs/
 │   └── 【Bug】Nacos发布流控规则无法到Sentinel Dashboard.md
@@ -74,13 +52,21 @@ Persional-Notes
 │   └── 【Crontab】基本介绍.md
 ├── Docker
 │   ├── img/
-│   ├── 【Docker】.md
-│   ├── 【Docker】基础.md
-│   └── 【Docker】镜像修改.md
+│   ├── 【Docker】基础命令速查手册.md
+│   ├── 【Docker】镜像修改与优化指南.md
+│   └── 【Docker】Docker 完全指南.md
+├── Git
+│   ├── imgs/
+│   ├── 【Git】保护master分支配置说明.md
+│   ├── 【Git】个人主页优化方案.md
+│   ├── 【Git】基础命令指南.md
+│   ├── 【Git】如何添加和更新gitignore文件.md
+│   ├── 【Git】优化Git提交脚本.md
+│   └── 【Git】远程分支有更新本地已改名.md
 ├── Git学习
 │   ├── imgs/
-│   ├── 【Apusic应用服务器】常用命令.md
-│   ├── 【Apusic应用服务器】问题.md
+│   ├── 【Git】个人主页优化方案.md
+│   ├── 【Git】基础命令指南.md
 │   ├── 【Git】如何添加和更新gitignore文件.md
 │   ├── 【Git】优化Git提交脚本.md
 │   └── 【Git】远程分支有更新本地已改名.md
@@ -88,39 +74,37 @@ Persional-Notes
 │   └── 【Grafana】安装.md
 ├── IDEA
 │   ├── imgs/
-│   ├── 【IDEA】打开IDEA不自动跳转上次打开项目.md
-│   ├── 【IDEA】书签.md
-│   ├── 【IDEA】文件分行显示.md
-│   ├── 【IDEA】显示change log.md
-│   ├── 【IDEA】远程调试.md
-│   ├── 【IDEA】中文乱码.md
-│   └── 【IDEA】自动导包和删包.md
+│   ├── 【IDEA】常用设置指南.md
+│   └── 【IDEA】远程调试.md
 ├── JAVA
 │   ├── imgs/
 │   ├── JAVA基础/
 │   ├── JAVA集合/
 │   ├── JVM/
-│   └── 【JAVA】JDK切换.md
+│   └── 【JAVA】JDK 版本切换指南.md
 ├── KubeSphere
-│   └── 【KubeSphere】跨namespace访问.md
+│   ├── 【KubeSphere】存储管理指南.md
+│   ├── 【KubeSphere】基础概念与架构.md
+│   ├── 【KubeSphere】跨namespace访问.md
+│   └── 【KubeSphere】DevOps实践指南.md
 ├── LeetCode
 │   └── LeetCode-Hot-100/
 ├── LLM
 │   ├── 【LLM】LLaMA-Factory学习.md
 │   └── 【LLM】Qwen.md
 ├── Mac
-│   └── 【Mac】文件位置.md
+│   └── 【Mac】系统目录与文件管理.md
 ├── Maven
 │   └── 【Maven】常用命令.md
 ├── MiniIO
 │   ├── imgs/
-│   ├── 【MiniIO】.md
-│   └── 【MinoIO】文件上传.md
+│   └── 【MinIO】使用指南.md
 ├── MySQL
-│   ├── 【MySQL】关系型数据库和非关系型数据库区别.md
-│   └── 【MySQL】为什么需要NOSQL数据库.md
+│   ├── 【MySQL】安装指南.md
+│   ├── 【MySQL】配置文件指南.md
+│   └── 【MySQL】数据库系统详解.md
 ├── Prometheus
-│   └── 【Prometheus】快速开始.md
+│   └── 【Prometheus】监控系统指南.md
 ├── Redis
 │   └── 【Redis】命令行.md
 ├── Ruoyi-Plus
@@ -133,14 +117,15 @@ Persional-Notes
 │   └── 【Ruoyi-Plus】项目学习-yaml文件.md
 ├── Ruoyi-Vue-Plus
 │   ├── img
+│   ├── imgs/
 │   ├── 【Ruoyi-Vue-Plus】登录验证.md
 │   ├── 【Ruoyi-Vue-Plus】配置工厂.md
 │   ├── 【Ruoyi-Vue-Plus】配置工厂流程.canvas
+│   ├── 【Ruoyi-Vue-Plus】业务开发流程.md
 │   └── 【Ruoyi-Vue-Plus】ServletUtils请求工具与RequestContextHolder.md
 ├── Solr
 │   ├── 【Solr】安装.md
-│   ├── 【Solr】创建Core.md
-│   └── 【Solr】全量化改装.md
+│   └── 【Solr】Solr安装和数据同步方案——PostgreSQL.md
 ├── Sping Cloud
 │   ├── imgs/
 │   └── 【Spring Cloud】微服务架构.md
@@ -148,12 +133,11 @@ Persional-Notes
 │   ├── imgs/
 │   └── 【Tomcat】EOFException.md
 ├── Zipkin
-│   ├── 【Zipkin】 OkHttp集成Zipkin实现链路追踪.md
 │   ├── 【Zipkin】快速开始.md
+│   ├── 【Zipkin】OkHttp集成Zipkin实现链路追踪.md
 │   ├── 【Zipkin】WebFlux服务器中traceID无法显示在日志上.md
-│   └── 【Zipkin】zipkin-dependencies修改.md
-├── push.bat
-├── push.sh
+│   ├── 【Zipkin】zipkin-dependencies修改.md
+│   └── 【Zipkin】Zipkin和定时执行Zipkin-dependencies（MySQL存储方案）.md
 └── README.md
 ```
 
