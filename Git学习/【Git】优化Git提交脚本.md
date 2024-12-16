@@ -1,4 +1,4 @@
-# 优化Git提交脚本
+# 【Git】优化Git提交脚本
 
 ## 背景
 在日常开发中，我们经常需要提交代码到Git仓库。为了规范提交信息格式，提高提交效率，同时避免提交过程中的错误，我们开发了这个Git提交脚本。
@@ -251,7 +251,7 @@
      ```
      您的更改已经提交到本地仓库。要重新推送，请执行：
      git push origin [分支名]
-
+     
      如果想要撤销提交，请执行：
      git reset --soft HEAD^
      ```
@@ -260,7 +260,7 @@
      文件已暂存但未提交。要继续，请执行：
      git commit -m "[提交信息]"
      git push origin [分支名]
-
+     
      如果想要撤销暂存，请执行：
      git reset
      ```
@@ -313,7 +313,7 @@
    ```bash
    # 创建个人bin目录（如果不存在）
    mkdir -p ~/bin
-
+   
    # 创建软链接
    ln -s /path/to/your/push.sh ~/bin/push.sh
    ```
@@ -322,7 +322,7 @@
    ```bash
    # 添加个人脚本目录到 PATH
    export PATH="$HOME/bin:$PATH"
-
+   
    # 可选：创建别名使命令更简短
    alias git-push="push.sh"
    ```
@@ -364,10 +364,10 @@
    ```bash
    # 检查软链接是否创建成功
    ls -l ~/bin/push.sh
-
+   
    # 检查命令是否可用
    which push.sh
-
+   
    # 测试脚本执行
    push.sh --version  # 或其他测试命令
    ```
