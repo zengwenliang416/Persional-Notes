@@ -1,4 +1,4 @@
-# Solr PostgreSQL 数据导入服务
+# 【Solr】Solr安装和数据同步方案——PostgreSQL
 
 该项目是一个基于 Solr 8.11.1 的数据导入服务，用于从 PostgreSQL 数据库定时导入数据到 Solr 索引中。
 
