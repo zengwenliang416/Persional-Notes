@@ -35,34 +35,24 @@ jobs:
           TEMP_FILE=$(mktemp)
           
           # 处理 README.md
-          {
-            # 如果文件存在且包含目录结构部分，则保留其他部分
-            if [ -f README.md ] && grep -q "## 目录结构" README.md; then
-              # 提取目录结构部分之前的内容
-              sed -n '1,/## 目录结构/p' README.md | head -n -1
-              
-              # 添加目录结构标题和更新时间
-              echo "## 目录结构"
-              echo "最后更新时间：$(date '+%Y年%m月%d日 %H:%M:%S')"
-              echo ""
-              echo "\`\`\`"
-              echo "$TREE_OUTPUT"
-              echo "\`\`\`"
-              
-              # 提取目录结构部分之后的内容（如果有）
-              sed -n '/^```$/,$ p' README.md | tail -n +2
-            else
-              # 如果文件不存在或没有目录结构部分，创建新的内容
-              echo "# 个人笔记"
-              echo ""
-              echo "## 目录结构"
-              echo "最后更新时间：$(date '+%Y年%m月%d日 %H:%M:%S')"
-              echo ""
-              echo "\`\`\`"
-              echo "$TREE_OUTPUT"
-              echo "\`\`\`"
-            fi
-          } > "$TEMP_FILE"
+          awk -v tree="$TREE_OUTPUT" -v date="$(TZ='Asia/Shanghai' date '+%Y年%m月%d日 %H:%M:%S')" '
+          BEGIN { in_tree = 0; printed_tree = 0 }
+          /^## 目录结构/ { 
+            if (!printed_tree) {
+              print $0;
+              print "最后更新时间：" date;
+              print "";
+              print "```";
+              print tree;
+              print "```";
+              printed_tree = 1;
+              in_tree = 1;
+              next;
+            }
+          }
+          in_tree && /^```/ { in_tree = 0; next }
+          !in_tree { print $0 }
+          ' README.md > "$TEMP_FILE"
           
           # 替换原文件
           mv "$TEMP_FILE" README.md
@@ -71,13 +61,13 @@ jobs:
         id: cpr
         uses: peter-evans/create-pull-request@v5
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}  # 使用默认的 GITHUB_TOKEN
+          token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: "docs: 更新目录结构"
           title: "docs: 自动更新目录结构"
           body: |
             自动更新 README.md 中的目录结构
             
-            - 更新时间：$(date '+%Y年%m月%d日 %H:%M:%S')
+            - 更新时间：$(TZ='Asia/Shanghai' date '+%Y年%m月%d日 %H:%M:%S')
             - 由 GitHub Actions 自动创建
           branch: directory-tree-updates
           delete-branch: true
