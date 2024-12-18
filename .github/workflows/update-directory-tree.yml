@@ -10,12 +10,20 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-      pull-requests: write
     
     steps:
       - uses: actions/checkout@v3
         with:
+          ref: directory-tree-updates  # 使用固定的分支名
           fetch-depth: 1
+
+      - name: Create branch if not exists
+        run: |
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+          
+          # 尝试检出分支，如果不存在则创建
+          git checkout directory-tree-updates 2>/dev/null || git checkout -b directory-tree-updates
 
       - name: Install tree
         run: sudo apt-get install -y tree
@@ -25,21 +33,13 @@ jobs:
           echo "# Personal Notes" > README.md
           echo "" >> README.md
           echo "## Directory Structure" >> README.md
+          echo "Last updated: $(date '+%Y-%m-%d %H:%M:%S %Z')" >> README.md
           echo "" >> README.md
           echo "\`\`\`" >> README.md
           tree -L 2 -I '.git|.github|node_modules' --charset=ascii >> README.md
           echo "\`\`\`" >> README.md
 
-      - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v5
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: "docs: update directory tree"
-          title: "docs: update directory tree"
-          body: |
-            Automatically update directory tree in README.md
-            
-            This PR was automatically created by the GitHub Action workflow.
-          branch: update-directory-tree
-          delete-branch: true
-          base: master
+      - name: Commit and Push Changes
+        run: |
+          git add README.md
+          git diff --quiet && git diff --staged --quiet || (git commit -m "docs: update directory tree" && git push origin directory-tree-updates --force)
