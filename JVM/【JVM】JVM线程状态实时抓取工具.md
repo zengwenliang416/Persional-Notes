@@ -35,7 +35,7 @@ jtop (Java Thread Observer & Profiler) 是一个用于实时监控JVM的线程�
 
 ### 4.1 获取工具
 
-将 [`jtop` 脚本](/JVM/Utils/jtop/jtop.sh)复制到你的系统中，确保它具有执行权限：
+将 [`jtop` 脚本](/JVM/Utils/jtop/jtop)复制到你的系统中，确保它具有执行权限：
 
 ```bash
 chmod +x jtop
