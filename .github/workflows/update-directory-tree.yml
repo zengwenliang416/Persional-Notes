@@ -16,6 +16,9 @@ jobs:
         with:
           fetch-depth: 1
 
+      - name: Install tree
+        run: sudo apt-get install -y tree
+
       - name: Create Directory Tree
         run: |
           echo "# Personal Notes" > README.md
@@ -23,8 +26,7 @@ jobs:
           echo "## Directory Structure" >> README.md
           echo "" >> README.md
           echo "\`\`\`" >> README.md
-          # 使用 tree 命令生成目录结构（最大深度为2，忽略.git目录和其他不需要的文件）
-          tree -L 2 -I '.git|.github|node_modules' >> README.md
+          tree -L 2 -I '.git|.github|node_modules' --charset=ascii >> README.md
           echo "\`\`\`" >> README.md
 
       - name: Commit and Push
