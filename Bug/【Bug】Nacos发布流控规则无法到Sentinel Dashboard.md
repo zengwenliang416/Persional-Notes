@@ -1,6 +1,15 @@
 # 【Bug】Nacos发布流控规则无法到Sentinel Dashboard
 
-> 版本说明：nacos=2.4.0、Sentinel Dashborad=1.8.8、spring.cloud.alibaba.version=2023.0.1.2
+## 目录
+- [1. 目录](#目录)
+- [2. 依赖](#依赖)
+- [3. 配置](#配置)
+- [4. nacos配置流控](#nacos配置流控)
+- [5. Sentinel Dashboard配置流控](#sentinel-dashboard配置流控)
+    - [情况一](#情况一)
+    - [情况二](#情况二)
+
+
 
 ## 依赖
 

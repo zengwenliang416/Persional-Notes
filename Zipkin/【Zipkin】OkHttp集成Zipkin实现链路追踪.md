@@ -1,25 +1,52 @@
 # 【Zipkin】OkHttp集成Zipkin实现链路追踪
 
-## 1. 概述
+## 目录
+- [1. 目录](#目录)
+- [2. 概述](#概述)
+    - [背景介绍](#背景介绍)
+    - [问题描述](#问题描述)
+    - [解决方案概览](#解决方案概览)
+- [3. 环境准备](#环境准备)
+    - [依赖配置](#依赖配置)
+    - [配置文件](#配置文件)
+- [4. 实现步骤](#实现步骤)
+    - [定义追踪拦截器](#定义追踪拦截器)
+    - [注册拦截器](#注册拦截器)
+- [5. 验证与测试](#验证与测试)
+    - [测试步骤](#测试步骤)
+    - [验证要点](#验证要点)
+    - [常见问题及解决方案](#常见问题及解决方案)
+- [6. 最佳实践](#最佳实践)
+    - [性能优化](#性能优化)
+    - [安全考虑](#安全考虑)
+    - [监控与告警](#监控与告警)
+    - [开发建议](#开发建议)
+- [7. 参考资料](#参考资料)
 
-### 1.1 背景介绍
+
+
+## 概述
+
+### 背景介绍
+
 在微服务架构中，服务间调用链的复杂性使得问题定位变得困难。Zipkin作为分布式追踪系统，能够帮助我们追踪和分析服务调用链路，快速定位问题。
 
-### 1.2 问题描述
+### 问题描述
 在使用Zuul作为API网关时，如果从Apache HttpClient切换到OkHttp，可能会遇到以下问题：
 - 链路追踪信息（traceid、spanid、parentspanid）无法正确传递
 - 下游服务会生成新的traceid，导致调用链断裂
 - 无法从网关开始追踪完整的服务调用链路
 
-### 1.3 解决方案概览
+### 解决方案概览
 通过自定义OkHttp Interceptor，我们可以：
 1. 在请求头中注入追踪信息
 2. 确保链路追踪的连续性
 3. 实现从网关到最终服务的完整链路追踪
 
-## 2. 环境准备
+## 环境准备
 
-### 2.1 依赖配置
+### 依赖配置
+
 ```xml
 <dependencies>
     <!-- Spring Cloud Starter Zipkin -->
@@ -44,7 +71,7 @@
 </dependencies>
 ```
 
-### 2.2 配置文件
+### 配置文件
 ```yaml
 spring:
   application:
@@ -73,9 +100,9 @@ ribbon:
   ReadTimeout: 5000
 ```
 
-## 3. 实现步骤
+## 实现步骤
 
-### 3.1 定义追踪拦截器
+### 定义追踪拦截器
 创建 `TracingInterceptor.java`：
 ```java
 @Component
@@ -156,7 +183,7 @@ public class TracingInterceptor implements Interceptor {
 }
 ```
 
-### 3.2 注册拦截器
+### 注册拦截器
 创建 `HttpClientConfiguration.java`：
 ```java
 @Configuration
@@ -190,9 +217,9 @@ public class HttpClientConfiguration {
 }
 ```
 
-## 4. 验证与测试
+## 验证与测试
 
-### 4.1 测试步骤
+### 测试步骤
 1. 启动Zipkin服务器
    ```bash
    docker run -d -p 9411:9411 openzipkin/zipkin
@@ -212,14 +239,14 @@ public class HttpClientConfiguration {
    - 访问 http://localhost:9411
    - 使用服务名和TraceID进行查询
 
-### 4.2 验证要点
+### 验证要点
 - 检查traceid是否在整个调用链中保持一致
 - 确认spanid的父子关系是否正确
 - 验证服务调用的时序是否符合预期
 - 检查请求和响应的时间戳是否准确
 - 确认所有相关的元数据（如HTTP方法、URL）是否正确记录
 
-### 4.3 常见问题及解决方案
+### 常见问题及解决方案
 1. **追踪信息丢失**
    - 检查拦截器是否正确注册
    - 确认追踪头的名称是否正确
@@ -246,9 +273,9 @@ public class HttpClientConfiguration {
    - 监控请求延迟
    - 分析Zipkin UI中的时间分布
 
-## 5. 最佳实践
+## 最佳实践
 
-### 5.1 性能优化
+### 性能优化
 - 合理配置连接池参数
   ```java
   new ConnectionPool(
@@ -268,7 +295,7 @@ public class HttpClientConfiguration {
   .retryOnConnectionFailure(true)
   ```
 
-### 5.2 安全考虑
+### 安全考虑
 
 - 在生产环境中使用合适的采样率（建议0.1-0.3）
 - 配置敏感信息过滤
@@ -281,18 +308,18 @@ public class HttpClientConfiguration {
 - 实现追踪信息加密
 - 控制日志级别，避免敏感信息泄露
 
-### 5.3 监控与告警
+### 监控与告警
 - 配置Zipkin指标监控
 - 设置关键指标告警阈值
 - 定期检查追踪数据质量
 
-### 5.4 开发建议
+### 开发建议
 - 使用有意义的span名称
 - 添加自定义标签记录业务信息
 - 保持追踪粒度的合理性
 - 定期更新依赖版本
 
-## 6. 参考资料
+## 参考资料
 
 - [Zipkin官方文档](https://zipkin.io/)
 - [Spring Cloud Sleuth文档](https://docs.spring.io/spring-cloud-sleuth/docs/current/reference/html/)

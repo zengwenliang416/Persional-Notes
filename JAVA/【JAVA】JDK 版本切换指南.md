@@ -1,8 +1,25 @@
 # JDK 版本切换指南
 
+## 目录
+- [1. 目录](#目录)
+- [2. 一、Windows 系统配置](#一windows-系统配置)
+    - [安装多版本 JDK](#安装多版本-jdk)
+    - [创建切换脚本](#创建切换脚本)
+- [3. 二、macOS 系统配置](#二macos-系统配置)
+    - [使用 Homebrew 安装多版本 JDK](#使用-homebrew-安装多版本-jdk)
+    - [创建切换脚本](#创建切换脚本)
+- [4. 三、其他方法](#三其他方法)
+    - [使用 SDKMAN（推荐用于 Linux/macOS）](#使用-sdkman推荐用于-linuxmacos)
+    - [使用 jEnv](#使用-jenv)
+- [5. 四、IDE 配置](#四ide-配置)
+    - [IntelliJ IDEA](#intellij-idea)
+    - [Eclipse](#eclipse)
+
+
+
 ## 一、Windows 系统配置
 
-### 1. 安装多版本 JDK
+### 安装多版本 JDK
 
 1. 下载所需的 JDK 版本：
    - 访问 [Oracle JDK 下载页面](https://www.oracle.com/java/technologies/downloads/)
@@ -25,7 +42,7 @@
 
 ![image-20240218150506003](./imgs/image-20240218150506003.png)
 
-### 2. 创建切换脚本
+### 创建切换脚本
 
 1. 创建 `setjdk.bat` 脚本：
 
@@ -106,7 +123,7 @@ goto :EOF
 
 ## 二、macOS 系统配置
 
-### 1. 使用 Homebrew 安装多版本 JDK
+### 使用 Homebrew 安装多版本 JDK
 
 ```bash
 # 安装 JDK 8
@@ -122,12 +139,12 @@ brew install --cask temurin17
 brew install --cask temurin
 ```
 
-### 2. 创建切换脚本
+### 创建切换脚本
 
 1. 创建 `setjdk.sh` 脚本：
 
 ```bash
-#!/bin/bash
+# !/bin/bash
 
 # 显示使用说明
 if [ -z "$1" ]; then
@@ -199,7 +216,7 @@ setjdk 11
 
 ## 三、其他方法
 
-### 1. 使用 SDKMAN（推荐用于 Linux/macOS）
+### 使用 SDKMAN（推荐用于 Linux/macOS）
 
 1. 安装 SDKMAN：
 ```bash
@@ -218,7 +235,7 @@ sdk install java 17.0.9-amzn
 sdk use java 11.0.21-amzn
 ```
 
-### 2. 使用 jEnv
+### 使用 jEnv
 
 1. 安装 jEnv：
 ```bash
@@ -245,7 +262,7 @@ jenv local 11.0
 
 ## 四、IDE 配置
 
-### 1. IntelliJ IDEA
+### IntelliJ IDEA
 
 1. 配置多个 JDK：
    - 打开 `File -> Project Structure -> Platform Settings -> SDKs`
@@ -255,7 +272,7 @@ jenv local 11.0
    - 打开 `File -> Project Structure -> Project Settings -> Project`
    - 选择对应的 JDK 版本
 
-### 2. Eclipse
+### Eclipse
 
 1. 配置多个 JDK：
    - 打开 `Window -> Preferences -> Java -> Installed JREs`

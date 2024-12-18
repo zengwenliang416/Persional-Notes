@@ -1,18 +1,19 @@
 # 【Ruoyi-Vue-Plus】SpringUtils使用文档
 
 ## 目录
-1. [介绍](#介绍)
-2. [SpringUtils功能点](#springutils功能点)
-3. [API使用详解](#api使用详解)
-   - [获取Bean](#获取bean)
-   - [动态注册与注销Bean](#动态注册与注销bean)
-   - [获取泛型Bean](#获取泛型bean)
-   - [获取Spring环境信息](#获取spring环境信息)
-   - [AOP代理对象获取](#aop代理对象获取)
-   - [事件发布与监听](#事件发布与监听)
-4. [总结](#总结)
+- [1. 目录](#目录)
+- [2. 介绍](#介绍)
+- [3. SpringUtils功能点](#springutils功能点)
+- [4. API使用详解](#api使用详解)
+    - [获取Bean](#获取bean)
+    - [动态注册与注销Bean](#动态注册与注销bean)
+    - [获取泛型Bean](#获取泛型bean)
+    - [获取Spring环境信息](#获取spring环境信息)
+    - [AOP代理对象获取](#aop代理对象获取)
+    - [事件发布与监听](#事件发布与监听)
+- [5. 总结](#总结)
 
----
+
 
 ## 介绍
 

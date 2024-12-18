@@ -1,24 +1,52 @@
 # 【Zipkin】Zipkin Dependencies配置指南
 
-## 1. 概述
+## 目录
+- [1. 目录](#目录)
+- [2. 概述](#概述)
+    - [背景说明](#背景说明)
+    - [工作原理](#工作原理)
+- [3. 安装配置](#安装配置)
+    - [获取镜像](#获取镜像)
+    - [基本配置](#基本配置)
+    - [运行示例](#运行示例)
+- [4. 定时任务配置](#定时任务配置)
+    - [Linux Crontab配置](#linux-crontab配置)
+    - [Docker Compose配置](#docker-compose配置)
+- [5. 高级配置](#高级配置)
+    - [内存配置](#内存配置)
+    - [Elasticsearch高级配置](#elasticsearch高级配置)
+- [6. 监控与维护](#监控与维护)
+    - [日志监控](#日志监控)
+    - [健康检查](#健康检查)
+- [7. 故障排除](#故障排除)
+    - [常见问题](#常见问题)
+    - [解决方案](#解决方案)
+- [8. 最佳实践](#最佳实践)
+    - [生产环境建议](#生产环境建议)
+    - [性能优化建议](#性能优化建议)
+- [9. 参考资料](#参考资料)
 
-### 1.1 背景说明
+
+
+## 概述
+
+### 背景说明
 Zipkin Dependencies是一个用于处理和聚合Zipkin追踪数据的组件，它能够分析存储在Elasticsearch（或其他存储后端）中的追踪数据，生成服务依赖关系图。这对于理解和监控微服务架构中的服务调用关系非常重要。
 
-### 1.2 工作原理
+### 工作原理
 - 定期（通常是每天）处理追踪数据
 - 分析服务间的调用关系
 - 生成依赖关系图数据
 - 存储结果供Zipkin UI展示
 
-## 2. 安装配置
+## 安装配置
 
-### 2.1 获取镜像
+### 获取镜像
 ```bash
 docker pull openzipkin/zipkin-dependencies
 ```
 
-### 2.2 基本配置
+### 基本配置
 环境变量配置：
 ```bash
 # 存储类型（elasticsearch）
@@ -29,7 +57,7 @@ ES_HOSTS=http://elasticsearch:9200
 ZIPKIN_DEPENDENCIES_DAY=2024-01-01
 ```
 
-### 2.3 运行示例
+### 运行示例
 ```bash
 # 单次运行
 docker run --rm \
@@ -45,9 +73,9 @@ docker run --rm \
   openzipkin/zipkin-dependencies
 ```
 
-## 3. 定时任务配置
+## 定时任务配置
 
-### 3.1 Linux Crontab配置
+### Linux Crontab配置
 ```bash
 # 编辑crontab
 crontab -e
@@ -59,7 +87,7 @@ crontab -e
   openzipkin/zipkin-dependencies
 ```
 
-### 3.2 Docker Compose配置
+### Docker Compose配置
 ```yaml
 version: '3'
 services:
@@ -88,9 +116,9 @@ services:
       - "9200:9200"
 ```
 
-## 4. 高级配置
+## 高级配置
 
-### 4.1 内存配置
+### 内存配置
 ```bash
 # 设置JVM内存参数
 docker run --rm \
@@ -100,7 +128,7 @@ docker run --rm \
   openzipkin/zipkin-dependencies
 ```
 
-### 4.2 Elasticsearch高级配置
+### Elasticsearch高级配置
 ```bash
 # ES用户名密码认证
 docker run --rm \
@@ -120,9 +148,9 @@ docker run --rm \
   openzipkin/zipkin-dependencies
 ```
 
-## 5. 监控与维护
+## 监控与维护
 
-### 5.1 日志监控
+### 日志监控
 ```bash
 # 查看容器日志
 docker logs zipkin-dependencies
@@ -135,7 +163,7 @@ docker run --rm \
   openzipkin/zipkin-dependencies
 ```
 
-### 5.2 健康检查
+### 健康检查
 ```bash
 # 检查ES连接
 curl -X GET "http://elasticsearch:9200/_cluster/health?pretty"
@@ -144,9 +172,9 @@ curl -X GET "http://elasticsearch:9200/_cluster/health?pretty"
 curl -X GET "http://elasticsearch:9200/zipkin:dependency-*/dependency"
 ```
 
-## 6. 故障排除
+## 故障排除
 
-### 6.1 常见问题
+### 常见问题
 1. **ES连接失败**
    - 检查ES地址是否正确
    - 验证网络连接
@@ -162,7 +190,7 @@ curl -X GET "http://elasticsearch:9200/zipkin:dependency-*/dependency"
    - 检查ES索引是否正确
    - 验证Zipkin数据采集是否正常
 
-### 6.2 解决方案
+### 解决方案
 1. **ES连接问题**
    ```bash
    # 测试ES连接
@@ -183,21 +211,21 @@ curl -X GET "http://elasticsearch:9200/zipkin:dependency-*/dependency"
      openzipkin/zipkin-dependencies
    ```
 
-## 7. 最佳实践
+## 最佳实践
 
-### 7.1 生产环境建议
+### 生产环境建议
 - 使用专用的ES集群存储追踪数据
 - 配置合适的数据保留期限
 - 实施监控和告警机制
 - 定期备份依赖关系数据
 
-### 7.2 性能优化建议
+### 性能优化建议
 - 根据数据量调整JVM内存
 - 优化ES索引配置
 - 选择合适的执行时间
 - 考虑数据分片策略
 
-## 8. 参考资料
+## 参考资料
 
 - [Zipkin Dependencies GitHub](https://github.com/openzipkin/zipkin-dependencies)
 - [Zipkin官方文档](https://zipkin.io/)

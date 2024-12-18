@@ -1,8 +1,39 @@
 # Java 多线程编程指南
 
+## 目录
+- [1. 目录](#目录)
+- [2. 一、基础概念](#一基础概念)
+    - [进程与线程](#进程与线程)
+    - [线程的生命周期](#线程的生命周期)
+- [3. 二、线程的创建与使用](#二线程的创建与使用)
+    - [创建线程的方式](#创建线程的方式)
+    - [线程的基本操作](#线程的基本操作)
+- [4. 三、线程同步](#三线程同步)
+    - [synchronized 关键字](#synchronized-关键字)
+    - [Lock 接口](#lock-接口)
+- [5. 四、线程通信](#四线程通信)
+    - [wait/notify 机制](#waitnotify-机制)
+    - [Condition 接口](#condition-接口)
+- [6. 五、线程池](#五线程池)
+    - [常用线程池](#常用线程池)
+    - [自定义线程池](#自定义线程池)
+- [7. 六、并发工具类](#六并发工具类)
+    - [CountDownLatch](#countdownlatch)
+    - [CyclicBarrier](#cyclicbarrier)
+    - [Semaphore](#semaphore)
+- [8. 七、线程安全集合](#七线程安全集合)
+    - [并发容器](#并发容器)
+    - [线程安全的基本类型包装](#线程安全的基本类型包装)
+- [9. 八、最佳实践](#八最佳实践)
+    - [线程安全编程原则](#线程安全编程原则)
+    - [性能优化](#性能优化)
+    - [调试与监控](#调试与监控)
+
+
+
 ## 一、基础概念
 
-### 1. 进程与线程
+### 进程与线程
 - **进程**：程序的一次执行，是系统进行资源分配和调度的独立单位
 - **线程**：进程的执行单元，是 CPU 调度的基本单位
 - **区别**：
@@ -10,7 +41,7 @@
   - 一个进程可以包含多个线程，线程共享进程的资源
   - 线程创建和销毁的开销比进程小
 
-### 2. 线程的生命周期
+### 线程的生命周期
 1. **新建（New）**：创建线程对象
 2. **就绪（Runnable）**：等待 CPU 调度
 3. **运行（Running）**：获得 CPU 时间片正在执行
@@ -21,7 +52,7 @@
 
 ## 二、线程的创建与使用
 
-### 1. 创建线程的方式
+### 创建线程的方式
 
 1. **继承 Thread 类**：
 ```java
@@ -72,7 +103,7 @@ executor.submit(() -> {
 });
 ```
 
-### 2. 线程的基本操作
+### 线程的基本操作
 
 1. **启动线程**：
 ```java
@@ -101,7 +132,7 @@ thread.setPriority(Thread.MAX_PRIORITY); // 设置优先级
 
 ## 三、线程同步
 
-### 1. synchronized 关键字
+### synchronized 关键字
 
 1. **同步方法**：
 ```java
@@ -117,7 +148,7 @@ synchronized (object) {
 }
 ```
 
-### 2. Lock 接口
+### Lock 接口
 
 1. **ReentrantLock**：
 ```java
@@ -158,7 +189,7 @@ public void write() {
 
 ## 四、线程通信
 
-### 1. wait/notify 机制
+### wait/notify 机制
 
 ```java
 public synchronized void produce() {
@@ -178,7 +209,7 @@ public synchronized void consume() {
 }
 ```
 
-### 2. Condition 接口
+### Condition 接口
 
 ```java
 private Lock lock = new ReentrantLock();
@@ -200,7 +231,7 @@ public void method() {
 
 ## 五、线程池
 
-### 1. 常用线程池
+### 常用线程池
 
 1. **固定大小线程池**：
 ```java
@@ -222,7 +253,7 @@ ExecutorService singlePool = Executors.newSingleThreadExecutor();
 ScheduledExecutorService scheduledPool = Executors.newScheduledThreadPool(5);
 ```
 
-### 2. 自定义线程池
+### 自定义线程池
 
 ```java
 ThreadPoolExecutor executor = new ThreadPoolExecutor(
@@ -238,7 +269,7 @@ ThreadPoolExecutor executor = new ThreadPoolExecutor(
 
 ## 六、并发工具类
 
-### 1. CountDownLatch
+### CountDownLatch
 
 ```java
 CountDownLatch latch = new CountDownLatch(3);
@@ -250,7 +281,7 @@ latch.countDown(); // 计数减一
 latch.await(); // 等待计数为0
 ```
 
-### 2. CyclicBarrier
+### CyclicBarrier
 
 ```java
 CyclicBarrier barrier = new CyclicBarrier(3, () -> {
@@ -261,7 +292,7 @@ CyclicBarrier barrier = new CyclicBarrier(3, () -> {
 barrier.await(); // 等待其他线程
 ```
 
-### 3. Semaphore
+### Semaphore
 
 ```java
 Semaphore semaphore = new Semaphore(5);
@@ -278,7 +309,7 @@ try {
 
 ## 七、线程安全集合
 
-### 1. 并发容器
+### 并发容器
 
 1. **ConcurrentHashMap**：
 ```java
@@ -297,7 +328,7 @@ queue.put("element"); // 阻塞式插入
 String element = queue.take(); // 阻塞式获取
 ```
 
-### 2. 线程安全的基本类型包装
+### 线程安全的基本类型包装
 
 1. **AtomicInteger**：
 ```java
@@ -313,7 +344,7 @@ userRef.compareAndSet(oldUser, newUser); // CAS 操作
 
 ## 八、最佳实践
 
-### 1. 线程安全编程原则
+### 线程安全编程原则
 
 1. 优先使用不可变对象
 2. 使用线程安全的集合类
@@ -321,7 +352,7 @@ userRef.compareAndSet(oldUser, newUser); // CAS 操作
 4. 避免过度同步
 5. 合理使用线程池
 
-### 2. 性能优化
+### 性能优化
 
 1. **减少锁的粒度**：
 ```java
@@ -350,7 +381,7 @@ public void method() {
 - 使用超时锁
 - 使用 tryLock() 方法
 
-### 3. 调试与监控
+### 调试与监控
 
 1. **线程转储**：
 ```java

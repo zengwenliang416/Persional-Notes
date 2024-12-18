@@ -1,5 +1,37 @@
 # Prometheus 监控系统指南
 
+## 目录
+- [1. 目录](#目录)
+- [2. 一、简介](#一简介)
+    - [主要特点](#主要特点)
+- [3. 二、安装和配置](#二安装和配置)
+    - [macOS安装](#macos安装)
+    - [Docker安装](#docker安装)
+    - [配置文件](#配置文件)
+        - [基础配置 (prometheus.yml)](#基础配置-prometheusyml)
+        - [配置文件位置](#配置文件位置)
+- [4. 三、基本使用](#三基本使用)
+    - [访问界面](#访问界面)
+    - [PromQL基础查询](#promql基础查询)
+    - [常用监控指标](#常用监控指标)
+- [5. 四、告警配置](#四告警配置)
+    - [告警规则示例](#告警规则示例)
+    - [Alertmanager配置](#alertmanager配置)
+- [6. 五、Grafana配置](#五grafana配置)
+    - [添加数据源](#添加数据源)
+    - [导入常用面板](#导入常用面板)
+    - [自定义面板示例](#自定义面板示例)
+- [7. 六、最佳实践](#六最佳实践)
+    - [性能优化](#性能优化)
+    - [存储配置](#存储配置)
+    - [安全建议](#安全建议)
+- [8. 七、故障排查](#七故障排查)
+    - [常见问题](#常见问题)
+    - [监控Prometheus自身](#监控prometheus自身)
+- [9. 八、参考资源](#八参考资源)
+
+
+
 ## 一、简介
 
 Prometheus是一个开源的系统监控和告警工具包，最初由SoundCloud开发。它现在是继Kubernetes之后的第二个加入云原生计算基金会(CNCF)的项目。
@@ -15,7 +47,7 @@ Prometheus是一个开源的系统监控和告警工具包，最初由SoundCloud
 
 ## 二、安装和配置
 
-### 1. macOS安装
+### macOS安装
 
 ```bash
 # 使用Homebrew安装
@@ -32,7 +64,7 @@ brew services start grafana
 brew services list
 ```
 
-### 2. Docker安装
+### Docker安装
 
 ```bash
 # 拉取镜像
@@ -53,7 +85,7 @@ docker run -d \
     grafana/grafana
 ```
 
-### 3. 配置文件
+### 配置文件
 
 #### 基础配置 (prometheus.yml)
 ```yaml
@@ -90,11 +122,11 @@ scrape_configs:
 
 ## 三、基本使用
 
-### 1. 访问界面
+### 访问界面
 - Prometheus: `http://localhost:9090`
 - Grafana: `http://localhost:3000`
 
-### 2. PromQL基础查询
+### PromQL基础查询
 
 ```promql
 # 查询当前指标
@@ -110,7 +142,7 @@ http_requests_total{status="200"}
 sum(rate(http_requests_total[5m])) by (status)
 ```
 
-### 3. 常用监控指标
+### 常用监控指标
 
 ```promql
 # CPU使用率
@@ -129,7 +161,7 @@ rate(node_network_transmit_bytes_total[5m])
 
 ## 四、告警配置
 
-### 1. 告警规则示例
+### 告警规则示例
 
 ```yaml
 groups:
@@ -154,7 +186,7 @@ groups:
       description: Memory usage is above 90% for 5 minutes
 ```
 
-### 2. Alertmanager配置
+### Alertmanager配置
 
 ```yaml
 global:
@@ -179,7 +211,7 @@ receivers:
 
 ## 五、Grafana配置
 
-### 1. 添加数据源
+### 添加数据源
 1. 访问Grafana (`http://localhost:3000`)
 2. 默认登录凭据: admin/admin
 3. 配置 → 数据源 → 添加数据源
@@ -187,7 +219,7 @@ receivers:
 5. URL设置为`http://localhost:9090`
 6. 保存并测试
 
-### 2. 导入常用面板
+### 导入常用面板
 1. 创建 → 导入
 2. 输入面板ID（常用面板）：
    - Node Exporter: 1860
@@ -195,7 +227,7 @@ receivers:
    - Redis: 763
    - JVM: 4701
 
-### 3. 自定义面板示例
+### 自定义面板示例
 
 ```
 # 系统负载面板
@@ -212,13 +244,13 @@ histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by 
 
 ## 六、最佳实践
 
-### 1. 性能优化
+### 性能优化
 - 合理设置抓取间隔
 - 使用适当的存储保留期
 - 优化查询语句
 - 使用记录规则预计算
 
-### 2. 存储配置
+### 存储配置
 ```yaml
 storage:
   tsdb:
@@ -227,7 +259,7 @@ storage:
     wal-compression: true
 ```
 
-### 3. 安全建议
+### 安全建议
 - 启用认证
 - 使用TLS加密
 - 限制网络访问
@@ -235,7 +267,7 @@ storage:
 
 ## 七、故障排查
 
-### 1. 常见问题
+### 常见问题
 1. 服务无法启动
    ```bash
    # 检查日志
@@ -254,7 +286,7 @@ storage:
    curl http://target-host:port/metrics
    ```
 
-### 2. 监控Prometheus自身
+### 监控Prometheus自身
 ```promql
 # 抓取持续时间
 rate(prometheus_target_interval_length_seconds_sum[5m])

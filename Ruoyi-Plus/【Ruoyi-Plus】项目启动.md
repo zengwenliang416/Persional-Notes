@@ -1,34 +1,15 @@
 # 克隆项目并安装maven依赖
 
-```shell
-git clone https://github.com/dromara/RuoYi-Vue-Plus.git
-cd RuoYi-Vue-Plus
-mvn clean install package -Dmaven.test.skip=true
-```
+## 目录
+- [1. 目录](#目录)
+- [2. admin启动](#admin启动)
+- [3. 启动监控](#启动监控)
+    - [开启监控配置](#开启监控配置)
+- [4. 启动定时任务](#启动定时任务)
 
-# 创建并导入数据库
 
-数据库配置文件位置：`ruoyi-admin/pom.xml`
 
-数据库文件位置：`script/sql`
-
-按照如图所示顺序导入：
-
-![image.png](./imgs/1704594354918-096cf323-b21e-4d64-9433-8dc209ca0fe0.png)
-
-# 前端依赖安装
-
-配置好`nodejs`后，进入`RuoYi-Vue-Plus/ruoyi-ui`进行前端依赖安装
-
-```
-cd RuoYi-Vue-Plus/ruoyi-ui
-# 切换到 nonde 16 进行依赖安装
-npm install --registry=https://registry.npmmirror.com
-```
-
-# 4. 后端启动
-
-## 4.1. admin启动
+## admin启动
 
 运行`RuoYi-Vue-Plus/ruoyi-admin`下的启动类即可启动后端，启动后控制台输出如下信息：
 
@@ -36,9 +17,9 @@ npm install --registry=https://registry.npmmirror.com
 
 
 
-## 4.2. 启动监控
+## 启动监控
 
-### 4.2.1. 开启监控配置
+### 开启监控配置
 
 ```yaml
 spring.boot.admin.client:
@@ -59,7 +40,7 @@ spring.boot.admin.client:
 
 ![image.png](./imgs/1704977508415-0684f257-bdbd-4138-b504-ea24302aa7d2.png)
 
-## 4.3. 启动定时任务
+## 启动定时任务
 
 ```yaml
 --- # xxl-job 配置

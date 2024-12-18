@@ -1,10 +1,36 @@
 # MinIO 使用指南
 
-MinIO 是一个高性能的分布式对象存储系统，它是 Amazon S3 云存储服务的开源实现。本指南将介绍 MinIO 的安装、配置和使用方法。
+## 目录
+- [1. 目录](#目录)
+- [2. 一、Mac M1/M2 安装与启动](#一mac-m1m2-安装与启动)
+    - [安装 MinIO](#安装-minio)
+    - [启动服务](#启动服务)
+        - [方式一：本地启动](#方式一本地启动)
+        - [方式二：Docker 启动（推荐）](#方式二docker-启动推荐)
+    - [访问控制台](#访问控制台)
+    - [常用 Docker 命令](#常用-docker-命令)
+- [3. 二、基本配置](#二基本配置)
+    - [初始设置](#初始设置)
+    - [存储桶管理](#存储桶管理)
+- [4. 三、Java SDK 使用](#三java-sdk-使用)
+    - [添加依赖](#添加依赖)
+    - [基本配置](#基本配置)
+    - [配置文件](#配置文件)
+    - [文件操作示例](#文件操作示例)
+- [5. 四、最佳实践](#四最佳实践)
+    - [安全建议](#安全建议)
+    - [性能优化](#性能优化)
+    - [监控管理](#监控管理)
+- [6. 五、常见问题](#五常见问题)
+    - [安装和启动问题](#安装和启动问题)
+    - [使用问题](#使用问题)
+- [7. 六、参考资源](#六参考资源)
+
+
 
 ## 一、Mac M1/M2 安装与启动
 
-### 1. 安装 MinIO
+### 安装 MinIO
 
 ```bash
 # 使用 Homebrew 安装（Apple Silicon）
@@ -14,7 +40,7 @@ arch -arm64 brew install minio/stable/minio
 docker pull minio/minio:latest
 ```
 
-### 2. 启动服务
+### 启动服务
 
 #### 方式一：本地启动
 
@@ -55,12 +81,12 @@ docker ps -a | grep minio
 docker logs minio
 ```
 
-### 3. 访问控制台
+### 访问控制台
 
 - Web 管理控制台：http://localhost:9001
 - API 端点：http://localhost:9000
 
-### 4. 常用 Docker 命令
+### 常用 Docker 命令
 
 ```bash
 # 启动容器
@@ -78,7 +104,7 @@ docker rm -f minio
 
 ## 二、基本配置
 
-### 1. 初始设置
+### 初始设置
 
 1. **登录控制台**
    - 默认用户名：minioadmin
@@ -103,7 +129,7 @@ docker rm -f minio
    
    > 注意：如果忘记密钥，需要重新创建新的密钥对，旧的密钥将无法恢复
 
-### 2. 存储桶管理
+### 存储桶管理
 
 1. **创建存储桶**
    1. 点击顶部的 "Create Bucket" 按钮
@@ -121,7 +147,7 @@ docker rm -f minio
 
 ## 三、Java SDK 使用
 
-### 1. 添加依赖
+### 添加依赖
 
 ```xml
 <dependency>
@@ -131,7 +157,7 @@ docker rm -f minio
 </dependency>
 ```
 
-### 2. 基本配置
+### 基本配置
 
 ```java
 @Configuration
@@ -155,7 +181,7 @@ public class MinioConfig {
 }
 ```
 
-### 3. 配置文件
+### 配置文件
 
 ```yaml
 # application.yml
@@ -166,7 +192,7 @@ minio:
   bucketName: your-bucket-name
 ```
 
-### 4. 文件操作示例
+### 文件操作示例
 
 ```java
 @Service
@@ -262,7 +288,7 @@ public class MinioService {
 
 ## 四、最佳实践
 
-### 1. 安全建议
+### 安全建议
 
 1. **访问控制**
    - 使用强密码
@@ -276,7 +302,7 @@ public class MinioService {
    - 定期备份重要数据
    - 使用 HTTPS 进行传输加密
 
-### 2. 性能优化
+### 性能优化
 
 1. **上传优化**
    - 使用分片上传处理大文件（>5MB）
@@ -290,7 +316,7 @@ public class MinioService {
    - 使用CDN加速访问
    - 实现断点续传
 
-### 3. 监控管理
+### 监控管理
 
 1. **系统监控**
    - 监控存储使用量
@@ -306,7 +332,7 @@ public class MinioService {
 
 ## 五、常见问题
 
-### 1. 安装和启动问题
+### 安装和启动问题
 
 - **问题**: Docker 容器无法启动
   ```bash
@@ -326,7 +352,7 @@ public class MinioService {
   docker logs minio
   ```
 
-### 2. 使用问题
+### 使用问题
 
 - **问题**: 上传大文件失败
   ```java

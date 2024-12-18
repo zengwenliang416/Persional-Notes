@@ -1,10 +1,28 @@
 # Zipkin 快速开始指南
 
-Zipkin 是一个分布式追踪系统，它可以帮助收集解决微服务架构中的延迟问题所需的计时数据。它管理这些数据的收集和查找。
+## 目录
+- [1. 目录](#目录)
+- [2. 安装方式](#安装方式)
+    - [Docker 安装（推荐）](#docker-安装推荐)
+        - [单容器运行](#单容器运行)
+        - [使用 Docker Compose](#使用-docker-compose)
+    - [Java 安装](#java-安装)
+    - [Homebrew 安装 (macOS)](#homebrew-安装-macos)
+    - [从源码运行](#从源码运行)
+- [3. 配置说明](#配置说明)
+    - [存储配置](#存储配置)
+    - [采样率配置](#采样率配置)
+    - [端口配置](#端口配置)
+- [4. 验证安装](#验证安装)
+- [5. 常见问题排查](#常见问题排查)
+- [6. 下一步](#下一步)
+- [7. 参考资源](#参考资源)
+
+
 
 ## 安装方式
 
-### 1. Docker 安装（推荐）
+### Docker 安装（推荐）
 
 使用 [Docker Zipkin](https://github.com/openzipkin/docker-zipkin) 是最简单的方式。你可以使用预构建的镜像或通过 `docker-compose.yml` 启动完整的环境。
 
@@ -40,7 +58,7 @@ networks:
   zipkin-network:
 ```
 
-### 2. Java 安装
+### Java 安装
 
 要求 Java 17 或更高版本。
 
@@ -64,7 +82,7 @@ STORAGE_TYPE=mysql MYSQL_HOST=localhost java -jar zipkin.jar
 STORAGE_TYPE=elasticsearch ES_HOSTS=http://localhost:9200 java -jar zipkin.jar
 ```
 
-### 3. Homebrew 安装 (macOS)
+### Homebrew 安装 (macOS)
 
 使用 [Homebrew](https://brew.sh/) 包管理器安装：
 
@@ -82,7 +100,7 @@ brew services start zipkin
 brew services stop zipkin
 ```
 
-### 4. 从源码运行
+### 从源码运行
 
 适合开发新功能或自定义 Zipkin：
 
@@ -103,7 +121,7 @@ java -jar ./zipkin-server/target/zipkin-server-*slim.jar
 
 ## 配置说明
 
-### 1. 存储配置
+### 存储配置
 
 Zipkin 支持多种存储后端：
 
@@ -112,14 +130,14 @@ Zipkin 支持多种存储后端：
 - **Elasticsearch**：推荐用于生产环境，支持大规模数据和复杂查询
 - **Cassandra**：适合超大规模部署
 
-### 2. 采样率配置
+### 采样率配置
 
 ```bash
 # 设置采样率（0.0-1.0）
 SAMPLING_RATE=0.1 java -jar zipkin.jar
 ```
 
-### 3. 端口配置
+### 端口配置
 
 ```bash
 # 修改默认端口（9411）

@@ -1,8 +1,33 @@
 # KubeSphere跨Namespace访问指南
 
+## 目录
+- [1. 目录](#目录)
+- [2. 一、基础概念](#一基础概念)
+    - [Namespace概述](#namespace概述)
+    - [跨Namespace访问场景](#跨namespace访问场景)
+- [3. 二、实现方案](#二实现方案)
+    - [Service访问](#service访问)
+    - [RBAC配置](#rbac配置)
+    - [网络策略](#网络策略)
+- [4. 三、最佳实践](#三最佳实践)
+    - [服务发现](#服务发现)
+    - [安全控制](#安全控制)
+    - [监控告警](#监控告警)
+- [5. 四、故障排查](#四故障排查)
+    - [常见问题](#常见问题)
+    - [调试方法](#调试方法)
+- [6. 五、性能优化](#五性能优化)
+    - [服务优化](#服务优化)
+    - [网络优化](#网络优化)
+- [7. 六、参考资源](#六参考资源)
+    - [官方文档](#官方文档)
+    - [最佳实践](#最佳实践)
+
+
+
 ## 一、基础概念
 
-### 1.1 Namespace概述
+### Namespace概述
 
 Namespace是Kubernetes中实现多租户的基础，它提供了以下功能：
 
@@ -16,7 +41,7 @@ Namespace是Kubernetes中实现多租户的基础，它提供了以下功能：
    - 服务账户管理
    - 资源可见性控制
 
-### 1.2 跨Namespace访问场景
+### 跨Namespace访问场景
 
 1. **微服务架构**
    - 服务发现和调用
@@ -35,7 +60,7 @@ Namespace是Kubernetes中实现多租户的基础，它提供了以下功能：
 
 ## 二、实现方案
 
-### 2.1 Service访问
+### Service访问
 
 1. **DNS方式**
 ```yaml
@@ -68,7 +93,7 @@ spec:
   externalName: my-service.namespace-a.svc.cluster.local
 ```
 
-### 2.2 RBAC配置
+### RBAC配置
 
 1. **Role和RoleBinding**
 ```yaml
@@ -128,7 +153,7 @@ roleRef:
   apiGroup: rbac.authorization.k8s.io
 ```
 
-### 2.3 网络策略
+### 网络策略
 
 1. **允许跨Namespace访问**
 ```yaml
@@ -176,7 +201,7 @@ spec:
 
 ## 三、最佳实践
 
-### 3.1 服务发现
+### 服务发现
 
 1. **服务命名规范**
    - 使用描述性名称
@@ -189,7 +214,7 @@ spec:
    - 应用标签
    - 版本标签
 
-### 3.2 安全控制
+### 安全控制
 
 1. **最小权限原则**
    - 精确定义资源访问范围
@@ -201,7 +226,7 @@ spec:
    - 白名单机制
    - 流量监控
 
-### 3.3 监控告警
+### 监控告警
 
 1. **服务监控**
    - 调用链路追踪
@@ -215,7 +240,7 @@ spec:
 
 ## 四、故障排查
 
-### 4.1 常见问题
+### 常见问题
 
 1. **访问权限问题**
    - 检查RBAC配置
@@ -227,7 +252,7 @@ spec:
    - 验证网络策略
    - 检查服务端口
 
-### 4.2 调试方法
+### 调试方法
 
 1. **命令行工具**
 ```bash
@@ -252,7 +277,7 @@ kubectl logs -n kube-system -l k8s-app=kube-proxy
 
 ## 五、性能优化
 
-### 5.1 服务优化
+### 服务优化
 
 1. **缓存策略**
    - DNS缓存
@@ -264,7 +289,7 @@ kubectl logs -n kube-system -l k8s-app=kube-proxy
    - 配置HPA
    - 使用节点亲和性
 
-### 5.2 网络优化
+### 网络优化
 
 1. **网络配置**
    - MTU优化
@@ -278,10 +303,10 @@ kubectl logs -n kube-system -l k8s-app=kube-proxy
 
 ## 六、参考资源
 
-### 6.1 官方文档
+### 官方文档
 - [Kubernetes Namespace文档](https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/)
 - [KubeSphere多租户管理](https://kubesphere.io/docs/multitenancy/)
 
-### 6.2 最佳实践
+### 最佳实践
 - [Kubernetes网络策略](https://kubernetes.io/docs/concepts/services-networking/network-policies/)
 - [RBAC授权](https://kubernetes.io/docs/reference/access-authn-authz/rbac/)

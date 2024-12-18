@@ -1,10 +1,40 @@
 # 【Grafana】安装指南
 
+## 目录
+- [1. 目录](#目录)
+- [2. 一、Grafana 简介](#一grafana-简介)
+    - [主要特性](#主要特性)
+- [3. 二、安装方式](#二安装方式)
+    - [Docker 安装（推荐）](#docker-安装推荐)
+    - [Linux 系统安装](#linux-系统安装)
+        - [Ubuntu/Debian](#ubuntudebian)
+        - [CentOS/RHEL](#centosrhel)
+    - [macOS 安装](#macos-安装)
+    - [Windows 安装](#windows-安装)
+- [4. 三、基本配置](#三基本配置)
+    - [配置文件位置](#配置文件位置)
+    - [重要配置项](#重要配置项)
+    - [环境变量配置](#环境变量配置)
+- [5. 四、初始化设置](#四初始化设置)
+    - [首次登录](#首次登录)
+    - [配置数据源](#配置数据源)
+    - [创建仪表板](#创建仪表板)
+- [6. 五、安全建议](#五安全建议)
+- [7. 六、故障排查](#六故障排查)
+- [8. 七、升级指南](#七升级指南)
+    - [Docker 升级](#docker-升级)
+    - [系统包升级](#系统包升级)
+- [9. 八、备份和恢复](#八备份和恢复)
+    - [数据备份](#数据备份)
+    - [数据恢复](#数据恢复)
+
+
+
 ## 一、Grafana 简介
 
 Grafana 是一个开源的数据可视化和监控平台，支持多种数据源（如 Prometheus、MySQL、Elasticsearch 等），可以创建丰富的仪表板和图表。
 
-### 1. 主要特性
+### 主要特性
 
 1. **多数据源支持**：
    - 时序数据库：Prometheus, InfluxDB
@@ -25,7 +55,7 @@ Grafana 是一个开源的数据可视化和监控平台，支持多种数据源
 
 ## 二、安装方式
 
-### 1. Docker 安装（推荐）
+### Docker 安装（推荐）
 
 ```bash
 # 拉取官方镜像
@@ -62,7 +92,7 @@ EOF
 docker-compose up -d
 ```
 
-### 2. Linux 系统安装
+### Linux 系统安装
 
 #### Ubuntu/Debian
 ```bash
@@ -104,7 +134,7 @@ sudo systemctl start grafana-server
 sudo systemctl enable grafana-server
 ```
 
-### 3. macOS 安装
+### macOS 安装
 
 ```bash
 # 使用 Homebrew 安装
@@ -115,7 +145,7 @@ brew install grafana
 brew services start grafana
 ```
 
-### 4. Windows 安装
+### Windows 安装
 
 1. 下载安装包：
    - 访问 [Grafana 下载页面](https://grafana.com/grafana/download)
@@ -128,14 +158,14 @@ brew services start grafana
 
 ## 三、基本配置
 
-### 1. 配置文件位置
+### 配置文件位置
 
 - Linux: `/etc/grafana/grafana.ini`
 - macOS: `/usr/local/etc/grafana/grafana.ini`
 - Windows: `<安装目录>/conf/defaults.ini`
 - Docker: `/etc/grafana/grafana.ini`
 
-### 2. 重要配置项
+### 重要配置项
 
 ```ini
 [server]
@@ -171,7 +201,7 @@ enabled = true
 # allowed_domains = ["your-domain.com", "another-domain.com"]
 ```
 
-### 3. 环境变量配置
+### 环境变量配置
 
 Docker 环境可以通过环境变量覆盖配置：
 
@@ -185,7 +215,7 @@ docker run -d \
 
 ## 四、初始化设置
 
-### 1. 首次登录
+### 首次登录
 
 1. 访问 `http://localhost:3000`
 2. 默认凭据：
@@ -193,14 +223,14 @@ docker run -d \
    - 密码：admin
 3. 首次登录后需要修改密码
 
-### 2. 配置数据源
+### 配置数据源
 
 1. 点击 Configuration > Data Sources
 2. 选择需要添加的数据源类型
 3. 配置连接信息
 4. 测试并保存
 
-### 3. 创建仪表板
+### 创建仪表板
 
 1. 点击 Create > Dashboard
 2. 添加新的面板
@@ -257,7 +287,7 @@ netstat -tulpn | grep 3000
 
 ## 七、升级指南
 
-### 1. Docker 升级
+### Docker 升级
 
 ```bash
 # 拉取新版本
@@ -275,7 +305,7 @@ docker run -d \
   grafana/grafana:latest
 ```
 
-### 2. 系统包升级
+### 系统包升级
 
 ```bash
 # Ubuntu/Debian
@@ -291,7 +321,7 @@ brew upgrade grafana
 
 ## 八、备份和恢复
 
-### 1. 数据备份
+### 数据备份
 
 ```bash
 # 备份配置文件
@@ -307,7 +337,7 @@ docker run --rm \
   ubuntu tar -czf /backup/grafana-backup.tar.gz -C /source .
 ```
 
-### 2. 数据恢复
+### 数据恢复
 
 ```bash
 # 恢复配置文件

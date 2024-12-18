@@ -1,5 +1,16 @@
 # 【Git】远程分支有更新本地已改名
 
+## 目录
+- [1. 目录](#目录)
+- [2. 问题描述](#问题描述)
+- [3. 解决方案](#解决方案)
+    - [方案一：使用 merge（推荐）](#方案一使用-merge推荐)
+    - [方案二：使用 rebase](#方案二使用-rebase)
+- [4. 两种方案的区别](#两种方案的区别)
+- [5. 注意事项](#注意事项)
+
+
+
 ## 问题描述
 
 当你遇到以下情况时，本文将帮助你解决问题：
@@ -11,16 +22,16 @@
 ### 方案一：使用 merge（推荐）
 
 ```bash
-# 1. 确保在正确的分支上
+# 确保在正确的分支上
 git checkout dev-learn
 
-# 2. 获取远程更新
+# 获取远程更新
 git fetch origin
 
-# 3. 合并远程dev分支的更新
+# 合并远程dev分支的更新
 git merge origin/dev
 
-# 4. 如果需要，推送更新到远程
+# 如果需要，推送更新到远程
 git push origin dev-learn
 ```
 
@@ -29,19 +40,19 @@ git push origin dev-learn
 如果你希望保持更整洁的提交历史：
 
 ```bash
-# 1. 确保在正确的分支上
+# 确保在正确的分支上
 git checkout dev-learn
 
-# 2. 获取远程更新
+# 获取远程更新
 git fetch origin
 
-# 3. 变基操作
+# 变基操作
 git rebase origin/dev
 
-# 4. 如果遇到冲突，解决后继续
+# 如果遇到冲突，解决后继续
 git rebase --continue
 
-# 5. 推送更新（因为rebase会改变历史，需要强制推送）
+# 推送更新（因为rebase会改变历史，需要强制推送）
 git push origin dev-learn --force-with-lease
 ```
 

@@ -1,8 +1,16 @@
 # 【JAVA基础】String、StringBuilder和StringBuffer的区别——巨详细
 
-**先给答案**
+## 目录
+- [1. 目录](#目录)
+- [2. 源码](#源码)
+    - [String](#string)
+    - [StringBuilder](#stringbuilder)
+    - [StringBuffer](#stringbuffer)
+- [3. String的“+”操作](#string的操作)
+    - [测试demo](#测试demo)
+- [4. 使用场景](#使用场景)
 
-`String`是不可变的，`StringBuilder`和`StringBuffer`是可变的。而`StringBuffer`是线程安全的，而`StringBuilder`是非线程安全的。
+
 
 ## 源码
 

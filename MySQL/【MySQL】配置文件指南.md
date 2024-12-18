@@ -1,8 +1,33 @@
 # MySQL 配置文件指南
 
+## 目录
+- [1. 目录](#目录)
+- [2. 一、配置文件位置](#一配置文件位置)
+    - [Windows](#windows)
+    - [macOS](#macos)
+    - [Linux](#linux)
+- [3. 二、配置文件结构](#二配置文件结构)
+    - [基本结构](#基本结构)
+    - [常用配置项](#常用配置项)
+        - [基础配置](#基础配置)
+        - [内存配置](#内存配置)
+        - [日志配置](#日志配置)
+        - [安全配置](#安全配置)
+- [4. 三、性能优化配置](#三性能优化配置)
+    - [InnoDB优化](#innodb优化)
+    - [并发优化](#并发优化)
+- [5. 四、修改配置的步骤](#四修改配置的步骤)
+- [6. 五、常见问题解决](#五常见问题解决)
+    - [配置不生效](#配置不生效)
+    - [内存配置](#内存配置)
+    - [性能监控](#性能监控)
+- [7. 六、参考资源](#六参考资源)
+
+
+
 ## 一、配置文件位置
 
-### 1. Windows
+### Windows
 ```
 # MySQL 8.0
 C:\ProgramData\MySQL\MySQL Server 8.0\my.ini
@@ -12,7 +37,7 @@ C:\Program Files\MySQL\MySQL Server 8.0\my.ini
 C:\Windows\my.ini
 ```
 
-### 2. macOS
+### macOS
 ```
 # Homebrew 安装
 /opt/homebrew/etc/my.cnf
@@ -23,7 +48,7 @@ C:\Windows\my.ini
 ~/.my.cnf
 ```
 
-### 3. Linux
+### Linux
 ```
 # 主要位置
 /etc/my.cnf
@@ -33,7 +58,7 @@ C:\Windows\my.ini
 
 ## 二、配置文件结构
 
-### 1. 基本结构
+### 基本结构
 ```ini
 [mysqld]           # MySQL服务器配置
 [mysql]            # MySQL命令行客户端配置
@@ -41,7 +66,7 @@ C:\Windows\my.ini
 [mysqldump]        # mysqldump工具配置
 ```
 
-### 2. 常用配置项
+### 常用配置项
 
 #### 基础配置
 ```ini
@@ -119,7 +144,7 @@ ssl-key=/path/to/server-key.pem
 
 ## 三、性能优化配置
 
-### 1. InnoDB优化
+### InnoDB优化
 ```ini
 [mysqld]
 # 缓冲池实例数（建议CPU核心数）
@@ -141,7 +166,7 @@ innodb_flush_method = O_DIRECT
 innodb_flush_log_at_trx_commit = 1
 ```
 
-### 2. 并发优化
+### 并发优化
 ```ini
 [mysqld]
 # 线程缓存
@@ -198,13 +223,13 @@ net start mysql
 
 ## 五、常见问题解决
 
-### 1. 配置不生效
+### 配置不生效
 - 检查配置文件权限
 - 确认配置文件位置正确
 - 检查配置项拼写
 - 确保重启服务
 
-### 2. 内存配置
+### 内存配置
 - 计算公式：
   ```
   总内存 = innodb_buffer_pool_size 
@@ -214,7 +239,7 @@ net start mysql
   ```
 - 建议预留至少2GB给操作系统
 
-### 3. 性能监控
+### 性能监控
 ```sql
 -- 查看系统变量
 SHOW VARIABLES LIKE '%buffer%';

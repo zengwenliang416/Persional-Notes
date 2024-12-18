@@ -1,5 +1,23 @@
 # 【Git】个人主页优化方案
 
+## 目录
+- [1. 目录](#目录)
+- [2. 一、创建个人主页仓库](#一创建个人主页仓库)
+- [3. 二、README 基础设置](#二readme-基础设置)
+- [4. 三、美化与功能增强](#三美化与功能增强)
+    - [动态打字效果](#动态打字效果)
+    - [技术栈展示](#技术栈展示)
+    - [GitHub 统计](#github-统计)
+- [5. 四、WakaTime 统计设置](#四wakatime-统计设置)
+    - [配置 WakaTime](#配置-wakatime)
+    - [设置 GitHub Action](#设置-github-action)
+    - [配置 GitHub Secrets](#配置-github-secrets)
+    - [在 README 中添加统计区域](#在-readme-中添加统计区域)
+- [6. 五、维护与更新](#五维护与更新)
+- [7. 六、注意事项](#六注意事项)
+
+
+
 ## 一、创建个人主页仓库
 
 1. 在 GitHub 上创建与用户名相同的仓库
@@ -17,14 +35,14 @@
 
 ## 三、美化与功能增强
 
-### 1. 动态打字效果
+### 动态打字效果
 ```markdown
 <div align="center">
     <img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&pause=1000&center=true&vCenter=true&width=435&lines=Hello%2C+I'm+Your+Name+%F0%9F%91%8B;A+Passionate+Developer+%F0%9F%92%BB;Always+Learning+New+Things+%F0%9F%8C%B1" alt="Typing SVG" />
 </div>
 ```
 
-### 2. 技术栈展示
+### 技术栈展示
 使用 shields.io 徽章，每个徽章都链接到对应技术的官方网站：
 ```markdown
 <div align="center">
@@ -35,7 +53,7 @@
 </div>
 ```
 
-### 3. GitHub 统计
+### GitHub 统计
 ```markdown
 <div align="center">
     <img src="https://github-readme-stats.vercel.app/api?username=YOUR_USERNAME&show_icons=true&theme=tokyonight&hide_border=true&count_private=true" alt="GitHub Stats" />
@@ -44,13 +62,13 @@
 
 ## 四、WakaTime 统计设置
 
-### 1. 配置 WakaTime
+### 配置 WakaTime
 1. 安装 WakaTime
    - 在你的 IDE（如 VS Code）中安装 WakaTime 插件
    - 访问 https://wakatime.com 注册账号
    - 在设置中获取 API Key
 
-### 2. 设置 GitHub Action
+### 设置 GitHub Action
 1. 创建 `.github/workflows/waka-readme.yml` 文件：
 ```yaml
 name: Waka Readme
@@ -80,7 +98,7 @@ jobs:
           SHOW_SHORT_INFO: "True"
 ```
 
-### 3. 配置 GitHub Secrets
+### 配置 GitHub Secrets
 1. 创建 Personal Access Token
    - 访问 https://github.com/settings/tokens
    - 生成新的 token (classic)
@@ -93,7 +111,7 @@ jobs:
      - `WAKATIME_API_KEY`: WakaTime 的 API key
      - `GH_TOKEN`: GitHub Personal Access Token
 
-### 4. 在 README 中添加统计区域
+### 在 README 中添加统计区域
 ```markdown
 <!--START_SECTION:waka-->
 <!--END_SECTION:waka-->

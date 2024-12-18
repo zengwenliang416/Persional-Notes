@@ -1,10 +1,11 @@
 # 【Maven】标签说明
 
-声明是xml文件，同时声明版本和编码格式
+## 目录
+- [1. 目录](#目录)
+- [2. project标签](#project标签)
+- [3. moudelVersion标签](#moudelversion标签)
 
-```
-<?xml version="1.0" encoding="UTF-8"?>
-```
+
 
 ## project标签
 

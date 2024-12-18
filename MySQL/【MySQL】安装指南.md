@@ -1,8 +1,33 @@
 # MySQL 安装指南
 
+## 目录
+- [1. 目录](#目录)
+- [2. 一、macOS 安装](#一macos-安装)
+    - [使用 Homebrew 安装（推荐）](#使用-homebrew-安装推荐)
+    - [使用 DMG 安装包](#使用-dmg-安装包)
+    - [初始配置（两种方式通用）](#初始配置两种方式通用)
+- [3. 二、Windows 安装](#二windows-安装)
+    - [使用安装包（推荐）](#使用安装包推荐)
+    - [使用压缩包](#使用压缩包)
+- [4. 三、Linux 安装](#三linux-安装)
+    - [Ubuntu/Debian](#ubuntudebian)
+    - [CentOS/RHEL](#centosrhel)
+    - [使用 Docker](#使用-docker)
+- [5. 四、常见问题解决](#四常见问题解决)
+    - [连接问题](#连接问题)
+    - [密码重置](#密码重置)
+    - [权限问题](#权限问题)
+- [6. 五、安装后配置](#五安装后配置)
+    - [性能优化](#性能优化)
+    - [安全配置](#安全配置)
+    - [字符集配置](#字符集配置)
+- [7. 六、参考资源](#六参考资源)
+
+
+
 ## 一、macOS 安装
 
-### 1. 使用 Homebrew 安装（推荐）
+### 使用 Homebrew 安装（推荐）
 
 ```bash
 # 安装最新版本
@@ -21,14 +46,14 @@ brew services restart mysql
 brew services list
 ```
 
-### 2. 使用 DMG 安装包
+### 使用 DMG 安装包
 
 1. 访问 [MySQL 下载页面](https://dev.mysql.com/downloads/mysql/)
 2. 选择 macOS 版本下载 DMG 安装包
 3. 双击安装包并按照向导完成安装
 4. 安装过程中会提供临时 root 密码，请务必保存
 
-### 3. 初始配置（两种方式通用）
+### 初始配置（两种方式通用）
 
 ```bash
 # 安全配置向导
@@ -43,7 +68,7 @@ ALTER USER 'root'@'localhost' IDENTIFIED BY 'your_new_password';
 
 ## 二、Windows 安装
 
-### 1. 使用安装包（推荐）
+### 使用安装包（推荐）
 
 1. 下载 MySQL Installer
    - 访问 [MySQL 下载页面](https://dev.mysql.com/downloads/installer/)
@@ -67,7 +92,7 @@ ALTER USER 'root'@'localhost' IDENTIFIED BY 'your_new_password';
    mysql -u root -p
    ```
 
-### 2. 使用压缩包
+### 使用压缩包
 
 1. 下载 ZIP 压缩包
 2. 解压到指定目录（如 `C:\mysql`）
@@ -93,7 +118,7 @@ ALTER USER 'root'@'localhost' IDENTIFIED BY 'your_new_password';
 
 ## 三、Linux 安装
 
-### 1. Ubuntu/Debian
+### Ubuntu/Debian
 
 ```bash
 # 更新包列表
@@ -115,7 +140,7 @@ sudo systemctl status mysql
 sudo mysql_secure_installation
 ```
 
-### 2. CentOS/RHEL
+### CentOS/RHEL
 
 ```bash
 # 添加 MySQL 仓库
@@ -136,7 +161,7 @@ sudo grep 'temporary password' /var/log/mysqld.log
 sudo mysql_secure_installation
 ```
 
-### 3. 使用 Docker
+### 使用 Docker
 
 ```bash
 # 拉取 MySQL 镜像
@@ -159,7 +184,7 @@ docker exec -it mysql mysql -uroot -p
 
 ## 四、常见问题解决
 
-### 1. 连接问题
+### 连接问题
 
 ```bash
 # 检查服务状态
@@ -180,28 +205,28 @@ lsof -i :3306
 netstat -ano | findstr :3306
 ```
 
-### 2. 密码重置
+### 密码重置
 
 ```bash
 # 方法一：使用 --skip-grant-tables
-# 1. 停止 MySQL 服务
-# 2. 使用特权模式启动
+# 停止 MySQL 服务
+# 使用特权模式启动
 mysqld_safe --skip-grant-tables &
 
-# 3. 连接并重置密码
+# 连接并重置密码
 mysql -u root
 ALTER USER 'root'@'localhost' IDENTIFIED BY 'new_password';
 FLUSH PRIVILEGES;
 
 # 方法二：使用初始化文件
-# 1. 创建初始化文件
+# 创建初始化文件
 echo "ALTER USER 'root'@'localhost' IDENTIFIED BY 'new_password';" > mysql-init.txt
 
-# 2. 使用初始化文件启动
+# 使用初始化文件启动
 mysqld --init-file=mysql-init.txt
 ```
 
-### 3. 权限问题
+### 权限问题
 
 ```sql
 -- 查看用户权限
@@ -217,7 +242,7 @@ CREATE USER 'newuser'@'localhost' IDENTIFIED BY 'password';
 
 ## 五、安装后配置
 
-### 1. 性能优化
+### 性能优化
 
 ```ini
 # my.cnf 或 my.ini 配置示例
@@ -236,7 +261,7 @@ tmp_table_size = 64M
 max_heap_table_size = 64M
 ```
 
-### 2. 安全配置
+### 安全配置
 
 ```sql
 -- 删除匿名用户
@@ -253,7 +278,7 @@ DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%';
 FLUSH PRIVILEGES;
 ```
 
-### 3. 字符集配置
+### 字符集配置
 
 ```ini
 # my.cnf 配置

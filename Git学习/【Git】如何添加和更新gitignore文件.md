@@ -1,5 +1,20 @@
 # 【Git】如何添加和更新.gitignore文件
 
+## 目录
+- [1. 目录](#目录)
+- [2. 背景](#背景)
+- [3. 操作步骤](#操作步骤)
+    - [创建.gitignore文件](#创建gitignore文件)
+    - [清除Git缓存](#清除git缓存)
+    - [添加新的.gitignore文件](#添加新的gitignore文件)
+    - [提交更改](#提交更改)
+    - [推送到远程仓库](#推送到远程仓库)
+- [4. 注意事项](#注意事项)
+- [5. 常见问题](#常见问题)
+- [6. 参考资料](#参考资料)
+
+
+
 ## 背景
 
 在Git项目中，经常会有一些文件我们不希望被版本控制系统追踪，例如：
@@ -13,7 +28,7 @@
 
 ## 操作步骤
 
-### 1. 创建.gitignore文件
+### 创建.gitignore文件
 
 在项目根目录下创建.gitignore文件，添加需要忽略的文件规则。以下是一个常用的.gitignore文件模板：
 
@@ -88,7 +103,7 @@ wheels/
 *~
 ```
 
-### 2. 清除Git缓存
+### 清除Git缓存
 
 如果有些文件已经被Git追踪，仅仅添加.gitignore文件是不够的，需要先清除Git缓存：
 
@@ -97,7 +112,7 @@ wheels/
 git rm -r --cached .
 ```
 
-### 3. 添加新的.gitignore文件
+### 添加新的.gitignore文件
 
 ```bash
 # 添加.gitignore文件到Git
@@ -107,14 +122,14 @@ git add .gitignore
 git add .
 ```
 
-### 4. 提交更改
+### 提交更改
 
 ```bash
 # 提交更改
 git commit -m "Add .gitignore file and remove ignored files from git"
 ```
 
-### 5. 推送到远程仓库
+### 推送到远程仓库
 
 ```bash
 # 推送到远程仓库
