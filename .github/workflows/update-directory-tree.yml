@@ -47,7 +47,7 @@ jobs:
           # 当找到目录结构标题时
           /^## 目录结构/ {
             if (!found_tree) {
-              print \$0;  # 打印标题
+              print $0;  # 打印标题
               print "最后更新时间：" date;
               print "";
               print "```";
@@ -61,13 +61,13 @@ jobs:
           # 当在目录结构部分时，跳过直到找到下一个标题或文件结束
           in_tree && /^##/ {
             in_tree = 0;
-            print \$0;
+            print $0;
             next;
           }
           # 跳过目录结构部分的内容
           in_tree { next }
           # 打印其他所有内容
-          { print \$0 }
+          { print $0 }
           # 如果没有找到目录结构部分，在文件末尾添加
           END {
             if (!found_tree) {
