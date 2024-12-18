@@ -1,4 +1,4 @@
-name: Update Directory Tree
+name: 更新目录结构
 
 on:
   schedule:
@@ -24,16 +24,46 @@ jobs:
       - name: Install tree
         run: sudo apt-get install -y tree
 
-      - name: Create Directory Tree
+      - name: Update Directory Structure
         run: |
-          echo "# Personal Notes" > README.md
-          echo "" >> README.md
-          echo "## Directory Structure" >> README.md
-          echo "Last updated: $(date '+%Y-%m-%d %H:%M:%S %Z')" >> README.md
-          echo "" >> README.md
-          echo "\`\`\`" >> README.md
-          tree -L 2 -I '.git|.github|node_modules' --charset=ascii >> README.md
-          echo "\`\`\`" >> README.md
+          # 生成目录结构
+          TREE_OUTPUT=$(tree -L 2 -I '.git|.github|node_modules' --charset=utf8)
+          
+          # 创建临时文件
+          TEMP_FILE=$(mktemp)
+          
+          # 处理 README.md
+          {
+            # 如果文件存在且包含目录结构部分，则保留其他部分
+            if [ -f README.md ] && grep -q "## 目录结构" README.md; then
+              # 提取目录结构部分之前的内容
+              sed -n '1,/## 目录结构/p' README.md | head -n -1
+              
+              # 添加目录结构标题和更新时间
+              echo "## 目录结构"
+              echo "最后更新时间：$(date '+%Y年%m月%d日 %H:%M:%S')"
+              echo ""
+              echo "\`\`\`"
+              echo "$TREE_OUTPUT"
+              echo "\`\`\`"
+              
+              # 提取目录结构部分之后的内容（如果有）
+              sed -n '/^```$/,$ p' README.md | tail -n +2
+            else
+              # 如果文件不存在或没有目录结构部分，创建新的内容
+              echo "# 个人笔记"
+              echo ""
+              echo "## 目录结构"
+              echo "最后更新时间：$(date '+%Y年%m月%d日 %H:%M:%S')"
+              echo ""
+              echo "\`\`\`"
+              echo "$TREE_OUTPUT"
+              echo "\`\`\`"
+            fi
+          } > "$TEMP_FILE"
+          
+          # 替换原文件
+          mv "$TEMP_FILE" README.md
 
       - name: Create Branch and Push Changes
         run: |
@@ -42,7 +72,7 @@ jobs:
           
           # 提交更改
           git add README.md
-          git commit -m "docs: update directory tree"
+          git commit -m "docs: 更新目录结构"
           
           # 推送到远程
           git push origin HEAD
