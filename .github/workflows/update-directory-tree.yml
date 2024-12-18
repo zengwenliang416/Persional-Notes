@@ -16,6 +16,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
+          token: ${{ secrets.PAT_TOKEN }}  # 使用 PAT 进行 checkout
           fetch-depth: 1
 
       - name: Setup Git
@@ -57,28 +58,48 @@ jobs:
           # 替换原文件
           mv "$TEMP_FILE" README.md
 
-      - name: Create Pull Request
-        id: cpr
-        uses: peter-evans/create-pull-request@v5
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: "docs: 更新目录结构"
-          title: "docs: 自动更新目录结构"
-          body: |
-            自动更新 README.md 中的目录结构
+      - name: Commit and Push Changes
+        run: |
+          # 检查是否有更改
+          if [[ -n "$(git status --porcelain)" ]]; then
+            # 获取当前时间作为分支名
+            BRANCH_NAME="directory-tree-updates-$(TZ='Asia/Shanghai' date +%Y%m%d-%H%M%S)"
+            
+            # 创建新分支
+            git checkout -b "$BRANCH_NAME"
+            
+            # 提交更改
+            git add README.md
+            git commit -m "docs: 更新目录结构
             
             - 更新时间：$(TZ='Asia/Shanghai' date '+%Y年%m月%d日 %H:%M:%S')
-            - 由 GitHub Actions 自动创建
-          branch: directory-tree-updates
-          delete-branch: true
-          base: master
-
-      - name: Merge Pull Request
-        if: steps.cpr.outputs.pull-request-operation == 'created'
+            - 由 GitHub Actions 自动创建"
+            
+            # 推送到远程
+            git push origin "$BRANCH_NAME"
+            
+            # 创建 PR
+            gh pr create \
+              --title "docs: 自动更新目录结构" \
+              --body "自动更新 README.md 中的目录结构
+              
+              - 更新时间：$(TZ='Asia/Shanghai' date '+%Y年%m月%d日 %H:%M:%S')
+              - 由 GitHub Actions 自动创建" \
+              --base master \
+              --head "$BRANCH_NAME"
+            
+            # 等待几秒确保 PR 创建完成
+            sleep 5
+            
+            # 获取最新创建的 PR 编号
+            PR_NUMBER=$(gh pr list --state open --base master --head "$BRANCH_NAME" --json number -q '.[0].number')
+            
+            if [ ! -z "$PR_NUMBER" ]; then
+              # 合并 PR
+              gh pr merge "$PR_NUMBER" --merge --delete-branch
+            fi
+          else
+            echo "No changes to commit"
+          fi
         env:
-          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
-        run: |
-          # 等待几秒钟确保 PR 已经完全创建
-          sleep 5
-          # 使用你的 PAT 合并 PR
-          gh pr merge ${{ steps.cpr.outputs.pull-request-number }} --merge --delete-branch
+          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
