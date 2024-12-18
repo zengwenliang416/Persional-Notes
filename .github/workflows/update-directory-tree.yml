@@ -37,7 +37,12 @@ jobs:
           
           # 处理 README.md
           awk -v tree="$TREE_OUTPUT" -v date="$(TZ='Asia/Shanghai' date '+%Y年%m月%d日 %H:%M:%S')" '
-          BEGIN { in_tree = 0; printed_tree = 0 }
+          BEGIN { 
+            in_tree = 0; 
+            printed_tree = 0;
+            buffer = "";
+          }
+          # 当遇到目录结构标题时
           /^## 目录结构/ { 
             if (!printed_tree) {
               print $0;
@@ -51,14 +56,44 @@ jobs:
               next;
             }
           }
-          in_tree && /^```/ { in_tree = 0; next }
-          !in_tree { print $0 }
+          # 当遇到下一个二级标题时
+          /^## / && !/^## 目录结构/ {
+            if (in_tree) {
+              in_tree = 0;
+            }
+            if (!printed_tree) {
+              print "## 目录结构";
+              print "最后更新时间：" date;
+              print "";
+              print "```";
+              print tree;
+              print "```";
+              printed_tree = 1;
+            }
+            print $0;
+            next;
+          }
+          # 如果在目录结构部分，跳过内容
+          in_tree { next }
+          # 输出其他内容
+          { print $0 }
+          # 如果到文件末尾还没打印目录结构，就在末尾打印
+          END {
+            if (!printed_tree) {
+              print "## 目录结构";
+              print "最后更新时间：" date;
+              print "";
+              print "```";
+              print tree;
+              print "```";
+            }
+          }
           ' README.md > "$TEMP_FILE"
           
           # 替换原文件
           mv "$TEMP_FILE" README.md
 
-      - name: Commit and Push Changes
+      - name: Create Pull Request
         run: |
           # 检查是否有更改
           if [[ -n "$(git status --porcelain)" ]]; then
@@ -87,17 +122,6 @@ jobs:
               - 由 GitHub Actions 自动创建" \
               --base master \
               --head "$BRANCH_NAME"
-            
-            # 等待几秒确保 PR 创建完成
-            sleep 5
-            
-            # 获取最新创建的 PR 编号
-            PR_NUMBER=$(gh pr list --state open --base master --head "$BRANCH_NAME" --json number -q '.[0].number')
-            
-            if [ ! -z "$PR_NUMBER" ]; then
-              # 合并 PR
-              gh pr merge "$PR_NUMBER" --merge --delete-branch
-            fi
           else
             echo "No changes to commit"
           fi
