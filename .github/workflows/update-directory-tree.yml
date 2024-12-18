@@ -1,0 +1,36 @@
+name: Update Directory Tree
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # 每天 UTC 00:00 运行
+  workflow_dispatch:  # 允许手动触发
+
+jobs:
+  update-directory-tree:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+
+      - name: Create Directory Tree
+        run: |
+          echo "# Personal Notes" > README.md
+          echo "" >> README.md
+          echo "## Directory Structure" >> README.md
+          echo "" >> README.md
+          echo "\`\`\`" >> README.md
+          # 使用 tree 命令生成目录结构（最大深度为2，忽略.git目录和其他不需要的文件）
+          tree -L 2 -I '.git|.github|node_modules' >> README.md
+          echo "\`\`\`" >> README.md
+
+      - name: Commit and Push
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add README.md
+          git diff --quiet && git diff --staged --quiet || git commit -m "docs: update directory tree"
+          git push
