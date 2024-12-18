@@ -38,49 +38,37 @@ jobs:
           # 处理 README.md
           awk -v tree="$TREE_OUTPUT" -v date="$(TZ='Asia/Shanghai' date '+%Y年%m月%d日 %H:%M:%S')" '
           BEGIN { 
-            in_tree = 0; 
-            printed_tree = 0;
-            buffer = "";
+            in_tree = 0;
+            found_tree = 0;
           }
-          # 当遇到目录结构标题时
-          /^## 目录结构/ { 
-            if (!printed_tree) {
-              print $0;
+          # 当找到目录结构标题时
+          /^## 目录结构/ {
+            if (!found_tree) {
+              print $0;  # 打印标题
               print "最后更新时间：" date;
               print "";
               print "```";
               print tree;
               print "```";
-              printed_tree = 1;
+              found_tree = 1;
               in_tree = 1;
               next;
             }
           }
-          # 当遇到下一个二级标题时
-          /^## / && !/^## 目录结构/ {
-            if (in_tree) {
-              in_tree = 0;
-            }
-            if (!printed_tree) {
-              print "## 目录结构";
-              print "最后更新时间：" date;
-              print "";
-              print "```";
-              print tree;
-              print "```";
-              printed_tree = 1;
-            }
+          # 当在目录结构部分时，跳过直到找到下一个标题或文件结束
+          in_tree && /^##/ {
+            in_tree = 0;
             print $0;
             next;
           }
-          # 如果在目录结构部分，跳过内容
+          # 跳过目录结构部分的内容
           in_tree { next }
-          # 输出其他内容
+          # 打印其他所有内容
           { print $0 }
-          # 如果到文件末尾还没打印目录结构，就在末尾打印
+          # 如果没有找到目录结构部分，在文件末尾添加
           END {
-            if (!printed_tree) {
-              print "## 目录结构";
+            if (!found_tree) {
+              print "\n## 目录结构";
               print "最后更新时间：" date;
               print "";
               print "```";
