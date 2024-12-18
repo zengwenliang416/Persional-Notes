@@ -67,12 +67,22 @@ jobs:
 
       - name: Create Branch and Push Changes
         run: |
+          # 获取当前日期
+          CURRENT_DATE=$(date +%Y%m%d)
+          BRANCH_NAME="directory-tree-updates-${CURRENT_DATE}"
+          
+          # 检查远程分支是否存在
+          if git ls-remote --heads origin refs/heads/${BRANCH_NAME} | grep -q .; then
+            # 如果分支存在，删除它
+            git push origin --delete ${BRANCH_NAME} || true
+          fi
+          
           # 创建新的分支
-          git checkout -b directory-tree-updates-$(date +%Y%m%d)
+          git checkout -b ${BRANCH_NAME}
           
           # 提交更改
           git add README.md
           git commit -m "docs: 更新目录结构"
           
-          # 推送到远程
-          git push origin HEAD
+          # 强制推送到远程
+          git push -f origin ${BRANCH_NAME}
