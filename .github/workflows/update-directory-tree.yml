@@ -16,7 +16,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
-          token: ${{ secrets.PAT_TOKEN }}  # 使用个人访问令牌
           fetch-depth: 1
 
       - name: Setup Git
@@ -72,7 +71,7 @@ jobs:
         id: cpr
         uses: peter-evans/create-pull-request@v5
         with:
-          token: ${{ secrets.PAT_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}  # 使用默认的 GITHUB_TOKEN
           commit-message: "docs: 更新目录结构"
           title: "docs: 自动更新目录结构"
           body: |
@@ -84,20 +83,12 @@ jobs:
           delete-branch: true
           base: master
 
-      - name: Auto-approve Pull Request
-        if: steps.cpr.outputs.pull-request-operation == 'created'
-        uses: hmarr/auto-approve-action@v3
-        with:
-          pull-request-number: ${{ steps.cpr.outputs.pull-request-number }}
-          github-token: ${{ secrets.PAT_TOKEN }}
-
       - name: Merge Pull Request
         if: steps.cpr.outputs.pull-request-operation == 'created'
-        uses: pascalgn/automerge-action@v0.15.6
         env:
-          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
-          MERGE_LABELS: ""
-          MERGE_METHOD: "merge"
-          MERGE_COMMIT_MESSAGE: "自动合并: 更新目录结构"
-          MERGE_DELETE_BRANCH: "true"
-          MERGE_ERROR_FAIL: "true"
+          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
+        run: |
+          # 等待几秒钟确保 PR 已经完全创建
+          sleep 5
+          # 使用你的 PAT 合并 PR
+          gh pr merge ${{ steps.cpr.outputs.pull-request-number }} --merge --delete-branch
