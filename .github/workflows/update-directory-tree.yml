@@ -10,6 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      pull-requests: write
     
     steps:
       - uses: actions/checkout@v3
@@ -29,10 +30,27 @@ jobs:
           tree -L 2 -I '.git|.github|node_modules' --charset=ascii >> README.md
           echo "\`\`\`" >> README.md
 
-      - name: Commit and Push
+      - name: Create Pull Request
         run: |
+          # 配置 Git
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
+          
+          # 创建新分支
+          current_date=$(date +%Y%m%d_%H%M%S)
+          branch_name="update-directory-tree-${current_date}"
+          git checkout -b $branch_name
+          
+          # 提交更改
           git add README.md
-          git diff --quiet && git diff --staged --quiet || git commit -m "docs: update directory tree"
-          git push
+          git commit -m "docs: update directory tree"
+          git push origin $branch_name
+          
+          # 创建 Pull Request
+          gh auth login --with-token <<< "${{ secrets.GITHUB_TOKEN }}"
+          gh pr create \
+            --base master \
+            --head $branch_name \
+            --title "docs: update directory tree" \
+            --body "Automatically update directory tree in README.md" \
+            --label "documentation"
