@@ -10,10 +10,13 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      pull-requests: write
     
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
         with:
+          token: ${{ secrets.PAT_TOKEN }}  # 使用个人访问令牌
           fetch-depth: 1
 
       - name: Setup Git
@@ -65,24 +68,24 @@ jobs:
           # 替换原文件
           mv "$TEMP_FILE" README.md
 
-      - name: Create Branch and Push Changes
+      - name: Create Pull Request
+        id: cpr
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.PAT_TOKEN }}
+          commit-message: "docs: 更新目录结构"
+          title: "docs: 自动更新目录结构"
+          body: |
+            自动更新 README.md 中的目录结构
+            
+            - 更新时间：$(date '+%Y年%m月%d日 %H:%M:%S')
+            - 由 GitHub Actions 自动创建
+          branch: directory-tree-updates
+          delete-branch: true
+          base: master
+
+      - name: Enable Pull Request Automerge
+        if: steps.cpr.outputs.pull-request-operation == 'created'
         run: |
-          # 获取当前日期
-          CURRENT_DATE=$(date +%Y%m%d)
-          BRANCH_NAME="directory-tree-updates-${CURRENT_DATE}"
-          
-          # 检查远程分支是否存在
-          if git ls-remote --heads origin refs/heads/${BRANCH_NAME} | grep -q .; then
-            # 如果分支存在，删除它
-            git push origin --delete ${BRANCH_NAME} || true
-          fi
-          
-          # 创建新的分支
-          git checkout -b ${BRANCH_NAME}
-          
-          # 提交更改
-          git add README.md
-          git commit -m "docs: 更新目录结构"
-          
-          # 强制推送到远程
-          git push -f origin ${BRANCH_NAME}
+          gh auth login --with-token <<< "${{ secrets.PAT_TOKEN }}"
+          gh pr merge --auto --merge "${{ steps.cpr.outputs.pull-request-number }}"
