@@ -3,17 +3,17 @@
 ## 目录
 - [1. 目录](#目录)
 - [2. 一、Windows 系统配置](#一windows-系统配置)
-    - [安装多版本 JDK](#安装多版本-jdk)
-    - [创建切换脚本](#创建切换脚本)
+    - [2.1 安装多版本 JDK](#安装多版本-jdk)
+    - [2.2 创建切换脚本](#创建切换脚本)
 - [3. 二、macOS 系统配置](#二macos-系统配置)
-    - [使用 Homebrew 安装多版本 JDK](#使用-homebrew-安装多版本-jdk)
-    - [创建切换脚本](#创建切换脚本)
+    - [3.1 使用 Homebrew 安装多版本 JDK](#使用-homebrew-安装多版本-jdk)
+    - [3.2 创建切换脚本](#创建切换脚本)
 - [4. 三、其他方法](#三其他方法)
-    - [使用 SDKMAN（推荐用于 Linux/macOS）](#使用-sdkman推荐用于-linuxmacos)
-    - [使用 jEnv](#使用-jenv)
+    - [4.1 使用 SDKMAN（推荐用于 Linux/macOS）](#使用-sdkman推荐用于-linuxmacos)
+    - [4.2 使用 jEnv](#使用-jenv)
 - [5. 四、IDE 配置](#四ide-配置)
-    - [IntelliJ IDEA](#intellij-idea)
-    - [Eclipse](#eclipse)
+    - [5.1 IntelliJ IDEA](#intellij-idea)
+    - [5.2 Eclipse](#eclipse)
 
 
 

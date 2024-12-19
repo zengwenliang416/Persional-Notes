@@ -3,11 +3,11 @@
 ## 目录
 - [1. 目录](#目录)
 - [2. 源码](#源码)
-    - [String](#string)
-    - [StringBuilder](#stringbuilder)
-    - [StringBuffer](#stringbuffer)
+    - [2.1 String](#string)
+    - [2.2 StringBuilder](#stringbuilder)
+    - [2.3 StringBuffer](#stringbuffer)
 - [3. String的“+”操作](#string的操作)
-    - [测试demo](#测试demo)
+    - [3.1 测试demo](#测试demo)
 - [4. 使用场景](#使用场景)
 
 

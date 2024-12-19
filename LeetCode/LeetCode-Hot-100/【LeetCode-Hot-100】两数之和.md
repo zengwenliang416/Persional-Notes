@@ -5,11 +5,11 @@
 - [2. [题目描述](https://leetcode.cn/problems/two-sum/description/?envType=study-plan-v2&envId=top-100-liked)](#题目描述httpsleetcodecnproblemstwo-sumdescriptionenvtypestudy-plan-v2envidtop-100-liked)
 - [3. 分析](#分析)
 - [4. 答案（附带ACM模式答案）](#答案附带acm模式答案)
-    - [C](#c)
-    - [C++](#c)
-    - [JAVA](#java)
-    - [Python](#python)
-    - [JavaScript](#javascript)
+    - [4.1 C](#c)
+    - [4.2 C++](#c)
+    - [4.3 JAVA](#java)
+    - [4.4 Python](#python)
+    - [4.5 JavaScript](#javascript)
 
 
 
