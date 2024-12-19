@@ -94,19 +94,31 @@ def generate_toc(headers: List[Tuple[int, str]]) -> str:
     toc = ["## 目录\n"]
     h2_counter = 0
     h3_counter = 0
+    seen_links = {}  # 用于处理重复的链接
+    
     for level, title in headers:
+        # 生成链接
+        link = re.sub(r'[^\w\s-]', '', title).strip().replace(" ", "-").lower()
+        
+        # 处理重复的链接
+        if link in seen_links:
+            counter = 1
+            while f"{link}-{counter}" in seen_links:
+                counter += 1
+            link = f"{link}-{counter}"
+        seen_links[link] = True
+        
         if level == 2:
             h2_counter += 1
             h3_counter = 0
             prefix = f"{h2_counter}. "
-            link = re.sub(r'[^\w\s-]', '', title).strip().replace(" ", "-").lower()
-            toc.append(f"- [{prefix}{title}](#{link})\n")
+            toc.append(f"[{prefix}{title}](#{link})\n")
         elif level > 2:
             h3_counter += 1
             indent = "    " * (level - 2)
             prefix = f"{h2_counter}.{h3_counter} " if level == 3 else "    " * (level - 3)
-            link = re.sub(r'[^\w\s-]', '', title).strip().replace(" ", "-").lower()
-            toc.append(f"{indent}- [{prefix}{title}](#{link})\n")
+            toc.append(f"{indent}[{prefix}{title}](#{link})\n")
+            
     toc.append("\n")  # 添加空行以提高可读性
     return "".join(toc)
 
