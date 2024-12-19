@@ -44,7 +44,7 @@ jobs:
           }
           /^## 目录结构/ {
             if (!found_tree) {
-              print \$0
+              print $0
               print "最后更新时间：" date
               print ""
               print "```"
@@ -60,7 +60,7 @@ jobs:
           }
           /^## 最近提交/ {
             if (!found_history) {
-              print \$0
+              print $0
               print ""
               print "```"
               print commit_history
@@ -73,11 +73,11 @@ jobs:
           (in_tree || in_history) && /^##/ {
             in_tree = 0
             in_history = 0
-            print \$0
+            print $0
             next
           }
           in_tree || in_history { next }
-          { print \$0 }
+          { print $0 }
           END {
             if (!found_tree) {
               print "\n## 目录结构"
