@@ -45,7 +45,7 @@ jobs:
           # 创建临时文件
           TEMP_FILE=$(mktemp)
           
-          # 处理 README.md
+          # 使用 heredoc 来编写 awk 脚本，避免转义问题
           awk -v tree="$TREE_OUTPUT" -v date="$(TZ='Asia/Shanghai' date '+%Y年%m月%d日 %H:%M:%S')" \
               -v dir_count="$((DIR_COUNT-1))" -v file_count="$FILE_COUNT" \
               -v commit_history="$COMMIT_HISTORY" '
@@ -55,15 +55,13 @@ jobs:
             in_history = 0;
             found_history = 0;
           }
-          # 处理目录结构部分
           /^## 目录结构/ {
             if (!found_tree) {
-              print \$0;  # 打印标题
+              print \$0;
               print "最后更新时间：" date;
               print "";
               print "```";
-              # 移除tree输出中的最后一行（统计信息）
-              sub(/\n[0-9]+ directories.*$/, "", tree)
+              sub(/\n[0-9]+ directories.*$/, "", tree);
               print tree;
               print "";
               print dir_count " directories, " file_count " files";
@@ -73,10 +71,9 @@ jobs:
               next;
             }
           }
-          # 处理提交历史部分
           /^## 最近提交/ {
             if (!found_history) {
-              print \$0;  # 打印标题
+              print \$0;
               print "";
               print "```";
               print commit_history;
@@ -86,26 +83,21 @@ jobs:
               next;
             }
           }
-          # 当在目录结构或提交历史部分时，跳过直到找到下一个标题或文件结束
           (in_tree || in_history) && /^##/ {
             in_tree = 0;
             in_history = 0;
             print \$0;
             next;
           }
-          # 跳过目录结构和提交历史部分的内容
           in_tree || in_history { next }
-          # 打印其他所有内容
           { print \$0 }
-          # 如果没有找到目录结构或提交历史部分，在文件末尾添加
           END {
             if (!found_tree) {
               print "\n## 目录结构";
               print "最后更新时间：" date;
               print "";
               print "```";
-              # 移除tree输出中的最后一行（统计信息）
-              sub(/\n[0-9]+ directories.*$/, "", tree)
+              sub(/\n[0-9]+ directories.*$/, "", tree);
               print tree;
               print "";
               print dir_count " directories, " file_count " files";
