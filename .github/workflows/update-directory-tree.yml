@@ -4,9 +4,9 @@ on:
   schedule:
     - cron: '0 0 * * *'  # 每天 UTC 00:00 运行
   workflow_dispatch:  # 允许手动触发
-  push:
-    branches:
-      - master  # 监听 master 分支上的推送事件
+  #push:
+  #  branches:
+  #    - master  # 监听 master 分支上的推送事件
 
 jobs:
   update-directory-tree:
