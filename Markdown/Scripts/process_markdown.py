@@ -32,13 +32,54 @@ def extract_headers(content: str) -> List[Tuple[int, str]]:
     返回:
     List[Tuple[int, str]]: 包含标题级别和标题文本的元组列表
     """
-    # 移除代码块中的所有内容
-    content_without_code = re.sub(r'```[\s\S]*?```', '', content, flags=re.DOTALL)
-
-    # 使用正则表达式匹配markdown标题
-    pattern = re.compile(r'^(#{1,6})\s+(.+)$', re.MULTILINE)
-    # 返回标题级别（#的数量）和标题文本的元组列表
-    return [(len(match.group(1)), match.group(2).strip()) for match in pattern.finditer(content_without_code)]
+    headers = []
+    lines = content.splitlines()
+    in_code_block = False
+    code_fence_pattern = None  # 记录当前代码块的分隔符
+    
+    for i, line in enumerate(lines):
+        stripped_line = line.strip()
+        
+        # 检查代码块标记
+        if stripped_line.startswith('```') or stripped_line.startswith('~~~'):
+            # 获取当前行使用的分隔符
+            current_fence = '```' if stripped_line.startswith('```') else '~~~'
+            
+            if not in_code_block:
+                # 进入代码块
+                in_code_block = True
+                code_fence_pattern = current_fence
+            elif code_fence_pattern == current_fence:
+                # 只有当遇到相同的分隔符时才结束代码块
+                in_code_block = False
+                code_fence_pattern = None
+            continue
+            
+        # 跳过代码块中的内容
+        if in_code_block:
+            continue
+            
+        # 检查是否是标题行
+        if stripped_line.startswith('#'):
+            # 确保这不是代码块中的标题
+            is_in_example = False
+            # 向上查找最近的非空行
+            for prev_line in reversed(lines[:i]):
+                prev_stripped = prev_line.strip()
+                if prev_stripped:  # 找到最近的非空行
+                    # 检查是否在示例部分
+                    if any(keyword in prev_stripped.lower() for keyword in ['示例', 'example']):
+                        is_in_example = True
+                    break
+                    
+            if not is_in_example:  # 只处理非示例部分的标题
+                match = re.match(r'^(#{1,6})\s+(.+)$', stripped_line)
+                if match:
+                    level = len(match.group(1))
+                    title = match.group(2).strip()
+                    headers.append((level, title))
+    
+    return headers
 
 def generate_toc(headers: List[Tuple[int, str]]) -> str:
     """
