@@ -21,8 +21,8 @@ jobs:
 
       - name: Setup Git
         run: |
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git config --global user.name "github-actions[bot]"
+          git config --global user.email "wenliang_zeng416@163.com"
+          git config --global user.name "Zengwenliang0416"
 
       - name: Install tree
         run: sudo apt-get install -y tree
