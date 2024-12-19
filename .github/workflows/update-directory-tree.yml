@@ -35,7 +35,7 @@ jobs:
           
           # 优化提交历史格式
           COMMIT_HISTORY=$(git log -n 10 --pretty=format:"%h|%s|%an|%ad" --date=format:"%Y-%m-%d %H:%M" | \
-                           awk -F'|' '{printf "| %s | %.60s | %s | %s |\n", \$1, \$2, \$3, \$4}')
+                           awk -F'|' '{printf "| %s | %.60s | %s | %s |\n", $1, $2, $3, $4}')
           
           TEMP_FILE=$(mktemp)
           
