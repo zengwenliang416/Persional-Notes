@@ -50,7 +50,7 @@
 - **Spring Cloud Alibaba**：阿里巴巴微服务框架学习笔记
 
 ## 目录结构
-最后更新时间：2024年12月19日 13:34:53
+最后更新时间：2024年12月19日 13:41:49
 
 ```
 .
@@ -188,6 +188,9 @@
 
 | Commit | Description | Author | Date |
 |--------|-------------|--------|------|
+| bac948e | 🚀 ci: 修改自动构建的邮箱和用户名 | Zengwenliang0416 | 2024-12-19 13:41 |
+| ad99181 | Merge pull request #36 from Zengwenliang0416/directory-tree- | Wenliang Zeng | 2024-12-19 13:35 |
+| 3e26693 | docs: 更新目录结构和提交历史 | github-actions[bot] | 2024-12-19 05:34 |
 | f43f19e | 🐛 fix: 更新工作流格式 | Zengwenliang0416 | 2024-12-19 13:34 |
 | 7e65aa9 | ✨ feat: 优化提交历史展现方式 | Zengwenliang0416 | 2024-12-19 13:32 |
 | 2d987f6 | Merge pull request #35 from Zengwenliang0416/directory-tree- | Wenliang Zeng | 2024-12-19 13:30 |
@@ -195,6 +198,3 @@
 | 50e93c6 | Update update-directory-tree.yml | Wenliang Zeng | 2024-12-19 13:29 |
 | e730305 | Update update-directory-tree.yml | Wenliang Zeng | 2024-12-19 13:22 |
 | 4697028 | Merge pull request #33 from Zengwenliang0416/auto-update-dir | Wenliang Zeng | 2024-12-19 13:16 |
-| 4d3f5e2 | Update update-directory-tree.yml | Wenliang Zeng | 2024-12-19 13:14 |
-| d956eae | Update update-directory-tree.yml | Wenliang Zeng | 2024-12-19 13:13 |
-| eaa7f85 | docs: 更新目录结构和提交历史 | github-actions[bot] | 2024-12-19 05:08 |
