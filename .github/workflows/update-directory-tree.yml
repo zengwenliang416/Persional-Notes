@@ -35,11 +35,16 @@ jobs:
           # 生成目录结构
           TREE_OUTPUT=$(tree -L 2 -I '.git|.github|node_modules' --charset=utf8)
           
+          # 获取目录和文件统计
+          DIR_COUNT=$(find . -type d -not -path '*/\.*' -not -path './node_modules*' | wc -l)
+          FILE_COUNT=$(find . -type f -not -path '*/\.*' -not -path './node_modules*' | wc -l)
+          
           # 创建临时文件
           TEMP_FILE=$(mktemp)
           
           # 处理 README.md
-          awk -v tree="$TREE_OUTPUT" -v date="$(TZ='Asia/Shanghai' date '+%Y年%m月%d日 %H:%M:%S')" '
+          awk -v tree="$TREE_OUTPUT" -v date="$(TZ='Asia/Shanghai' date '+%Y年%m月%d日 %H:%M:%S')" \
+              -v dir_count="$((DIR_COUNT-1))" -v file_count="$FILE_COUNT" '
           BEGIN { 
             in_tree = 0;
             found_tree = 0;
@@ -52,6 +57,8 @@ jobs:
               print "";
               print "```";
               print tree;
+              print "";
+              print dir_count " directories, " file_count " files";
               print "```";
               found_tree = 1;
               in_tree = 1;
@@ -76,6 +83,8 @@ jobs:
               print "";
               print "```";
               print tree;
+              print "";
+              print dir_count " directories, " file_count " files";
               print "```";
             }
           }
@@ -99,6 +108,8 @@ jobs:
             git commit -m "docs: 更新目录结构
             
             - 更新时间：$(TZ='Asia/Shanghai' date '+%Y年%m月%d日 %H:%M:%S')
+            - 目录数量：$((DIR_COUNT-1))
+            - 文件数量：$FILE_COUNT
             - 由 GitHub Actions 自动创建"
             
             # 推送到远程
@@ -110,6 +121,8 @@ jobs:
               --body "自动更新 README.md 中的目录结构
               
               - 更新时间：$(TZ='Asia/Shanghai' date '+%Y年%m月%d日 %H:%M:%S')
+              - 目录数量：$((DIR_COUNT-1))
+              - 文件数量：$FILE_COUNT
               - 由 GitHub Actions 自动创建" \
               --base master \
               --head "$BRANCH_NAME"
