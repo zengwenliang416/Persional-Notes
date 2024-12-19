@@ -1,6 +1,26 @@
 import os
 import re
+import logging
 from typing import List, Tuple
+
+# 配置日志记录
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
+def remove_number_prefix_from_headers(content: str) -> str:
+    """
+    从markdown标题中去除数字前缀，包括数字、点和多余的空格
+    
+    参数:
+    content (str): 包含markdown内容的字符串
+    
+    返回:
+    str: 处理后的markdown内容，标题中的数字前缀已被移除
+    """
+    # 正则表达式匹配标题行，捕获标题级别和内容，忽略数字前缀
+    pattern = re.compile(r'^(#{1,6})\s*(?:\d+(?:\.\d*)*\s*)*(.+)$', re.MULTILINE)
+    # 使用捕获的组替换匹配的内容，保留标题级别和内容，去除数字前缀
+    new_content = pattern.sub(r'\1 \2', content)
+    return new_content
 
 def extract_headers(content: str) -> List[Tuple[int, str]]:
     """
@@ -13,7 +33,7 @@ def extract_headers(content: str) -> List[Tuple[int, str]]:
     List[Tuple[int, str]]: 包含标题级别和标题文本的元组列表
     """
     # 移除代码块中的所有内容
-    content_without_code = re.sub(r'```.*?```', '', content, flags=re.DOTALL)
+    content_without_code = re.sub(r'```[\s\S]*?```', '', content, flags=re.DOTALL)
 
     # 使用正则表达式匹配markdown标题
     pattern = re.compile(r'^(#{1,6})\s+(.+)$', re.MULTILINE)
@@ -22,7 +42,7 @@ def extract_headers(content: str) -> List[Tuple[int, str]]:
 
 def generate_toc(headers: List[Tuple[int, str]]) -> str:
     """
-    生成美观的目录，为二级标题添加数字前缀
+    生成美观的目录，为二级标题及其子标题添加数字前缀
     
     参数:
     headers (List[Tuple[int, str]]): 包含标题级别和标题文本的元组列表
@@ -32,18 +52,20 @@ def generate_toc(headers: List[Tuple[int, str]]) -> str:
     """
     toc = ["## 目录\n"]
     h2_counter = 0
+    h3_counter = 0
     for level, title in headers:
         if level == 2:
             h2_counter += 1
+            h3_counter = 0
             prefix = f"{h2_counter}. "
-            # 生成标题的链接
             link = re.sub(r'[^\w\s-]', '', title).strip().replace(" ", "-").lower()
             toc.append(f"- [{prefix}{title}](#{link})\n")
         elif level > 2:
-            # 为更深层次的标题添加缩进
+            h3_counter += 1
             indent = "    " * (level - 2)
+            prefix = f"{h2_counter}.{h3_counter} " if level == 3 else "    " * (level - 3)
             link = re.sub(r'[^\w\s-]', '', title).strip().replace(" ", "-").lower()
-            toc.append(f"{indent}- [{title}](#{link})\n")
+            toc.append(f"{indent}- [{prefix}{title}](#{link})\n")
     toc.append("\n")  # 添加空行以提高可读性
     return "".join(toc)
 
@@ -86,9 +108,9 @@ def insert_toc(content: str, toc: str) -> str:
     """
     content, toc_found = remove_existing_toc(content)  # 删除旧的目录
     if toc_found:
-        print("已删除旧的目录")
+        logging.info("已删除旧的目录")
     else:
-        print("未找到旧的目录")
+        logging.info("未找到旧的目录")
     
     # 在第一个一级标题后插入目录
     pattern = re.compile(r'^# .+\n', re.MULTILINE)
@@ -101,27 +123,34 @@ def insert_toc(content: str, toc: str) -> str:
 
 def process_file(file_path: str):
     """
-    处理单个文件
+    处理单个文件，去除标题中的数字前缀并生成目录
     
     参数:
     file_path (str): 要处理的markdown文件路径
     """
-    with open(file_path, 'r', encoding='utf-8') as file:
-        content = file.read()
-    
-    print(f"\n处理文件：{file_path}")
-    print("原始内容前100个字符：")
-    print(content[:100])
-    
-    headers = extract_headers(content)
-    toc = generate_toc(headers)
-    new_content = insert_toc(content, toc)
-    
-    print("处理后内容前100个字符：")
-    print(new_content[:100])
-    
-    with open(file_path, 'w', encoding='utf-8') as file:
-        file.write(new_content)
+    try:
+        with open(file_path, 'r', encoding='utf-8') as file:
+            content = file.read()
+        
+        logging.info(f"\n处理文件：{file_path}")
+        logging.debug("原始内容前100个字符：")
+        logging.debug(content[:100])
+        
+        # 去除标题中的数字前缀
+        content = remove_number_prefix_from_headers(content)
+        
+        # 提取标题并生成目录
+        headers = extract_headers(content)
+        toc = generate_toc(headers)
+        new_content = insert_toc(content, toc)
+        
+        logging.debug("处理后内容前100个字符：")
+        logging.debug(new_content[:100])
+        
+        with open(file_path, 'w', encoding='utf-8') as file:
+            file.write(new_content)
+    except Exception as e:
+        logging.error(f"处理文件 {file_path} 时出错: {e}")
 
 def process_directory(directory: str):
     """
@@ -142,7 +171,7 @@ def main():
     """
     directory = input("请输入Markdown文件所在的目录路径：")
     process_directory(directory)
-    print("\n所有文件处理完成！")
+    logging.info("\n所有文件处理完成！")
 
 if __name__ == "__main__":
     main()
