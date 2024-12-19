@@ -1,9 +1,9 @@
 # 【Maven】标签说明
 
 ## 目录
-- [1. 目录](#目录)
-- [2. project标签](#project标签)
-- [3. moudelVersion标签](#moudelversion标签)
+[1. 目录](#目录)
+[2. project标签](#project标签)
+[3. moudelVersion标签](#moudelversion标签)
 
 
 

@@ -11,12 +11,12 @@
 # 扩展知识
 
 ## 目录
-- [1. 目录](#目录)
-- [2. 内存管理](#内存管理)
-        - [    **堆（Heap）**](#堆heap)
-        - [    **方法区（Method Area）/元空间（Metaspace）**](#方法区method-area元空间metaspace)
-        - [    **调用栈（Call Stack）**](#调用栈call-stack)
-    - [2.4 总结](#总结)
+[1. 目录](#目录)
+[2. 内存管理](#内存管理)
+        [    **堆（Heap）**](#堆heap)
+        [    **方法区（Method Area）/元空间（Metaspace）**](#方法区method-area元空间metaspace)
+        [    **调用栈（Call Stack）**](#调用栈call-stack)
+    [2.4 总结](#总结)
 
 
 
