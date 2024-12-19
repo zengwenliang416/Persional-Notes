@@ -4,9 +4,6 @@ on:
   schedule:
     - cron: '0 0 * * *'  # 每天 UTC 00:00 运行
   workflow_dispatch:  # 允许手动触发
-  #push:
-  #  branches:
-  #    - master  # 监听 master 分支上的推送事件
 
 jobs:
   update-directory-tree-and-commit-history:
@@ -19,7 +16,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
-          token: ${{ secrets.PAT_TOKEN }}  # 使用 PAT 进行 checkout
+          token: ${{ secrets.PAT_TOKEN }}
           fetch-depth: 0  # 获取所有历史记录
 
       - name: Setup Git
@@ -32,101 +29,94 @@ jobs:
 
       - name: Update Directory Structure and Commit History
         run: |
-          # 生成目录结构
           TREE_OUTPUT=$(tree -L 2 -I '.git|.github|node_modules' --charset=utf8)
-          
-          # 获取目录和文件统计
           DIR_COUNT=$(find . -type d -not -path '*/\.*' -not -path './node_modules*' | wc -l)
           FILE_COUNT=$(find . -type f -not -path '*/\.*' -not -path './node_modules*' | wc -l)
-          
-          # 获取最近的 10 条提交记录
           COMMIT_HISTORY=$(git log -n 10 --pretty=format:"- %h %s (%an, %ad)" --date=short)
-          
-          # 创建临时文件
           TEMP_FILE=$(mktemp)
           
-          # 使用 heredoc 来编写 awk 脚本，避免转义问题
           awk -v tree="$TREE_OUTPUT" -v date="$(TZ='Asia/Shanghai' date '+%Y年%m月%d日 %H:%M:%S')" \
               -v dir_count="$((DIR_COUNT-1))" -v file_count="$FILE_COUNT" \
               -v commit_history="$COMMIT_HISTORY" '
           BEGIN { 
-            in_tree = 0;
-            found_tree = 0;
-            in_history = 0;
-            found_history = 0;
+            in_tree = 0; found_tree = 0; 
+            in_history = 0; found_history = 0; 
           }
           /^## 目录结构/ {
             if (!found_tree) {
-              print $0;
-              print "最后更新时间：" date;
-              print "";
-              print "```";
-              sub(/\n[0-9]+ directories.*$/, "", tree);
-              print tree;
-              print "";
-              print dir_count " directories, " file_count " files";
-              print "```";
-              found_tree = 1;
-              in_tree = 1;
-              next;
+              print $0
+              print "最后更新时间：" date
+              print ""
+              print "```"
+              sub(/\n[0-9]+ directories.*$/, "", tree)
+              print tree
+              print ""
+              print dir_count " directories, " file_count " files"
+              print "```"
+              found_tree = 1
+              in_tree = 1
+              next
             }
           }
           /^## 最近提交/ {
             if (!found_history) {
-              print $0;
-              print "";
-              print "```";
-              print commit_history;
-              print "```";
-              found_history = 1;
-              in_history = 1;
-              next;
+              print $0
+              print ""
+              print "```"
+              print commit_history
+              print "```"
+              found_history = 1
+              in_history = 1
+              next
             }
           }
           (in_tree || in_history) && /^##/ {
-            in_tree = 0;
-            in_history = 0;
-            print $0;
-            next;
+            in_tree = 0
+            in_history = 0
+            print $0
+            next
           }
           in_tree || in_history { next }
           { print $0 }
           END {
             if (!found_tree) {
-              print "\n## 目录结构";
-              print "最后更新时间：" date;
-              print "";
-              print "```";
-              sub(/\n[0-9]+ directories.*$/, "", tree);
-              print tree;
-              print "";
-              print dir_count " directories, " file_count " files";
-              print "```";
+              print "\n## 目录结构"
+              print "最后更新时间：" date
+              print ""
+              print "```"
+              sub(/\n[0-9]+ directories.*$/, "", tree)
+              print tree
+              print ""
+              print dir_count " directories, " file_count " files"
+              print "```"
             }
             if (!found_history) {
-              print "\n## 最近提交";
-              print "";
-              print "```";
-              print commit_history;
-              print "```";
+              print "\n## 最近提交"
+              print ""
+              print "```"
+              print commit_history
+              print "```"
             }
           }
           ' README.md > "$TEMP_FILE"
           
-          # 替换原文件
           mv "$TEMP_FILE" README.md
 
-      - name: Create Pull Request
+      - name: Create or Update Pull Request
         run: |
+          BRANCH_NAME="auto-update-directory-tree-and-history"
+          
+          # 检查分支是否存在，如果不存在则创建
+          if ! git ls-remote --exit-code --heads origin $BRANCH_NAME; then
+            git checkout -b $BRANCH_NAME
+          else
+            git checkout $BRANCH_NAME
+            git pull origin $BRANCH_NAME
+            git reset --hard origin/master
+          fi
+          
           # 检查是否有更改
           if [[ -n "$(git status --porcelain)" ]]; then
-            # 获取当前时间作为分支名
-            BRANCH_NAME="directory-tree-and-history-updates-$(TZ='Asia/Shanghai' date +%Y%m%d-%H%M%S)"
-            
-            # 创建新分支
-            git checkout -b "$BRANCH_NAME"
-            
-            # 提交更改
             git add README.md
             git commit -m "docs: 更新目录结构和提交历史
             
@@ -135,20 +125,35 @@ jobs:
             - 文件数量：$FILE_COUNT
             - 由 GitHub Actions 自动创建"
             
-            # 推送到远程
-            git push origin "$BRANCH_NAME"
+            git push -f origin $BRANCH_NAME
             
-            # 创建 PR
-            gh pr create \
-              --title "docs: 自动更新目录结构和提交历史" \
-              --body "自动更新 README.md 中的目录结构和提交历史
-              
-              - 更新时间：$(TZ='Asia/Shanghai' date '+%Y年%m月%d日 %H:%M:%S')
-              - 目录数量：$((DIR_COUNT-1))
-              - 文件数量：$FILE_COUNT
-              - 由 GitHub Actions 自动创建" \
-              --base master \
-              --head "$BRANCH_NAME"
+            # 检查PR是否存在
+            PR_EXISTS=$(gh pr list --base master --head $BRANCH_NAME --json number --jq length)
+            
+            if [ "$PR_EXISTS" -eq "0" ]; then
+              # 创建新的PR
+              gh pr create \
+                --title "docs: 自动更新目录结构和提交历史" \
+                --body "自动更新 README.md 中的目录结构和提交历史
+                
+                - 更新时间：$(TZ='Asia/Shanghai' date '+%Y年%m月%d日 %H:%M:%S')
+                - 目录数量：$((DIR_COUNT-1))
+                - 文件数量：$FILE_COUNT
+                - 由 GitHub Actions 自动创建" \
+                --base master \
+                --head $BRANCH_NAME
+            else
+              # 更新现有的PR
+              gh pr edit \
+                --title "docs: 自动更新目录结构和提交历史" \
+                --body "自动更新 README.md 中的目录结构和提交历史
+                
+                - 更新时间：$(TZ='Asia/Shanghai' date '+%Y年%m月%d日 %H:%M:%S')
+                - 目录数量：$((DIR_COUNT-1))
+                - 文件数量：$FILE_COUNT
+                - 由 GitHub Actions 自动创建" \
+                $BRANCH_NAME
+            fi
           else
             echo "No changes to commit"
           fi
