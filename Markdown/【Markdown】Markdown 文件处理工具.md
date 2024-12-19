@@ -45,7 +45,7 @@ os
 ### 运行脚本
 
 1. **克隆或下载脚本**：
-   将脚本文件 `[process_markdown.py](/Scripts/process_markdown.py)` 下载到你的本地机器上。
+   将脚本文件 [`process_markdown.py`](/Scripts/process_markdown.py) 下载到你的本地机器上。
 
 2. **运行脚本**：
    打开终端或命令行工具，导航到脚本所在的目录，然后运行以下命令：
