@@ -1,4 +1,4 @@
-name: 更新目录结构
+name: 更新目录结构和提交历史
 
 on:
   schedule:
@@ -9,7 +9,7 @@ on:
   #    - master  # 监听 master 分支上的推送事件
 
 jobs:
-  update-directory-tree:
+  update-directory-tree-and-commit-history:
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -20,7 +20,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           token: ${{ secrets.PAT_TOKEN }}  # 使用 PAT 进行 checkout
-          fetch-depth: 1
+          fetch-depth: 0  # 获取所有历史记录
 
       - name: Setup Git
         run: |
@@ -30,7 +30,7 @@ jobs:
       - name: Install tree
         run: sudo apt-get install -y tree
 
-      - name: Update Directory Structure
+      - name: Update Directory Structure and Commit History
         run: |
           # 生成目录结构
           TREE_OUTPUT=$(tree -L 2 -I '.git|.github|node_modules' --charset=utf8)
@@ -39,20 +39,26 @@ jobs:
           DIR_COUNT=$(find . -type d -not -path '*/\.*' -not -path './node_modules*' | wc -l)
           FILE_COUNT=$(find . -type f -not -path '*/\.*' -not -path './node_modules*' | wc -l)
           
+          # 获取最近的 10 条提交记录
+          COMMIT_HISTORY=$(git log -n 10 --pretty=format:"- %h %s (%an, %ad)" --date=short)
+          
           # 创建临时文件
           TEMP_FILE=$(mktemp)
           
           # 处理 README.md
           awk -v tree="$TREE_OUTPUT" -v date="$(TZ='Asia/Shanghai' date '+%Y年%m月%d日 %H:%M:%S')" \
-              -v dir_count="$((DIR_COUNT-1))" -v file_count="$FILE_COUNT" '
+              -v dir_count="$((DIR_COUNT-1))" -v file_count="$FILE_COUNT" \
+              -v commit_history="$COMMIT_HISTORY" '
           BEGIN { 
             in_tree = 0;
             found_tree = 0;
+            in_history = 0;
+            found_history = 0;
           }
-          # 当找到目录结构标题时
+          # 处理目录结构部分
           /^## 目录结构/ {
             if (!found_tree) {
-              print $0;  # 打印标题
+              print \$0;  # 打印标题
               print "最后更新时间：" date;
               print "";
               print "```";
@@ -67,17 +73,31 @@ jobs:
               next;
             }
           }
-          # 当在目录结构部分时，跳过直到找到下一个标题或文件结束
-          in_tree && /^##/ {
+          # 处理提交历史部分
+          /^## 最近提交/ {
+            if (!found_history) {
+              print \$0;  # 打印标题
+              print "";
+              print "```";
+              print commit_history;
+              print "```";
+              found_history = 1;
+              in_history = 1;
+              next;
+            }
+          }
+          # 当在目录结构或提交历史部分时，跳过直到找到下一个标题或文件结束
+          (in_tree || in_history) && /^##/ {
             in_tree = 0;
-            print $0;
+            in_history = 0;
+            print \$0;
             next;
           }
-          # 跳过目录结构部分的内容
-          in_tree { next }
+          # 跳过目录结构和提交历史部分的内容
+          in_tree || in_history { next }
           # 打印其他所有内容
-          { print $0 }
-          # 如果没有找到目录结构部分，在文件末尾添加
+          { print \$0 }
+          # 如果没有找到目录结构或提交历史部分，在文件末尾添加
           END {
             if (!found_tree) {
               print "\n## 目录结构";
@@ -91,6 +111,13 @@ jobs:
               print dir_count " directories, " file_count " files";
               print "```";
             }
+            if (!found_history) {
+              print "\n## 最近提交";
+              print "";
+              print "```";
+              print commit_history;
+              print "```";
+            }
           }
           ' README.md > "$TEMP_FILE"
           
@@ -102,14 +129,14 @@ jobs:
           # 检查是否有更改
           if [[ -n "$(git status --porcelain)" ]]; then
             # 获取当前时间作为分支名
-            BRANCH_NAME="directory-tree-updates-$(TZ='Asia/Shanghai' date +%Y%m%d-%H%M%S)"
+            BRANCH_NAME="directory-tree-and-history-updates-$(TZ='Asia/Shanghai' date +%Y%m%d-%H%M%S)"
             
             # 创建新分支
             git checkout -b "$BRANCH_NAME"
             
             # 提交更改
             git add README.md
-            git commit -m "docs: 更新目录结构
+            git commit -m "docs: 更新目录结构和提交历史
             
             - 更新时间：$(TZ='Asia/Shanghai' date '+%Y年%m月%d日 %H:%M:%S')
             - 目录数量：$((DIR_COUNT-1))
@@ -121,8 +148,8 @@ jobs:
             
             # 创建 PR
             gh pr create \
-              --title "docs: 自动更新目录结构" \
-              --body "自动更新 README.md 中的目录结构
+              --title "docs: 自动更新目录结构和提交历史" \
+              --body "自动更新 README.md 中的目录结构和提交历史
               
               - 更新时间：$(TZ='Asia/Shanghai' date '+%Y年%m月%d日 %H:%M:%S')
               - 目录数量：$((DIR_COUNT-1))
