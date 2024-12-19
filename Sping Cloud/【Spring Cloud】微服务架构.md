@@ -1,12 +1,12 @@
 # 【Spring Cloud】微服务架构
 
 ## 目录
-- [1. 目录](#目录)
-- [2. 单体架构](#单体架构)
-    - [2.1 集群及垂直化](#集群及垂直化)
-- [3. 面向服务架构（Service-Oriented Architecture，SOA）](#面向服务架构service-oriented-architecturesoa)
-    - [3.1 场景](#场景)
-- [4. 微服务架构](#微服务架构)
+[1. 目录](#目录)
+[2. 单体架构](#单体架构)
+    [2.1 集群及垂直化](#集群及垂直化)
+[3. 面向服务架构（Service-Oriented Architecture，SOA）](#面向服务架构service-oriented-architecturesoa)
+    [3.1 场景](#场景)
+[4. 微服务架构](#微服务架构)
 
 
 
