@@ -1,15 +1,24 @@
 # 【JAVA基础】深拷贝和浅拷贝的区别
 
 ## 目录
+
 [1. 目录](#目录)
+
 [2. 浅拷贝（Shallow Copy）](#浅拷贝shallow-copy)
+
 [3. 深拷贝（Deep Copy）](#深拷贝deep-copy)
+
 [4. 代码示例](#代码示例)
-    [4.1 使用`clone()`方法实现深拷贝](#使用clone方法实现深拷贝)
-    [4.2 使用构造器实现深拷贝](#使用构造器实现深拷贝)
-    [4.3 使用序列化和反序列化实现深拷贝](#使用序列化和反序列化实现深拷贝)
-    [4.4 使用第三方库实现深拷贝（如Apache Commons Lang的SerializationUtils）](#使用第三方库实现深拷贝如apache-commons-lang的serializationutils)
-    [4.5 拷贝工厂的优缺点](#拷贝工厂的优缺点)
+
+- [4.1 使用`clone()`方法实现深拷贝](#使用clone方法实现深拷贝)
+
+- [4.2 使用构造器实现深拷贝](#使用构造器实现深拷贝)
+
+- [4.3 使用序列化和反序列化实现深拷贝](#使用序列化和反序列化实现深拷贝)
+
+- [4.4 使用第三方库实现深拷贝（如Apache Commons Lang的SerializationUtils）](#使用第三方库实现深拷贝如apache-commons-lang的serializationutils)
+
+- [4.5 拷贝工厂的优缺点](#拷贝工厂的优缺点)
 
 
 

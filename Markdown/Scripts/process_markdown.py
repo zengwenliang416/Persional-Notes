@@ -91,7 +91,7 @@ def generate_toc(headers: List[Tuple[int, str]]) -> str:
     返回:
     str: 生成的目录字符串
     """
-    toc = ["## 目录\n"]
+    toc = ["## 目录\n\n"]  # 在目录标题后添加一个空行
     h2_counter = 0
     h3_counter = 0
     seen_links = {}  # 用于处理重复的链接
@@ -112,14 +112,13 @@ def generate_toc(headers: List[Tuple[int, str]]) -> str:
             h2_counter += 1
             h3_counter = 0
             prefix = f"{h2_counter}. "
-            toc.append(f"[{prefix}{title}](#{link})\n")
+            toc.append(f"[{prefix}{title}](#{link})\n\n")  # 在每个二级标题后添加空行
         elif level > 2:
             h3_counter += 1
-            indent = "    " * (level - 2)
-            prefix = f"{h2_counter}.{h3_counter} " if level == 3 else "    " * (level - 3)
-            toc.append(f"{indent}[{prefix}{title}](#{link})\n")
+            indent = "- " * (level - 2)
+            prefix = f"{h2_counter}.{h3_counter} " if level == 3 else "- " * (level - 3)
+            toc.append(f"{indent}[{prefix}{title}](#{link})\n\n")  # 子标题之间不需要额外空行
             
-    toc.append("\n")  # 添加空行以提高可读性
     return "".join(toc)
 
 def remove_existing_toc(content: str) -> Tuple[str, bool]:
@@ -165,7 +164,7 @@ def insert_toc(content: str, toc: str) -> str:
     else:
         logging.info("未找到旧的目录")
     
-    # 在第一个一级标题后插入目录
+    # 在第一���一级标题后插入目录
     pattern = re.compile(r'^# .+\n', re.MULTILINE)
     match = pattern.search(content)
     if match:
