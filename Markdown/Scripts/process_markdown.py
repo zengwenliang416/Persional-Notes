@@ -116,8 +116,9 @@ def generate_toc(headers: List[Tuple[int, str]]) -> str:
         elif level > 2:
             h3_counter += 1
             indent = "- " * (level - 2)
-            prefix = f"{h2_counter}.{h3_counter} " if level == 3 else "- " * (level - 3)
+            prefix = f"{h2_counter}.{h3_counter} " if level == 3 else " " * (level - 3)
             toc.append(f"{indent}[{prefix}{title}](#{link})\n\n")  # 子标题之间不需要额外空行
+            logging.info(f"生成目录：{prefix}{title} (#{link})")
             
     return "".join(toc)
 
