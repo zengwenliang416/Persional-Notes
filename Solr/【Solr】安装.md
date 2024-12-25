@@ -6,6 +6,7 @@
 # 使用Solr官方轻量级基础镜像
 
 ## 目录
-    [0.1 Dockerfile](#dockerfile)
+
+- [0.1 Dockerfile](#dockerfile)
 
 
