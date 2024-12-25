@@ -34,17 +34,17 @@
 
 - [7.1 GitHub批量设置](#github批量设置)
 
-- - [- 使用GitHub API](#使用github-api)
+- - [ 使用GitHub API](#使用github-api)
 
-- - [- 使用GitHub Enterprise组织级策略](#使用github-enterprise组织级策略)
+- - [ 使用GitHub Enterprise组织级策略](#使用github-enterprise组织级策略)
 
 - [7.4 GitLab批量设置](#gitlab批量设置)
 
-- - [- 使用GitLab API](#使用gitlab-api)
+- - [ 使用GitLab API](#使用gitlab-api)
 
-- - [- 使用Python脚本批量设置](#使用python脚本批量设置)
+- - [ 使用Python脚本批量设置](#使用python脚本批量设置)
 
-- - [- GitLab Enterprise组设置](#gitlab-enterprise组设置)
+- - [ GitLab Enterprise组设置](#gitlab-enterprise组设置)
 
 - [7.8 注意事项](#注意事项)
 
