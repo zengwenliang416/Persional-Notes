@@ -59,7 +59,7 @@
 - **Spring Cloud Alibaba**：阿里巴巴微服务框架学习笔记
 
 ## 目录结构
-最后更新时间：2024年12月26日 08:56:31
+最后更新时间：2024年12月30日 08:59:03
 
 ```
 .
@@ -84,6 +84,7 @@
 │   ├── 【Git】基础命令指南.md
 │   ├── 【Git】如何添加和更新gitignore文件.md
 │   ├── 【Git】查找和删除 Git 仓库 (.git 文件夹).md
+│   ├── 【Git】获取 Commit Hash 和撤销多个提交.md
 │   └── 【Git】远程分支有更新本地已改名.md
 ├── Git学习
 │   ├── imgs
@@ -179,7 +180,7 @@
     └── 【设计模式】模板方法模式.md
 
 
-50 directories, 198 files
+50 directories, 199 files
 ```
 ## 如何使用这个仓库 ❓
 
@@ -201,6 +202,9 @@
 
 | Commit | Description | Author | Date |
 |--------|-------------|--------|------|
+| 4ee8032 | 📝 docs: Git撤销解决方案 | Zengwenliang0416 | 2024-12-27 11:12 |
+| 8765b12 | Merge pull request #46 from Zengwenliang0416/directory-tree- | Wenliang Zeng | 2024-12-26 11:05 |
+| 89b80e8 | docs: 更新目录结构和提交历史 | Zengwenliang0416 | 2024-12-26 00:56 |
 | d298771 | 📝 docs: 优化git文档 | Zengwenliang0416 | 2024-12-25 16:58 |
 | 0e2f80c | 🐛 fix: 生成目录多个- | Zengwenliang0416 | 2024-12-25 16:57 |
 | 9920c62 | 📝 docs: 目录样式修改 | Zengwenliang0416 | 2024-12-25 16:07 |
@@ -208,6 +212,3 @@
 | e284cce | docs: 更新目录结构和提交历史 | Zengwenliang0416 | 2024-12-25 00:56 |
 | 508b57d | Merge pull request #44 from Zengwenliang0416/directory-tree- | Wenliang Zeng | 2024-12-24 10:45 |
 | 57c7619 | docs: 更新目录结构和提交历史 | Zengwenliang0416 | 2024-12-24 00:57 |
-| 8026adc | Merge pull request #40 from Zengwenliang0416/directory-tree- | Wenliang Zeng | 2024-12-20 11:27 |
-| 18c6d0f | docs: 更新目录结构和提交历史 | Zengwenliang0416 | 2024-12-20 00:57 |
-| d49d3c1 | Merge pull request #39 from Zengwenliang0416/directory-tree- | Wenliang Zeng | 2024-12-19 16:28 |
