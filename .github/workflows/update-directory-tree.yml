@@ -113,17 +113,12 @@ jobs:
             
             git checkout -b "$BRANCH_NAME"
             git add README.md
-            git commit -m "docs: 更新目录结构和提交历史
-            
-            - 更新时间：$(TZ='Asia/Shanghai' date '+%Y年%m月%d日 %H:%M:%S')
-            - 目录数量：$((DIR_COUNT-1))
-            - 文件数量：$FILE_COUNT
-            - 由 GitHub Actions 自动创建"
+            git commit -m "docs: 📝 更新目录结构和提交历史"
             
             git push origin "$BRANCH_NAME"
             
             gh pr create \
-              --title "docs: 自动更新目录结构和提交历史" \
+              --title "docs: 📝 自动更新目录结构和提交历史" \
               --body "自动更新 README.md 中的目录结构和提交历史
               
               - 更新时间：$(TZ='Asia/Shanghai' date '+%Y年%m月%d日 %H:%M:%S')
