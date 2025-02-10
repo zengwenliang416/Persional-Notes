@@ -59,7 +59,7 @@
 - **Spring Cloud Alibaba**：阿里巴巴微服务框架学习笔记
 
 ## 目录结构
-最后更新时间：2025年02月05日 15:13:07
+最后更新时间：2025年02月10日 08:57:50
 
 ```
 .
@@ -77,6 +77,7 @@
 │   └── 【Docker】镜像修改与优化指南.md
 ├── Git
 │   ├── imgs
+│   ├── 【Git】GitHub Actions 身份验证问题解决方案.md
 │   ├── 【Git】GitHub Actions完整指南.md
 │   ├── 【Git】个人主页优化方案.md
 │   ├── 【Git】优化Git提交脚本.md
@@ -148,6 +149,7 @@
 │   └── 【Ruoyi-Plus】项目学习-yaml文件.md
 ├── Ruoyi-Vue-Plus
 │   ├── imgs
+│   ├── 【Ruoyi-Vue-Plus】Api加解密和数据加解密.md
 │   ├── 【Ruoyi-Vue-Plus】ServletUtils请求工具与RequestContextHolder.md
 │   ├── 【Ruoyi-Vue-Plus】SpringUtils使用文档.md
 │   ├── 【Ruoyi-Vue-Plus】StreamUtils使用文档.md
@@ -180,7 +182,7 @@
     └── 【设计模式】模板方法模式.md
 
 
-50 directories, 199 files
+50 directories, 203 files
 ```
 ## 如何使用这个仓库 ❓
 
@@ -202,13 +204,13 @@
 
 | Commit | Description | Author | Date |
 |--------|-------------|--------|------|
-| a792e7f | Merge pull request #65 from Zengwenliang0416/directory-tree- | Wenliang Zeng | 2025-01-14 10:31 |
-| 0da1416 | docs: 更新目录结构和提交历史 | Zengwenliang0416 | 2025-01-14 00:54 |
-| 567ef45 | Merge pull request #64 from Zengwenliang0416/directory-tree- | Wenliang Zeng | 2025-01-13 09:36 |
-| d0722b0 | docs: 更新目录结构和提交历史 | Zengwenliang0416 | 2025-01-13 01:01 |
-| 703f6cc | Merge pull request #63 from Zengwenliang0416/directory-tree- | Wenliang Zeng | 2025-01-12 22:36 |
-| da9fa30 | docs: 更新目录结构和提交历史 | Zengwenliang0416 | 2025-01-12 01:02 |
-| f642bb2 | Merge pull request #62 from Zengwenliang0416/directory-tree- | Wenliang Zeng | 2025-01-11 10:22 |
-| f61d552 | docs: 更新目录结构和提交历史 | Zengwenliang0416 | 2025-01-11 00:57 |
-| 33bf842 | Merge pull request #61 from Zengwenliang0416/directory-tree- | Wenliang Zeng | 2025-01-10 09:37 |
-| 3d88e51 | docs: 更新目录结构和提交历史 | Zengwenliang0416 | 2025-01-10 00:58 |
+| a453e3e | ci: 🔧 更新工作流提交信息格式 | Zengwenliang0416 | 2025-02-05 15:25 |
+| d0f3bc1 | docs: 📝 添加 Api加解密和数据加解密文档，更新 StreamUtils 文档 | Zengwenliang0416 | 2025-02-05 15:21 |
+| fefa142 | docs: 📝 添加 GitHub Actions 身份验证问题解决方案文档 | Zengwenliang0416 | 2025-02-05 15:20 |
+| 2d33462 | Merge pull request #69 from Zengwenliang0416/directory-tree- | Wenliang Zeng | 2025-02-05 15:14 |
+| 702b47a | docs: 📝 更新目录结构和提交历史 | Zengwenliang0416 | 2025-02-05 07:13 |
+| d817db2 | Merge pull request #65 from Zengwenliang0416/directory-tree- | Wenliang Zeng | 2025-01-14 10:31 |
+| b32f836 | docs: 📝 更新目录结构和提交历史 | Zengwenliang0416 | 2025-01-14 00:54 |
+| 15bd42e | Merge pull request #64 from Zengwenliang0416/directory-tree- | Wenliang Zeng | 2025-01-13 09:36 |
+| 766b967 | docs: 📝 更新目录结构和提交历史 | Zengwenliang0416 | 2025-01-13 01:01 |
+| 0fbc6e9 | Merge pull request #63 from Zengwenliang0416/directory-tree- | Wenliang Zeng | 2025-01-12 22:36 |
