@@ -16,6 +16,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
+          token: ${{ secrets.PAT_TOKEN }}  # 使用PAT进行checkout
           fetch-depth: 0  # 获取所有历史记录
 
       - name: Setup Git
@@ -107,7 +108,7 @@ jobs:
 
       - name: Create Pull Request
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}  # 使用PAT来创建PR
         run: |
           if [[ -n "$(git status --porcelain)" ]]; then
             BRANCH_NAME="directory-tree-and-history-updates-$(TZ='Asia/Shanghai' date +%Y%m%d-%H%M%S)"
