@@ -1,0 +1,38 @@
+{
+  "mcpServers": {
+      "sequentialthinking": {
+        "command": "node",
+        "args": [
+          "/Users/wenliang_zeng/workspace/open_sources/servers/src/sequentialthinking/dist/index.js"
+        ]
+      },
+      "software-planning-tool": {
+      "command": "node",
+      "args": [
+        "/Users/wenliang_zeng/workspace/open_sources/Software-planning-mcp/build/index.js"
+      ],
+      "autoApprove": []
+    },
+    "filesystem": {
+      "command": "node",
+      "args": [
+        "/Users/wenliang_zeng/workspace/open_sources/servers/src/filesystem/dist/index.js",
+        "~/",
+        "~/"
+      ]
+  },
+    "package-version": {
+      "command": "npx",
+      "args": ["-y", "mcp-package-version"]
+    },
+    "weather": {
+      "command": "uv",
+      "args": [
+          "--directory",
+          "/Users/wenliang_zeng/workspace/open_sources/weather",
+          "run",
+          "weather.py"
+      ]
+  }
+  }
+}
