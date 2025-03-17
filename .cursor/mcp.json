@@ -1,38 +1,42 @@
 {
   "mcpServers": {
-      "sequentialthinking": {
-        "command": "node",
-        "args": [
-          "/Users/wenliang_zeng/workspace/open_sources/servers/src/sequentialthinking/dist/index.js"
-        ]
+      "sequential-thinking": {
+          "command": "npx",
+          "args": [
+              "-y",
+              "@zengwenliang/mcp-server-sequential-thinking"
+          ]
       },
       "software-planning-tool": {
-      "command": "node",
-      "args": [
-        "/Users/wenliang_zeng/workspace/open_sources/Software-planning-mcp/build/index.js"
-      ],
-      "autoApprove": []
-    },
-    "filesystem": {
-      "command": "node",
-      "args": [
-        "/Users/wenliang_zeng/workspace/open_sources/servers/src/filesystem/dist/index.js",
-        "~/",
-        "~/"
-      ]
-  },
-    "package-version": {
-      "command": "npx",
-      "args": ["-y", "mcp-package-version"]
-    },
-    "weather": {
-      "command": "uv",
-      "args": [
-          "--directory",
-          "/Users/wenliang_zeng/workspace/open_sources/weather",
-          "run",
-          "weather.py"
-      ]
-  }
+        "command": "npx",
+        "args": [
+            "-y",
+              "@zengwenliang/software-planning-tool"
+          ],
+          "autoApprove": []
+      },
+      "filesystem": {
+          "command": "npx",
+          "args": [
+              "-y",
+              "@modelcontextprotocol/server-filesystem",
+              "/",
+              "/"
+          ]
+      },
+      "package-version": {
+          "command": "npx",
+          "args": [
+              "-y",
+              "mcp-package-version"
+          ]
+      },
+      "puppeteer": {
+          "command": "npx",
+          "args": [
+              "-y",
+              "@modelcontextprotocol/server-puppeteer"
+          ]
+      }
   }
 }
