@@ -1,223 +1,154 @@
-# Nacos 服务部署与使用指南
+# Nacos ARM64 部署指南
 
 ## 项目简介
 
-Nacos 是阿里巴巴开源的一个更易于构建云原生应用的动态服务发现、配置管理和服务管理平台。本项目提供了在 macOS ARM 架构上快速部署单节点 Nacos 服务的方案，使用内置数据库（Derby）而非 MySQL。
+本项目提供了 Nacos 在 ARM64 架构平台（如 Apple M1/M2/M3 芯片 macOS）上的部署方案。由于官方 Nacos 镜像暂不支持 ARM64 架构，本方案通过自定义 Dockerfile 构建支持 ARM64 的镜像，实现在 Apple Silicon 芯片的 macOS 系统上运行 Nacos 服务。
 
-主要功能：
+## 特性
 
-- 服务发现与管理：动态注册和发现服务
-- 配置管理：动态配置服务
-- 动态 DNS 服务：动态 DNS 服务
-- 服务及元数据管理：管理服务的元数据
+- 支持 ARM64 架构（Apple Silicon）
+- 基于 Nacos 2.2.3 版本
+- 提供单机模式和集群模式
+- 支持 MySQL 数据持久化存储
+- 简单的管理脚本，方便操作
 
-## 环境要求
+## 部署前提
 
-- macOS ARM 架构（Apple Silicon）
-- Docker Desktop 4.0.0+
-- 至少 1GB 可用内存
-- 至少 1GB 可用磁盘空间
+- Docker & Docker Compose 已安装
+- Mac OS 系统（M1/M2/M3 芯片）
 
 ## 目录结构
 
 ```
 Nacos/
-├── nacos.sh           # 统一管理脚本（启动、停止、状态查询等）
-├── conf/              # 配置文件目录（挂载到容器内的/home/nacos/conf）
-├── data/              # 数据目录（挂载到容器内的/home/nacos/data）
-├── logs/              # 日志目录（挂载到容器内的/home/nacos/logs）
-└── README.md          # 项目文档（本文件）
+├── Dockerfile           # ARM64 架构的 Nacos 镜像构建文件
+├── docker-compose.yaml  # 容器编排配置文件
+├── nacos.sh             # 管理脚本
+├── docker-startup.sh    # 容器内启动脚本
+├── custom.properties    # 自定义配置文件
+├── conf/                # 配置文件目录（自动创建）
+├── data/                # 数据存储目录（自动创建）
+└── logs/                # 日志目录（自动创建）
 ```
 
 ## 快速开始
 
-### 1. 设置脚本执行权限
-
-首先赋予管理脚本可执行权限：
+### 1. 构建镜像
 
 ```bash
-cd Nacos
+# 赋予脚本执行权限
 chmod +x nacos.sh
+
+# 构建ARM架构的Nacos镜像
+./nacos.sh build
 ```
 
-### 2. 启动 Nacos 服务
-
-使用管理脚本启动 Nacos 服务：
+### 2. 启动服务
 
 ```bash
+# 启动Nacos服务（单机模式）
 ./nacos.sh start
 ```
 
-服务启动后，可以通过 http://localhost:8848/nacos 访问 Nacos 控制台。
-- 默认用户名：nacos
-- 默认密码：nacos
+启动后，Nacos 控制台可通过 http://localhost:8848/nacos 访问
 
-### 3. 管理脚本命令详解
+默认账号密码：
+- 用户名：nacos
+- 密码：nacos
 
-Nacos 管理脚本提供了以下命令：
-
-| 命令 | 描述 |
-|------|------|
-| `start` | 启动 Nacos 服务 |
-| `stop` | 停止 Nacos 服务 |
-| `restart` | 重启 Nacos 服务 |
-| `status` | 查看 Nacos 服务状态 |
-| `logs` | 查看 Nacos 服务日志 |
-
-例如，要查看 Nacos 服务状态：
+### 3. 管理服务
 
 ```bash
+# 查看服务状态
 ./nacos.sh status
+
+# 查看日志
+./nacos.sh logs
+
+# 停止服务
+./nacos.sh stop
+
+# 重启服务
+./nacos.sh restart
+
+# 打开Web控制台
+./nacos.sh console
 ```
 
-## Nacos 使用指南
+## 配置说明
 
-### 1. 服务发现
+### 1. 内存配置
 
-Nacos 可以作为服务注册中心，支持 Spring Cloud、Dubbo 等框架的服务注册与发现。
+默认配置为较小内存占用，适合开发环境：
+- JVM_XMS: 512m
+- JVM_XMX: 512m
+- JVM_XMN: 256m
 
-#### 示例（Spring Cloud）
+可以在 `docker-compose.yaml` 文件中修改这些参数。
 
-在 Spring Boot 应用的 `pom.xml` 中添加依赖：
+### 2. 持久化配置
 
-```xml
-<dependency>
-    <groupId>com.alibaba.cloud</groupId>
-    <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
-    <version>2021.1</version>
-</dependency>
-```
-
-在 `application.properties` 中配置 Nacos 服务地址：
-
-```properties
-spring.cloud.nacos.discovery.server-addr=127.0.0.1:8848
-spring.application.name=your-service-name
-```
-
-在启动类上添加 `@EnableDiscoveryClient` 注解：
-
-```java
-@SpringBootApplication
-@EnableDiscoveryClient
-public class YourApplication {
-    public static void main(String[] args) {
-        SpringApplication.run(YourApplication.class, args);
-    }
-}
-```
-
-### 2. 配置管理
-
-Nacos 可以作为配置中心，实现配置的集中管理和动态更新。
-
-#### 示例（Spring Cloud）
-
-在 `pom.xml` 中添加依赖：
-
-```xml
-<dependency>
-    <groupId>com.alibaba.cloud</groupId>
-    <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
-    <version>2021.1</version>
-</dependency>
-```
-
-创建 `bootstrap.properties` 文件并配置：
-
-```properties
-spring.application.name=your-service-name
-spring.cloud.nacos.config.server-addr=127.0.0.1:8848
-spring.cloud.nacos.config.file-extension=yaml
-```
-
-在 Nacos 控制台创建配置：
-- Data ID: your-service-name.yaml
-- Group: DEFAULT_GROUP
-- 配置内容: 你的配置内容（YAML 格式）
-
-在代码中使用 `@Value` 或 `@ConfigurationProperties` 获取配置：
-
-```java
-@RestController
-@RefreshScope  // 支持配置动态刷新
-public class ConfigController {
-
-    @Value("${your.config.property:default-value}")
-    private String configProperty;
-
-    @GetMapping("/config")
-    public String getConfig() {
-        return configProperty;
-    }
-}
-```
-
-## 高级配置
-
-### 1. 修改 Nacos 配置
-
-如果需要修改 Nacos 的配置，可以在 `conf` 目录下添加配置文件，例如 `application.properties`：
-
-```properties
-# 开启访问日志
-server.tomcat.accesslog.enabled=true
-
-# 修改默认密码 (生产环境建议修改)
-nacos.core.auth.plugin.nacos.token.secret.key=SecretKey012345678901234567890123456789012345678901234567890123456789
-```
-
-### 2. 资源配置调整
-
-如果需要调整 Nacos 的资源配置，可以修改 `nacos.sh` 脚本中的 JVM 参数：
+默认使用嵌入式数据库（Derby）进行配置存储。如需使用 MySQL 存储配置：
 
 ```bash
--e JVM_XMS=512m \
--e JVM_XMX=512m \
--e JVM_XMN=256m \
+# 启用MySQL配置
+./nacos.sh mysql
+
+# 然后重启服务
+./nacos.sh restart
 ```
 
-### 3. 开启认证
+### 3. 自定义配置
 
-默认情况下，本配置的 Nacos 未开启认证。如需开启，修改脚本中的参数：
+可以通过编辑 `custom.properties` 文件并重启服务来修改配置：
 
-```bash
--e NACOS_AUTH_ENABLE=true \
+```properties
+# 启用权限认证
+nacos.core.auth.enabled=true
 ```
 
-## 故障排除
+## 集群模式配置
 
-### 1. 服务无法启动
+如需配置集群模式，编辑 `docker-compose.yaml` 文件，修改环境变量：
 
-检查日志文件（`logs/` 目录下）以获取详细错误信息。常见原因：
-- 端口冲突：检查端口 8848、9848 是否被占用
-- 内存不足：调整 JVM 参数或增加可用内存
-- 权限问题：确保 `data` 和 `logs` 目录有正确的权限
+```yaml
+environment:
+  - MODE=cluster
+  - NACOS_SERVERS=ip1:8848,ip2:8848,ip3:8848
+```
+
+## 常见问题
+
+### 1. 服务启动失败
+
+检查日志文件（`logs/` 目录）获取详细错误信息。常见原因：
+- 端口冲突：检查 8848 端口是否被占用
+- 内存不足：减小 JVM 内存配置
+- 权限问题：检查 data 和 logs 目录的权限
 
 ### 2. 无法访问控制台
 
-如果无法访问 Nacos 控制台，请尝试：
-- 检查服务状态：运行 `./nacos.sh status`
-- 检查日志：运行 `./nacos.sh logs`
-- 等待初始化：Nacos 初始化可能需要 10-30 秒
-- 检查网络：确保本地网络正常，Docker 网络配置正确
+可能的解决方案：
+- 检查容器状态：`docker-compose ps`
+- 查看日志：`./nacos.sh logs`
+- 重启服务：`./nacos.sh restart`
 
-### 3. 性能问题
+### 3. 配置丢失问题
 
-如果遇到性能问题，可以：
-- 增加 JVM 内存分配
-- 确保 macOS 有足够的可用资源
-- 调整 Docker 资源分配
+默认使用嵌入式数据库，数据存储在 `data` 目录。如需持久化配置:
+- 使用 MySQL 数据库存储（推荐生产环境）
+- 保护好 `data` 目录内容
 
 ## 相关资源
 
-- [Nacos 官方文档](https://nacos.io/zh-cn/docs/what-is-nacos.html)
-- [Nacos GitHub 仓库](https://github.com/alibaba/nacos)
-- [Spring Cloud Alibaba Nacos](https://github.com/alibaba/spring-cloud-alibaba/wiki/Nacos-discovery)
-- [Docker Hub: nacos/nacos-server](https://hub.docker.com/r/nacos/nacos-server)
+- [Nacos 官方文档](https://nacos.io/zh-cn/docs/quick-start.html)
+- [Nacos GitHub](https://github.com/alibaba/nacos)
+- [Docker Hub - MySQL ARM64](https://hub.docker.com/r/arm64v8/mysql)
 
-## 注意事项
+## 贡献者
 
-1. 本配置使用内置的 Derby 数据库，适合开发和测试环境。生产环境建议使用外部 MySQL 数据库。
-2. macOS ARM 架构运行 Docker 容器可能性能略低于原生 x86 架构。
-3. 默认未开启认证，生产环境建议开启认证并修改默认密码。 
+- Claude AI
+
+## 许可证
+
+与 Nacos 相同，采用 Apache License 2.0 开源许可。 

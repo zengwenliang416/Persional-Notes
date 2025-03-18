@@ -1,0 +1,55 @@
+version: '3'
+services:
+  nacos:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        nacos_version: 2.2.3
+    container_name: nacos-standalone
+    environment:
+      - MODE=standalone
+      - PREFER_HOST_MODE=hostname
+      - JVM_XMS=512m
+      - JVM_XMX=512m
+      - JVM_XMN=256m
+      # 如果需要使用MySQL存储配置，取消下面的注释并填写正确的MySQL连接信息
+      # - NACOS_DATABASE=mysql
+      # - MYSQL_SERVICE_HOST=mysql
+      # - MYSQL_SERVICE_PORT=3306
+      # - MYSQL_SERVICE_USER=nacos
+      # - MYSQL_SERVICE_PASSWORD=nacos
+      # - MYSQL_SERVICE_DB_NAME=nacos_config
+    volumes:
+      - ./logs:/nacos/logs
+      - ./data:/nacos/data
+      - ./conf:/nacos/conf
+    ports:
+      - "8848:8848"
+      - "9848:9848"
+      - "9849:9849"
+    restart: always
+    networks:
+      - nacos-net
+
+  # 如果需要MySQL存储，取消下面的注释
+  # mysql:
+  #   image: mysql:8.0.33-arm64
+  #   container_name: nacos-mysql
+  #   restart: always
+  #   environment:
+  #     - MYSQL_ROOT_PASSWORD=root
+  #     - MYSQL_DATABASE=nacos_config
+  #     - MYSQL_USER=nacos
+  #     - MYSQL_PASSWORD=nacos
+  #   volumes:
+  #     - ./mysql:/var/lib/mysql
+  #     - ./init.d:/docker-entrypoint-initdb.d
+  #   ports:
+  #     - "3306:3306"
+  #   networks:
+  #     - nacos-net
+
+networks:
+  nacos-net:
+    driver: bridge 
