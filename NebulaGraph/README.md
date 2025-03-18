@@ -25,6 +25,8 @@ NebulaGraph 是一个开源的、分布式的、易扩展的原生图数据库�
 ```
 NebulaGraph/
 ├── nebula.sh           # 统一管理脚本（启动、停止、状态查询等）
+├── push-images.sh      # 将官方镜像推送到自定义仓库的脚本
+├── update-image-sources.sh # 更新脚本中镜像源的工具
 ├── docker-compose/     # Docker Compose 部署配置
 │   ├── docker-compose.yaml  # NebulaGraph 核心服务配置
 │   └── README.md           # Docker Compose 部署说明
@@ -119,6 +121,43 @@ docker run --rm -it --network=nebula-net vesoft/nebula-console:v3.8.0 -addr grap
 - 端口: `9669`
 - 用户名: `root`
 - 密码: `nebula`
+
+## 使用自定义镜像仓库
+
+如果您需要将 NebulaGraph 官方镜像推送到自己的 Docker 仓库（例如在内网环境或镜像加速），可以使用以下工具：
+
+### 1. 推送镜像到自定义仓库
+
+使用 `push-images.sh` 脚本将官方镜像推送到您的仓库：
+
+```bash
+# 赋予脚本执行权限
+chmod +x push-images.sh
+
+# 推送镜像到您的仓库（例如 docker.io/yourusername）
+./push-images.sh docker.io/yourusername
+```
+
+该脚本会处理以下镜像：
+- vesoft/nebula-metad:v3.8.0
+- vesoft/nebula-storaged:v3.8.0
+- vesoft/nebula-graphd:v3.8.0
+- vesoft/nebula-console:v3.8.0
+- vesoft/nebula-graph-studio:v3.10.0
+
+### 2. 更新脚本中的镜像源
+
+使用 `update-image-sources.sh` 脚本将 nebula.sh 中的镜像源更新为您的仓库：
+
+```bash
+# 赋予脚本执行权限
+chmod +x update-image-sources.sh
+
+# 更新镜像源（例如 docker.io/yourusername）
+./update-image-sources.sh docker.io/yourusername
+```
+
+此脚本会自动备份原始 nebula.sh 文件，并更新所有镜像引用。
 
 ## 架构组件
 
