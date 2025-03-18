@@ -66,3 +66,9 @@ wheels/
 *.swp
 *.swo
 *~
+
+# NebulaGraph数据和日志文件
+NebulaGraph/data/
+NebulaGraph/logs/
+NebulaGraph/docker-compose/data/
+NebulaGraph/docker-compose/logs/
