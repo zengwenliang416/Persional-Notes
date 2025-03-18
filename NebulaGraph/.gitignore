@@ -1,0 +1,3 @@
+# NebulaGraph数据和日志文件
+docker-compose/data/
+docker-compose/logs/ 

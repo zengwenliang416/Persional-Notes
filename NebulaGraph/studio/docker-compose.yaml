@@ -1,0 +1,14 @@
+version: '3.4'
+services:
+  web:
+    image: vesoft/nebula-graph-studio:v3.10.0
+    ports:
+      - "7001:7001"
+    networks:
+      - nebula-net
+    restart: unless-stopped
+
+networks:
+  nebula-net:
+    external:
+      name: docker-compose_nebula-net 
