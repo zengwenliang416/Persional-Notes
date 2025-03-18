@@ -72,3 +72,4 @@ NebulaGraph/data/
 NebulaGraph/logs/
 NebulaGraph/docker-compose/data/
 NebulaGraph/docker-compose/logs/
+nebula.sh.bak

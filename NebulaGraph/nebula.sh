@@ -33,7 +33,7 @@ start_core() {
     -v $PWD/logs/meta0:/logs \
     -e TZ=Asia/Shanghai \
     --cap-add=SYS_PTRACE \
-    vesoft/nebula-metad:v3.8.0 \
+    docker.io/zengwenliang0416/nebula-metad:v3.8.0 \
     --meta_server_addrs=metad0:9559,metad1:9559,metad2:9559 \
     --local_ip=metad0 --ws_ip=metad0 --port=9559 --ws_http_port=19559 \
     --data_path=/data/meta --log_dir=/logs --v=0 --minloglevel=0
@@ -43,7 +43,7 @@ start_core() {
     -v $PWD/logs/meta1:/logs \
     -e TZ=Asia/Shanghai \
     --cap-add=SYS_PTRACE \
-    vesoft/nebula-metad:v3.8.0 \
+    docker.io/zengwenliang0416/nebula-metad:v3.8.0 \
     --meta_server_addrs=metad0:9559,metad1:9559,metad2:9559 \
     --local_ip=metad1 --ws_ip=metad1 --port=9559 --ws_http_port=19559 \
     --data_path=/data/meta --log_dir=/logs --v=0 --minloglevel=0
@@ -53,7 +53,7 @@ start_core() {
     -v $PWD/logs/meta2:/logs \
     -e TZ=Asia/Shanghai \
     --cap-add=SYS_PTRACE \
-    vesoft/nebula-metad:v3.8.0 \
+    docker.io/zengwenliang0416/nebula-metad:v3.8.0 \
     --meta_server_addrs=metad0:9559,metad1:9559,metad2:9559 \
     --local_ip=metad2 --ws_ip=metad2 --port=9559 --ws_http_port=19559 \
     --data_path=/data/meta --log_dir=/logs --v=0 --minloglevel=0
@@ -69,7 +69,7 @@ start_core() {
     -v $PWD/logs/storage0:/logs \
     -e TZ=Asia/Shanghai \
     --cap-add=SYS_PTRACE \
-    vesoft/nebula-storaged:v3.8.0 \
+    docker.io/zengwenliang0416/nebula-storaged:v3.8.0 \
     --meta_server_addrs=metad0:9559,metad1:9559,metad2:9559 \
     --local_ip=storaged0 --ws_ip=storaged0 --port=9779 --ws_http_port=19779 \
     --data_path=/data/storage --log_dir=/logs --v=0 --minloglevel=0
@@ -79,7 +79,7 @@ start_core() {
     -v $PWD/logs/storage1:/logs \
     -e TZ=Asia/Shanghai \
     --cap-add=SYS_PTRACE \
-    vesoft/nebula-storaged:v3.8.0 \
+    docker.io/zengwenliang0416/nebula-storaged:v3.8.0 \
     --meta_server_addrs=metad0:9559,metad1:9559,metad2:9559 \
     --local_ip=storaged1 --ws_ip=storaged1 --port=9779 --ws_http_port=19779 \
     --data_path=/data/storage --log_dir=/logs --v=0 --minloglevel=0
@@ -89,7 +89,7 @@ start_core() {
     -v $PWD/logs/storage2:/logs \
     -e TZ=Asia/Shanghai \
     --cap-add=SYS_PTRACE \
-    vesoft/nebula-storaged:v3.8.0 \
+    docker.io/zengwenliang0416/nebula-storaged:v3.8.0 \
     --meta_server_addrs=metad0:9559,metad1:9559,metad2:9559 \
     --local_ip=storaged2 --ws_ip=storaged2 --port=9779 --ws_http_port=19779 \
     --data_path=/data/storage --log_dir=/logs --v=0 --minloglevel=0
@@ -100,7 +100,7 @@ start_core() {
     -v $PWD/logs/graph:/logs \
     -e TZ=Asia/Shanghai \
     --cap-add=SYS_PTRACE \
-    vesoft/nebula-graphd:v3.8.0 \
+    docker.io/zengwenliang0416/nebula-graphd:v3.8.0 \
     --meta_server_addrs=metad0:9559,metad1:9559,metad2:9559 \
     --local_ip=graphd --ws_ip=graphd --port=9669 --ws_http_port=19669 \
     --log_dir=/logs --v=0 --minloglevel=0
@@ -112,7 +112,7 @@ start_core() {
   # 添加存储主机
   echo "添加存储主机..."
   docker run --rm -it --network=nebula-net \
-    vesoft/nebula-console:v3.8.0 \
+    docker.io/zengwenliang0416/nebula-console:v3.8.0 \
     -addr graphd -port 9669 -u root -p nebula \
     -e 'ADD HOSTS "storaged0":9779,"storaged1":9779,"storaged2":9779'
   
@@ -130,7 +130,7 @@ start_studio() {
   docker run -d --name nebula-studio \
     --network=nebula-net \
     -p 7001:7001 \
-    vesoft/nebula-graph-studio:v3.10.0
+    docker.io/zengwenliang0416/nebula-graph-studio:v3.10.0
   
   echo "NebulaGraph Studio已启动，请访问 http://localhost:7001"
   echo "连接信息:"
@@ -166,7 +166,7 @@ show_status() {
 connect_console() {
   echo "连接到NebulaGraph控制台..."
   docker run --rm -it --network=nebula-net \
-    vesoft/nebula-console:v3.8.0 \
+    docker.io/zengwenliang0416/nebula-console:v3.8.0 \
     -addr graphd -port 9669 -u root -p nebula
 }
 
