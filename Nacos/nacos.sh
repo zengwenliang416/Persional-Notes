@@ -1,6 +1,7 @@
 #!/bin/bash
-# Nacos 统一管理脚本
-# 用法: ./nacos.sh [start|stop|restart|status|log]
+# Nacos 服务管理脚本
+# 适用于 macOS ARM 架构，使用内置数据库（Derby）
+# 用法: ./nacos.sh [start|stop|restart|status|console]
 
 # 显示使用帮助
 show_usage() {
@@ -11,176 +12,105 @@ show_usage() {
   echo "  stop     - 停止Nacos服务"
   echo "  restart  - 重启Nacos服务"
   echo "  status   - 查看服务状态"
-  echo "  log      - 查看日志"
+  echo "  logs     - 查看服务日志"
 }
 
-# 设置环境变量
-NACOS_VERSION="2.2.3"
+# 配置信息
+NACOS_VERSION="v2.3.0"
 NACOS_PORT=8848
-NACOS_DATA_DIR="$PWD/data"
-NACOS_LOGS_DIR="$PWD/logs"
-NACOS_CONF_DIR="$PWD/conf"
+NACOS_GRPC_PORT=9848
 NACOS_CONTAINER_NAME="nacos-server"
-MYSQL_CONTAINER_NAME="nacos-mysql"
+WORK_DIR="$PWD"
 
-# 创建数据目录
-ensure_dirs() {
-  mkdir -p "$NACOS_DATA_DIR" "$NACOS_LOGS_DIR" "$NACOS_CONF_DIR"
-  echo "确保数据目录存在: $NACOS_DATA_DIR"
-  echo "确保日志目录存在: $NACOS_LOGS_DIR"
-  echo "确保配置目录存在: $NACOS_CONF_DIR"
-}
-
-# 启动MySQL容器(用于Nacos持久化)
-start_mysql() {
-  # 检查MySQL容器是否已存在
-  if docker ps -a | grep -q "$MYSQL_CONTAINER_NAME"; then
-    echo "MySQL容器已存在，正在启动..."
-    docker start "$MYSQL_CONTAINER_NAME"
-  else
-    echo "创建并启动MySQL容器..."
-    docker run -d --name "$MYSQL_CONTAINER_NAME" \
-      -p 3306:3306 \
-      -e MYSQL_ROOT_PASSWORD=root \
-      -e MYSQL_DATABASE=nacos_config \
-      -e MYSQL_USER=nacos \
-      -e MYSQL_PASSWORD=nacos \
-      mysql:8.0
-    
-    # 等待MySQL启动
-    echo "等待MySQL启动..."
-    sleep 10
-    
-    # 初始化Nacos数据库
-    echo "初始化Nacos数据库..."
-    docker exec "$MYSQL_CONTAINER_NAME" mysql -uroot -proot -e "CREATE DATABASE IF NOT EXISTS nacos_config CHARACTER SET utf8 COLLATE utf8_bin;"
-    
-    # 导入Nacos数据库初始化脚本
-    echo "正在获取Nacos MySQL初始化脚本..."
-    curl -o /tmp/nacos-mysql.sql https://raw.githubusercontent.com/alibaba/nacos/v${NACOS_VERSION}/distribution/conf/mysql-schema.sql
-    
-    if [ -f /tmp/nacos-mysql.sql ]; then
-      docker cp /tmp/nacos-mysql.sql "$MYSQL_CONTAINER_NAME":/tmp/
-      docker exec "$MYSQL_CONTAINER_NAME" mysql -uroot -proot nacos_config < /tmp/nacos-mysql.sql
-      echo "Nacos数据库初始化完成"
-      rm -f /tmp/nacos-mysql.sql
-    else
-      echo "无法获取Nacos数据库初始化脚本，将使用内嵌数据库。"
-    fi
-  fi
-}
-
-# 启动Nacos容器
+# 启动Nacos服务
 start_nacos() {
-  ensure_dirs
+  echo "启动Nacos服务..."
   
-  echo "检查Nacos容器是否已存在..."
-  if docker ps -a | grep -q "$NACOS_CONTAINER_NAME"; then
-    echo "Nacos容器已存在，正在启动..."
-    docker start "$NACOS_CONTAINER_NAME"
+  # 创建自定义网络
+  docker network create nacos-net 2>/dev/null || true
+  
+  # 创建数据目录
+  mkdir -p "$WORK_DIR/data" "$WORK_DIR/logs" "$WORK_DIR/conf"
+  
+  # 启动Nacos服务
+  docker run -d --name ${NACOS_CONTAINER_NAME} \
+    --network nacos-net \
+    -p ${NACOS_PORT}:${NACOS_PORT} \
+    -p ${NACOS_GRPC_PORT}:${NACOS_GRPC_PORT} \
+    -e MODE=standalone \
+    -e PREFER_HOST_MODE=hostname \
+    -e NACOS_AUTH_ENABLE=false \
+    -e NACOS_REPLICAS=1 \
+    -e JVM_XMS=512m \
+    -e JVM_XMX=512m \
+    -e JVM_XMN=256m \
+    -v "$WORK_DIR/conf":/home/nacos/conf \
+    -v "$WORK_DIR/data":/home/nacos/data \
+    -v "$WORK_DIR/logs":/home/nacos/logs \
+    nacos/nacos-server:${NACOS_VERSION}
+  
+  if [ $? -eq 0 ]; then
+    echo "Nacos服务启动中..."
+    echo "服务初始化可能需要几十秒，请耐心等待"
+    echo "控制台地址: http://localhost:${NACOS_PORT}/nacos"
+    echo "默认账号: nacos"
+    echo "默认密码: nacos"
   else
-    echo "创建并启动Nacos容器..."
-    
-    # 获取MySQL容器IP
-    if docker ps | grep -q "$MYSQL_CONTAINER_NAME"; then
-      MYSQL_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' "$MYSQL_CONTAINER_NAME")
-      USE_MYSQL=true
-      echo "使用MySQL: $MYSQL_IP"
-    else
-      USE_MYSQL=false
-      echo "未检测到MySQL容器，将使用内嵌数据库。"
-    fi
-    
-    if [ "$USE_MYSQL" = true ]; then
-      # 使用MySQL数据库
-      docker run -d --name "$NACOS_CONTAINER_NAME" \
-        -p $NACOS_PORT:8848 \
-        -p 9848:9848 \
-        -p 9849:9849 \
-        -e JVM_XMS=512m \
-        -e JVM_XMX=512m \
-        -e MODE=standalone \
-        -e SPRING_DATASOURCE_PLATFORM=mysql \
-        -e MYSQL_SERVICE_HOST="$MYSQL_IP" \
-        -e MYSQL_SERVICE_PORT=3306 \
-        -e MYSQL_SERVICE_DB_NAME=nacos_config \
-        -e MYSQL_SERVICE_USER=root \
-        -e MYSQL_SERVICE_PASSWORD=root \
-        -v "$NACOS_DATA_DIR":/home/nacos/data \
-        -v "$NACOS_LOGS_DIR":/home/nacos/logs \
-        -v "$NACOS_CONF_DIR":/home/nacos/conf \
-        nacos/nacos-server:${NACOS_VERSION}
-    else
-      # 使用内嵌数据库
-      docker run -d --name "$NACOS_CONTAINER_NAME" \
-        -p $NACOS_PORT:8848 \
-        -p 9848:9848 \
-        -p 9849:9849 \
-        -e JVM_XMS=512m \
-        -e JVM_XMX=512m \
-        -e MODE=standalone \
-        -v "$NACOS_DATA_DIR":/home/nacos/data \
-        -v "$NACOS_LOGS_DIR":/home/nacos/logs \
-        -v "$NACOS_CONF_DIR":/home/nacos/conf \
-        nacos/nacos-server:${NACOS_VERSION}
-    fi
+    echo "Nacos服务启动失败！"
   fi
-  
-  echo "Nacos正在启动，可通过以下地址访问:"
-  echo "控制台: http://localhost:$NACOS_PORT/nacos"
-  echo "默认账号: nacos"
-  echo "默认密码: nacos"
 }
 
-# 停止Nacos容器
+# 停止Nacos服务
 stop_nacos() {
-  echo "停止Nacos容器..."
-  docker stop "$NACOS_CONTAINER_NAME" 2>/dev/null || true
-  echo "Nacos容器已停止"
+  echo "停止Nacos服务..."
+  docker stop ${NACOS_CONTAINER_NAME} 2>/dev/null || true
+  docker rm ${NACOS_CONTAINER_NAME} 2>/dev/null || true
+  echo "Nacos服务已停止"
 }
 
-# 停止MySQL容器
-stop_mysql() {
-  echo "停止MySQL容器..."
-  docker stop "$MYSQL_CONTAINER_NAME" 2>/dev/null || true
-  echo "MySQL容器已停止"
-}
-
-# 查看Nacos服务状态
+# 查看服务状态
 show_status() {
   echo "Nacos服务状态:"
-  docker ps -a --filter "name=$NACOS_CONTAINER_NAME" --filter "name=$MYSQL_CONTAINER_NAME"
+  docker ps -a --filter "name=${NACOS_CONTAINER_NAME}"
+  
+  # 检查服务可访问性
+  if docker ps -q -f "name=${NACOS_CONTAINER_NAME}" | grep -q .; then
+    echo ""
+    echo "检查服务可访问性..."
+    http_code=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:${NACOS_PORT}/nacos/index.html)
+    if [ "$http_code" = "200" ]; then
+      echo "Nacos服务运行正常，可通过 http://localhost:${NACOS_PORT}/nacos 访问"
+    else
+      echo "Nacos服务似乎运行中，但网页返回状态码: $http_code"
+      echo "服务可能仍在初始化，请稍后再试"
+    fi
+  fi
 }
 
-# 查看Nacos日志
+# 查看服务日志
 show_logs() {
-  echo "Nacos日志:"
-  docker logs -f "$NACOS_CONTAINER_NAME"
+  echo "显示Nacos服务日志:"
+  docker logs -f ${NACOS_CONTAINER_NAME}
 }
 
 # 主函数
 main() {
   case "$1" in
     start)
-      start_mysql
+      stop_nacos
       start_nacos
-      show_status
       ;;
     stop)
       stop_nacos
-      stop_mysql
       ;;
     restart)
       stop_nacos
-      stop_mysql
-      start_mysql
       start_nacos
-      show_status
       ;;
     status)
       show_status
       ;;
-    log)
+    logs)
       show_logs
       ;;
     *)
