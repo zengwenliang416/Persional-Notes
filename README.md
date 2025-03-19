@@ -39,7 +39,6 @@
 - **IDEA**：IntelliJ IDEA IDE使用技巧和配置说明
 - **JAVA**：Java编程语言学习笔记和实践经验
 - **KubeSphere**：容器平台使用记录
-- **Linux**：Linux操作系统学习笔记，包含基础命令、系统架构与安装指南
 - **LLM**：大语言模型相关学习笔记
 - **LeetCode**：算法刷题记录
 - **Mac**：MacOS使用技巧和问题解决
