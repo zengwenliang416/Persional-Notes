@@ -1,0 +1,313 @@
+app:
+  description: '协助用户进行深度思考，分析复杂问题'
+  icon: 🧠
+  icon_background: '#E5F7FF'
+  mode: advanced-chat
+  name: 深度思考助手
+  use_icon_as_answer_icon: true
+kind: app
+version: 0.1.5
+workflow:
+  conversation_variables: []
+  environment_variables: []
+  features:
+    file_upload:
+      allowed_file_extensions: []
+      allowed_file_types:
+      - image
+      allowed_file_upload_methods:
+      - remote_url
+      - local_file
+      enabled: true
+      fileUploadConfig:
+        audio_file_size_limit: 50
+        batch_count_limit: 5
+        file_size_limit: 15
+        image_file_size_limit: 10
+        video_file_size_limit: 100
+        workflow_file_upload_limit: 10
+      image:
+        enabled: true
+        number_limits: 3
+        transfer_methods:
+        - local_file
+        - remote_url
+      number_limits: 3
+    opening_statement: '我是深度思考助手，擅长分析复杂问题并提供详细的思考过程。'
+    retriever_resource:
+      enabled: true
+    sensitive_word_avoidance:
+      enabled: false
+    speech_to_text:
+      enabled: false
+    suggested_questions: []
+    suggested_questions_after_answer:
+      enabled: false
+    text_to_speech:
+      enabled: false
+      language: ''
+      voice: ''
+  graph:
+    edges:
+    - data:
+        isInIteration: false
+        sourceType: start
+        targetType: document-extractor
+      id: start-source-doc-extractor-target
+      source: start
+      sourceHandle: source
+      target: doc_extractor
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: document-extractor
+        targetType: llm
+      id: doc-extractor-source-reasoning-target
+      source: doc_extractor
+      sourceHandle: source
+      target: reasoning
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: llm
+        targetType: llm
+      id: reasoning-source-final-target
+      source: reasoning
+      sourceHandle: source
+      target: final
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: llm
+        targetType: answer
+      id: final-source-answer-target
+      source: final
+      sourceHandle: source
+      target: answer
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    nodes:
+    - data:
+        desc: ''
+        selected: false
+        title: 开始
+        type: start
+        variables: []
+      height: 54
+      id: start
+      position:
+        x: 80
+        y: 282
+      positionAbsolute:
+        x: 80
+        y: 282
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: ''
+        is_array_file: true
+        selected: false
+        title: 文档提取器
+        type: document-extractor
+        variable_selector:
+        - sys
+        - files
+      height: 92
+      id: doc_extractor
+      position:
+        x: 378
+        y: 282
+      positionAbsolute:
+        x: 378
+        y: 282
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        desc: ''
+        memory:
+          query_prompt_template: '<用户问题>{{#sys.query#}}</用户问题>
+            {{#if files}}
+            <文件>{{#doc_extractor.text#}}</文件>
+            {{/if}}'
+          role_prefix:
+            assistant: ''
+            user: ''
+          window:
+            enabled: false
+            size: 10
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name:
+            id: moonshot-v1-8k
+          provider: moonshot
+        prompt_template:
+        - id: reasoning-prompt
+          role: system
+          text: '<角色>
+            你是一个具有强大思考能力的AI助手。与普通AI不同，你会详细输出你的完整思考过程。
+            </角色>
+
+            <任务>
+            你的任务是帮助用户进行深度思考，解决复杂问题。
+            你需要基于用户的问题，输出完整的思考过程和分析逻辑。
+
+            <步骤>
+            "步骤1": "接收用户的问题"
+            "步骤2": "对问题进行深入思考和分析"
+            "步骤3": "详细阐述思考过程和逻辑推理，确保过程完整且易于理解"
+            "步骤4": "输出完整的思考过程，包括分析各种可能性、权衡利弊等"
+            </步骤>
+            </任务>
+
+            <注意事项>
+            1. 提供系统化、结构化的思考框架
+            2. 分析问题的多个角度和维度
+            3. 提出不同的解决方案和可能性
+            4. 评估每种方案的优缺点
+            5. 考虑各种边缘情况和特殊条件
+            </注意事项>'
+        selected: false
+        title: 思考过程
+        type: llm
+        variables: []
+        vision:
+          configs:
+            detail: high
+            variable_selector:
+            - sys
+            - files
+          enabled: true
+      height: 98
+      id: reasoning
+      position:
+        x: 680
+        y: 282
+      positionAbsolute:
+        x: 680
+        y: 282
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        desc: ''
+        memory:
+          query_prompt_template: '<用户问题>{{#sys.query#}}</用户问题>
+            {{#if files}}
+            <文件>{{#doc_extractor.text#}}</文件>
+            {{/if}}
+            <思考过程>{{#reasoning.text#}}</思考过程>'
+          role_prefix:
+            assistant: ''
+            user: ''
+          window:
+            enabled: false
+            size: 10
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name:
+            id: moonshot-v1-32k
+          provider: moonshot
+        prompt_template:
+        - id: final-prompt
+          role: system
+          text: '<角色>
+            你是一个善于学习和总结的AI助手。
+            </角色>
+
+            <任务>
+            你需要学习前面思考模型提供的思考过程，提炼精华，然后提供最终答案。
+            
+            <步骤>
+            "步骤1": "接收思考过程"
+            "步骤2": "仔细研究并理解思考的逻辑和步骤"
+            "步骤3": "基于思考过程生成清晰、简洁的最终答案"
+            "步骤4": "在答案中保留关键的思考点，但更加精炼和易于理解"
+            </步骤>
+            </任务>
+
+            <输出格式>
+            1. 首先总结问题的核心
+            2. 然后提供结构化的答案
+            3. 最后给出具体的建议或结论
+            
+            确保答案准确、相关且有实用价值。
+            </输出格式>'
+        selected: false
+        title: 最终回答
+        type: llm
+        variables: []
+        vision:
+          configs:
+            detail: high
+            variable_selector:
+            - sys
+            - files
+          enabled: true
+      height: 98
+      id: final
+      position:
+        x: 1000
+        y: 282
+      positionAbsolute:
+        x: 1000
+        y: 282
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        answer: '<思考过程>
+          {{#reasoning.text#}}
+          </思考过程>
+
+          <最终答案>
+          {{#final.text#}}
+          </最终答案>'
+        desc: ''
+        selected: false
+        title: 回答
+        type: answer
+        variables: []
+      height: 121
+      id: answer
+      position:
+        x: 1320
+        y: 282
+      positionAbsolute:
+        x: 1320
+        y: 282
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+  viewport:
+    x: -77
+    y: 124
+    zoom: 1 

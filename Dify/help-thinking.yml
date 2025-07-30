@@ -1,0 +1,487 @@
+app:
+  description: ''
+  icon: ♿
+  icon_background: '#D5F5F6'
+  mode: advanced-chat
+  name: 协助思考
+  use_icon_as_answer_icon: true
+kind: app
+version: 0.1.5
+workflow:
+  conversation_variables: []
+  environment_variables: []
+  features:
+    file_upload:
+      allowed_file_extensions: []
+      allowed_file_types:
+      - image
+      allowed_file_upload_methods:
+      - remote_url
+      - local_file
+      enabled: true
+      fileUploadConfig:
+        audio_file_size_limit: 50
+        batch_count_limit: 5
+        file_size_limit: 15
+        image_file_size_limit: 10
+        video_file_size_limit: 100
+        workflow_file_upload_limit: 10
+      image:
+        enabled: false
+        number_limits: 3
+        transfer_methods:
+        - local_file
+        - remote_url
+      number_limits: 1
+    opening_statement: ''
+    retriever_resource:
+      enabled: true
+    sensitive_word_avoidance:
+      enabled: false
+    speech_to_text:
+      enabled: false
+    suggested_questions: []
+    suggested_questions_after_answer:
+      enabled: false
+    text_to_speech:
+      enabled: false
+      language: ''
+      voice: ''
+  graph:
+    edges:
+    - data:
+        isInIteration: false
+        sourceType: llm
+        targetType: llm
+      id: llm-source-1738052643931-target
+      source: llm
+      sourceHandle: source
+      target: '1738052643931'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: llm
+        targetType: answer
+      id: 1738052643931-source-answer-target
+      source: '1738052643931'
+      sourceHandle: source
+      target: answer
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: start
+        targetType: document-extractor
+      id: 1738052599424-source-1738169041280-target
+      source: '1738052599424'
+      sourceHandle: source
+      target: '1738169041280'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: document-extractor
+        targetType: llm
+      id: 1738169041280-source-llm-target
+      source: '1738169041280'
+      sourceHandle: source
+      target: llm
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    nodes:
+    - data:
+        desc: ''
+        selected: false
+        title: Start
+        type: start
+        variables: []
+      height: 54
+      id: '1738052599424'
+      position:
+        x: 80
+        y: 282
+      positionAbsolute:
+        x: 80
+        y: 282
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        desc: ''
+        memory:
+          query_prompt_template: '<User Query>{{#sys.query#}}</User Query>
+
+            <file>{{#document_extractor.text#}}</file>'
+          role_prefix:
+            assistant: ''
+            user: ''
+          window:
+            enabled: false
+            size: 10
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: 
+            id: moonshot-v1-8k
+          provider: moonshot
+        prompt_template:
+        - id: 60740fa2-90fc-4269-93f4-3d150c3df150
+          role: system
+          text: '<Role>
+
+            You are an LLM with reasoning capabilities.
+
+            Unlike other LLMs, you can output your complete thinking process.
+
+            </Role>
+
+
+            <Task>
+
+            Your task is to assist other LLMs that lack reasoning capabilities.
+
+            You need to output complete thinking processes for other LLMs based on
+            user questions.
+
+            <Steps>
+
+            "Step 1": "Receive questions from users."
+
+            "Step 2": "Conduct deep reasoning and analysis on user questions."
+
+            "Step 3": "Elaborate on the reasoning process and logic, ensuring the
+            process is complete and easy to understand."
+
+            "Step 4": "Output the complete reasoning process, no final answer needed."
+
+            </Steps>
+
+            </Task>
+
+
+            <Limitations>
+
+            Do not output the final answer, only output the thinking process.
+
+            Do not explain your own capabilities or limitations.
+
+            </Limitations>'
+        selected: false
+        title: deepseek-r1
+        type: llm
+        variables: []
+        vision:
+          enabled: false
+      height: 98
+      id: llm
+      position:
+        x: 736
+        y: 282
+      positionAbsolute:
+        x: 736
+        y: 282
+      selected: true
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        answer: '<think>
+
+          {{#llm.text#}}
+
+          </think>
+
+
+          <o>
+
+          {{#second_llm.text#}}
+
+          </o>'
+        desc: ''
+        selected: false
+        title: Direct Response
+        type: answer
+        variables: []
+      height: 121
+      id: answer
+      position:
+        x: 1522
+        y: 282
+      positionAbsolute:
+        x: 1522
+        y: 282
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        desc: ''
+        memory:
+          query_prompt_template: '<User Query>{{#sys.query#}}</User Query>
+
+            <file>{{#document_extractor.text#}}</file>
+
+            <deepseek-r1>{{#llm.text#}}</deepseek-r1>'
+          role_prefix:
+            assistant: ''
+            user: ''
+          window:
+            enabled: false
+            size: 50
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name:
+            id: moonshot-v1-128k
+          provider: moonshot
+        prompt_template:
+        - id: 564efaef-34a5-4c48-9ca3-a9f4f0bdeba9
+          role: system
+          text: '<Role>
+
+            You are an LLM that excels at learning.
+
+            </Role>
+
+
+            <Task>
+
+            You need to learn from others'' thinking processes about problems, enhance
+            your results with their thinking, and then provide your answer.
+
+            <Steps>
+
+            "Step 1": "Receive thinking process from DeepSeek-R1 model."
+
+            "Step 2": "Carefully study and understand DeepSeek-R1''s reasoning logic
+            and steps."
+
+            "Step 3": "Generate final answer based on DeepSeek-R1''s thinking, combined
+            with image capabilities."
+
+            "Step 4": "Output the final answer, no need to explain the thinking process."
+
+            </Steps>
+
+            </Task>
+
+
+            <Limitations>
+
+            Do not repeat DeepSeek-R1''s thinking process, only output the final answer.
+
+            Do not explain your own capabilities or learning process.
+
+            Ensure the answer is accurate and relevant to the question.
+
+            </Limitations>'
+        selected: false
+        title: gemini
+        type: llm
+        variables: []
+        vision:
+          configs:
+            detail: high
+            variable_selector:
+            - sys
+            - files
+          enabled: false
+      height: 98
+      id: 'second_llm'
+      position:
+        x: 1096
+        y: 282
+      positionAbsolute:
+        x: 1096
+        y: 282
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        author: stvlynn
+        desc: ''
+        height: 202
+        selected: false
+        showAuthor: true
+        text: '{"root":{"children":[{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size:
+          16px;","text":"Introduction","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"This
+          demo utilizes DeepSeek R1''s powerful reasoning capabilities and enhances
+          output through Gemini model learning, demonstrating how to combine reasoning
+          LLMs with multimodal LLMs to improve AI''s thinking and problem-solving
+          abilities.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}'
+        theme: blue
+        title: ''
+        type: ''
+        width: 266
+      height: 202
+      id: '1738165679422'
+      position:
+        x: 61
+        y: 29
+      positionAbsolute:
+        x: 61
+        y: 29
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom-note
+      width: 266
+    - data:
+        author: stvlynn
+        desc: ''
+        height: 236
+        selected: false
+        showAuthor: true
+        text: '{"root":{"children":[{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size:
+          16px;","text":"Reasoning Model","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"This
+          node calls the DeepSeek-R1 reasoning model (deepseek-reasoner). The system
+          prompt sets DeepSeek-R1 as an LLM with reasoning capabilities that needs
+          to output complete thinking processes. Its task is to assist other LLMs
+          without reasoning capabilities and output complete thinking processes based
+          on user questions. The thinking process will be wrapped in <think> tags.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}'
+        theme: blue
+        title: ''
+        type: ''
+        width: 315
+      height: 236
+      id: '1738165732645'
+      position:
+        x: 736
+        y: 11
+      positionAbsolute:
+        x: 736
+        y: 11
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom-note
+      width: 315
+    - data:
+        author: stvlynn
+        desc: ''
+        height: 251
+        selected: false
+        showAuthor: true
+        text: '{"root":{"children":[{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size:
+          16px;","text":"Multimodal Model","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"This
+          node calls Google''s Gemini model (gemini-1.5-flash-8b-exp-0924). The system
+          prompt sets the Gemini model as an LLM that excels at learning, and its
+          task is to learn from others'' (DeepSeek-R1''s) thinking processes about
+          problems, enhance its results with that thinking, and then provide its answer.
+          The input thinking process will be treated as a user question, and the final
+          answer will be wrapped in <o> tags.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}'
+        theme: blue
+        title: ''
+        type: ''
+        width: 312
+      height: 251
+      id: '1738165823052'
+      position:
+        x: 1096
+        y: 11
+      positionAbsolute:
+        x: 1096
+        y: 11
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom-note
+      width: 312
+    - data:
+        author: stvlynn
+        desc: ''
+        height: 226
+        selected: false
+        showAuthor: true
+        text: '{"root":{"children":[{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size:
+          16px;","text":"Output","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size:
+          12px;","text":"To make it easy to display reasoning and actual output, we
+          use XML tags (<think><o>) to separate the outputs of the two models.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}'
+        theme: blue
+        title: ''
+        type: ''
+        width: 280
+      height: 226
+      id: '1738165846879'
+      position:
+        x: 1522
+        y: 11
+      positionAbsolute:
+        x: 1522
+        y: 11
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom-note
+      width: 280
+    - data:
+        desc: ''
+        is_array_file: true
+        selected: false
+        title: Doc Extractor
+        type: document-extractor
+        variable_selector:
+        - sys
+        - files
+      height: 92
+      id: 'document_extractor'
+      position:
+        x: 378
+        y: 282
+      positionAbsolute:
+        x: 378
+        y: 282
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        author: stvlynn
+        desc: ''
+        height: 190
+        selected: false
+        showAuthor: true
+        text: '{"root":{"children":[{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size:
+          14px;","text":"Document Extractor","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Extracts
+          documents into readable text content  for LLMs.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}'
+        theme: blue
+        title: ''
+        type: ''
+        width: 240
+      height: 190
+      id: '1738169102378'
+      position:
+        x: 403
+        y: 29
+      positionAbsolute:
+        x: 403
+        y: 29
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom-note
+      width: 240
+    viewport:
+      x: -234
+      y: 141
+      zoom: 1
